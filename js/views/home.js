@@ -104,20 +104,18 @@ SE.views.home = function (el, p) {
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec news-sec" aria-labelledby="h-news">' +
-        '<div class="card news-panel">' +
-          '<button class="news-panel-head" type="button" data-news-toggle aria-expanded="false" aria-controls="news-grid">' +
-            '<span class="news-panel-title" id="h-news">Fleet news &amp; updates</span>' +
-            '<span class="news-panel-right"><a class="sec-action" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a>' + icon('chevron-right') + '</span>' +
-          '</button>' +
-          '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
-        '</div>' +
+        '<button class="news-toggle" type="button" data-news-toggle aria-expanded="false" aria-controls="news-grid">' +
+          icon('newspaper') + '<span id="h-news">Fleet news &amp; updates</span>' +
+          '<span class="news-toggle-right"><a class="sec-action news-toggle-viewall" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a>' + icon('chevron-right') + '</span>' +
+        '</button>' +
+        '<div class="news-body" id="news-grid" hidden><ul class="news-grid-inner">' + newsCards() + '</ul></div>' +
       '</section>' +
       '<section class="sec net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
-      // 1021 (owner, 2026-10-22): then the operational layers, approvals and active work orders
-      '<section class="sec" id="appr-sec" aria-labelledby="h-appr"' + (SE.pendingApprovals().length ? '' : ' hidden') + '><div class="sec-head"><h2 id="h-appr">Waiting for your approval <span class="h-note">All branches</span></h2><a class="sec-action" href="#/approvals">All approvals' + icon('arrow-small-right') + '</a></div><div id="appr-host"></div></section>' +
-      '<section class="sec" aria-labelledby="h-orders">' +
-        '<div class="sec-head"><h2 id="h-orders">Active work orders</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
-        '<p class="muted">Active means a work order at the selected location that is not done' + (SE.twin ? ' or cancelled' : ', cancelled or archived') + '.</p><div id="orders-host"></div>' +
+      '<section class="sec wo-table-sec" aria-labelledby="h-wotable">' +
+        '<div class="sec-head"><h2 id="h-wotable"><span id="wo-table-count">5</span> most recently updated work orders</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
+        '<div class="wo-table-wrap"><table class="wo-table"><thead><tr>' +
+          '<th>WO #</th><th>Issue</th><th>Asset</th><th>Assignee</th><th>Due</th><th>Status</th><th></th>' +
+        '</tr></thead><tbody id="orders-host"></tbody></table></div>' +
       '</section>' +
       '</div>',
     onLocation: function () { el.querySelector('#subline').textContent = subline(); renderOrders(); renderQuick(); },
@@ -127,29 +125,32 @@ SE.views.home = function (el, p) {
   headEl.innerHTML = headEl.innerHTML.replace('__TOOLS__', SE.tools());
   if (SE.searchBox) { var f = headEl.querySelector('[data-search]'); if (f) SE.searchBox(f); }
 
-  // ---------- active orders: list view
+  // ---------- active orders: table view (combined with pending approvals inline)
   var stopOrders = null;
-  function orderRow(w) {
+  function orderTableRow(w) {
     var appr = D.approvals.find(function (a) { return a.wo === w.id; });
     var waiting = appr && !SE.state.approved[appr.order] && !SE.state.returned[appr.order];
-    var pri = w.priority === 'High' ? '<span class="chip high">HIGH</span>' : w.priority === 'Medium' ? '<span class="chip">MEDIUM</span>' : '';
-    return '<li class="wo-row">' +
-      '<div class="wo-row-info">' +
-        '<div class="wo-row-head"><a class="wo-link" href="#/work-order?id=' + w.id + '">#' + w.id + '</a><span class="wo-machine">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</span>' +
-          '<div class="chips chips-inline">' + '<span class="chip">' + esc(w.status.toUpperCase()) + '</span>' + pri + '</div>' +
-        '</div>' +
-        '<p class="wo-issue muted">' + esc(w.issue) + '</p>' +
-        '<p class="wo-meta muted">' + icon('shopping-cart') + (waiting ? appr.lines + ' lines awaiting approval' : appr ? appr.lines + ' lines approved' : 'No parts ordered yet') + ' · ' + icon('calendar') + 'Opened ' + esc(w.opened) + '</p>' +
-      '</div>' +
-      '<div class="wo-row-acts">' +
-        (waiting ? '<button class="btn btn-primary" type="button" data-go="approval" data-id="' + appr.order + '">Review approval</button>' : '<button class="btn btn-secondary" type="button" data-go="machine" data-m="' + machineKey(w) + '" data-wo="' + w.id + '">Search parts</button>') +
-      '</div>' +
-    '</li>';
+    var dot = w.priority === 'High' ? 'high' : w.priority === 'Medium' ? 'med' : 'low';
+    var st = w.status.toLowerCase();
+    var statusCls = st === 'active' ? 'wo-s-active' : st === 'pending' || st === 'awaiting approval' ? 'wo-s-pending' : st === 'done' || st === 'closed' ? 'wo-s-closed' : 'wo-s-neutral';
+    return '<tr class="wo-tr' + (waiting ? ' wo-tr-needs-appr' : '') + '">' +
+      '<td class="wo-td-id"><span class="wo-dot wo-dot-' + dot + '"></span><a class="wo-link" href="#/work-order?id=' + w.id + '">WO #' + esc(w.id) + '</a></td>' +
+      '<td class="wo-td-issue">' + esc(w.issue) + '</td>' +
+      '<td class="wo-td-asset">' + esc(w.equip) + ' · ' + esc(w.machine) + '</td>' +
+      '<td class="wo-td-who">' + esc(w.assignee || '—') + '</td>' +
+      '<td class="wo-td-due">' + esc(w.due || '—') + '</td>' +
+      '<td class="wo-td-status"><span class="wo-status-chip ' + statusCls + '">' + esc(w.status) + '</span></td>' +
+      '<td class="wo-td-act">' + (waiting ? '<button class="btn btn-primary btn-sm" type="button" data-approve="' + appr.order + '">Approve</button>' : '') + '</td>' +
+    '</tr>';
   }
   function renderOrders() {
-    var list = active().slice(0, 5), host = el.querySelector('#orders-host');
+    var list = active().slice(0, 5), body = el.querySelector('#orders-host');
+    var countEl = el.querySelector('#wo-table-count');
+    if (countEl) countEl.textContent = list.length;
     if (stopOrders) { stopOrders(); stopOrders = null; }
-    host.innerHTML = list.length ? '<ul class="wo-list">' + list.map(orderRow).join('') + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
+    body.innerHTML = list.length
+      ? list.map(orderTableRow).join('')
+      : '<tr><td colspan="7" class="wo-td-empty">No active work orders at this location.</td></tr>';
   }
 
   el.addEventListener('click', function (e) {
@@ -157,9 +158,8 @@ SE.views.home = function (el, p) {
     if (!t || t.dataset.go || t.hasAttribute('data-news-toggle')) return;
   });
 
-  // ---------- approvals waiting (the phone's approval cards): Approve signs off in place
+  // ---------- approvals (inline in the work orders table; these functions retained for the approve() flow)
   var foldTimer = null, stopAppr = null;
-  // 1016 (review F03, F06): branch and the reason for sign-off on every card; 1019: every card offers Review and Approve
   function apprCard(a) {
     var branch = (SE.loc(a.shipTo) || {}).name || '';
     return '<li class="appr-row" data-order="' + a.order + '">' +
@@ -180,7 +180,7 @@ SE.views.home = function (el, p) {
   }
   function approve(btn) {
     if (btn.disabled || SE.work.apprState(SE.approval(btn.dataset.approve)) !== 'pending') return;
-    var order = btn.dataset.approve, c = btn.closest('.appr');
+    var order = btn.dataset.approve, row = btn.closest('.wo-tr');
     btn.disabled = true; btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<svg class="spin" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2.4"/><path d="M9 1.5A7.5 7.5 0 0 1 16.5 9" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round"/></svg>Approving';
     setTimeout(function () {
@@ -193,18 +193,11 @@ SE.views.home = function (el, p) {
       } catch (err) { btn.disabled = false; btn.removeAttribute('aria-busy'); btn.textContent = 'Approve'; SE.toast('Approval needs review: ' + err.message, 'exclamation'); return; }
       SE.toast('Order #' + order + ' approved', 'check');
       s.refresh();
-      SE.animate(c, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.97)' }], { duration: 240 }).then(function () {
-        renderAppr(); renderOrders(); renderQuick();
-        if (!SE.pendingApprovals().length) foldTimer = setTimeout(function () {
-          var sec = el.querySelector('#appr-sec');
-          SE.animate(sec, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }).then(function () { sec.hidden = true; });
-        }, SE.reducedMotion ? 1200 : 2800);
-      });
+      SE.animate(row, [{ opacity: 1 }, { opacity: 0 }], { duration: 240 }).then(function () { renderOrders(); renderQuick(); });
     }, SE.reducedMotion ? 0 : 650);
   }
   el.addEventListener('click', function (e) { var b = e.target.closest('[data-approve]'); if (b && !b.disabled) approve(b); });
 
-  renderAppr();
   renderOrders();
   function renderQuick() { el.querySelector('#qtiles').innerHTML = qtiles(); }
   renderQuick();
@@ -213,7 +206,6 @@ SE.views.home = function (el, p) {
     var grid = el.querySelector('#news-grid'), open = grid.hidden;
     grid.hidden = !open;
     this.setAttribute('aria-expanded', String(open));
-    this.querySelector('.i').style.transform = open ? 'rotate(90deg)' : '';
   });
   el.querySelector('[data-net-q]').addEventListener('input', function (e) {
     var q = e.target.value.trim().toLowerCase(), n = 0;
