@@ -99,8 +99,7 @@ SE.views.home = function (el, p) {
       // actions in a 2 x 2 grid (4), then Fleet news and updates (8) beside the Supplier network (4), then the rest.
       // web-twin has no marketing kit: the quick actions run 4 across. Stacked below 1000px of content.
       '<div class="dash" id="dash">' +
-      (SE.mkt ? SE.mkt.hero().replace('<section class="sec"', '<section class="sec lay-8 lay-hero"') : '') +
-      '<section class="sec qa-sec' + (SE.mkt ? ' lay-4' : '') + '" aria-labelledby="h-quick">' +
+      '<section class="sec qa-sec" aria-labelledby="h-quick">' +
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec lay-8 news-sec" aria-labelledby="h-news">' +
@@ -220,14 +219,10 @@ SE.views.home = function (el, p) {
     el.querySelectorAll('[data-net-name]').forEach(function (li) { var hit = !q || li.dataset.netName.indexOf(q) >= 0; li.hidden = !hit; if (hit) n++; });
     el.querySelector('.net-none').hidden = n > 0;
   });
-  var stopMkt = SE.mkt ? SE.mkt.bind(el) : null;
-  // first sign in: desktop notifications, then What's new (not in web-twin: no marketing kit)
-  SE.push.bind(el, function () { if (SE.mkt && !SE.state.mkt.whatsNew) SE.mkt.whatsNew(); });
+  SE.push.bind(el, null);
   if (p.push === 'alert') SE.push.ask(function (msg, ic) { SE.state.pushAsked = true; SE.save(); var c = el.querySelector('[data-push-card]'); if (c) c.remove(); if (msg) SE.toast(msg, ic); });
-  if (SE.mkt && p.whatsnew) SE.mkt.whatsNew();
-  else if (SE.mkt && !SE.push.due() && !SE.state.mkt.whatsNew) SE.mkt.whatsNew();
   if (p.menu === 'account') s.openAccount();
   if (p.nav === 'open' && s.mode() === 'drawer') el.querySelector('.appbar-menu').click();
 
-  return function () { if (stopOrders) stopOrders(); clearTimeout(foldTimer); if (stopAppr) stopAppr(); if (stopMkt) stopMkt(); s.cleanup(); };
+  return function () { if (stopOrders) stopOrders(); clearTimeout(foldTimer); if (stopAppr) stopAppr(); s.cleanup(); };
 };

@@ -21,7 +21,7 @@
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 
     ['#', 'Parts'], ['search', 'Search Parts', 'search'], ['grid-alt', 'Parts Catalog', 'catalog'], ['star', 'Recommended Parts', 'recommended'], ['list', 'Shopping Lists', 'lists'], ['shopping-cart', 'Cart', 'cart'],
-    ['#', 'Knowledge'], ['book-alt', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['bell', 'Notifications', 'notifications'], ['pulse', 'Diagnostics', null],
+    ['#', 'Knowledge'], ['book-alt', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['bell', 'Notifications', 'notifications'],
   ];
   function count(route) {
     if (route === 'approvals') return SE.pendingApprovals().length;
