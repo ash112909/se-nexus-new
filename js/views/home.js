@@ -93,21 +93,22 @@ SE.views.home = function (el, p) {
       '__TOOLS__</header>',
     body:
       '<div id="push-slot">' + (SE.push.due() ? SE.push.card() : '') + '</div>' +
-      '<div class="news-bar">' +
-        '<div class="news-anchor" id="news-anchor">' +
-          '<button class="news-btn" type="button" data-news-toggle aria-expanded="false" aria-controls="news-drop">' +
-            icon('newspaper') + 'Fleet news &amp; updates' + icon('chevron-down') +
-          '</button>' +
-          '<div class="news-drop" id="news-drop" hidden>' +
-            '<div class="news-drop-hd"><b id="h-news">Fleet news &amp; updates</b><a class="sec-action" href="#/kb">View all' + icon('arrow-small-right') + '</a></div>' +
-            '<ul class="news-grid">' + newsCards() + '</ul>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
       '<div class="dash" id="dash">' +
       (SE.mkt ? SE.mkt.hero().replace('<section class="sec"', '<section class="sec lay-8 lay-hero"') : '') +
       '<section class="sec qa-sec' + (SE.mkt ? ' lay-4' : '') + '" aria-labelledby="h-quick">' +
-        '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
+        '<div class="sec-head">' +
+          '<h2 id="h-quick">Quick actions</h2>' +
+          '<div class="news-anchor" id="news-anchor">' +
+            '<button class="news-btn" type="button" data-news-toggle aria-expanded="false" aria-controls="news-drop">' +
+              icon('newspaper') + 'News' + icon('chevron-down') +
+            '</button>' +
+            '<div class="news-drop" id="news-drop" hidden>' +
+              '<div class="news-drop-hd"><b id="h-news">Fleet news &amp; updates</b><a class="sec-action" href="#/kb">View all' + icon('arrow-small-right') + '</a></div>' +
+              '<ul class="news-grid">' + newsCards() + '</ul>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec lay-8 ops-sec" aria-labelledby="h-ops">' +
         '<div class="sec-head"><h2 id="h-ops">Work orders &amp; approvals</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
@@ -122,32 +123,32 @@ SE.views.home = function (el, p) {
   headEl.innerHTML = headEl.innerHTML.replace('__TOOLS__', SE.tools());
   if (SE.searchBox) { var f = headEl.querySelector('[data-search]'); if (f) SE.searchBox(f); }
 
-  // ---------- combined ops list: pending approvals first, then active work orders
+  // ---------- combined ops list: clean grid-column rows
   var stopOrders = null;
-  function orderRow(w) {
+  var OPS_HEAD = '<li class="ops-head" aria-hidden="true"><span>WO #</span><span>Issue</span><span>Asset</span><span>Assignee</span><span>Due</span><span>Status</span><span></span></li>';
+  function opsRow(w) {
     var appr = D.approvals.find(function (a) { return a.wo === w.id; });
     var waiting = appr && !SE.state.approved[appr.order] && !SE.state.returned[appr.order];
-    var pri = w.priority === 'High' ? '<span class="chip high">HIGH</span>' : w.priority === 'Medium' ? '<span class="chip">MEDIUM</span>' : '';
-    return '<li class="wo-row">' +
-      '<div class="wo-row-info">' +
-        '<div class="wo-row-head"><a class="wo-link" href="#/work-order?id=' + w.id + '">#' + w.id + '</a><span class="wo-machine">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</span>' +
-          '<div class="chips chips-inline">' + '<span class="chip">' + esc(w.status.toUpperCase()) + '</span>' + pri + '</div>' +
-        '</div>' +
-        '<p class="wo-issue muted">' + esc(w.issue) + '</p>' +
-        '<p class="wo-meta muted">' + icon('shopping-cart') + (waiting ? appr.lines + ' lines awaiting approval' : appr ? appr.lines + ' lines approved' : 'No parts ordered yet') + ' · ' + icon('calendar') + 'Opened ' + esc(w.opened) + '</p>' +
-      '</div>' +
-      '<div class="wo-row-acts">' +
-        (waiting ? '<button class="btn btn-primary" type="button" data-go="approval" data-id="' + appr.order + '">Review approval</button>' : '<button class="btn btn-secondary" type="button" data-go="machine" data-m="' + machineKey(w) + '" data-wo="' + w.id + '">Search parts</button>') +
-      '</div>' +
+    var dot = w.priority === 'High' ? 'ops-dot-high' : w.priority === 'Medium' ? 'ops-dot-med' : 'ops-dot-low';
+    var statusLabel = waiting ? 'Needs approval' : w.status;
+    var statusCls = waiting ? 'ops-s-appr' : w.status.toLowerCase() === 'active' ? 'ops-s-active' : w.status.toLowerCase() === 'pending' || w.status.toLowerCase() === 'awaiting approval' ? 'ops-s-pending' : 'ops-s-neutral';
+    return '<li class="ops-row">' +
+      '<span class="ops-id"><span class="ops-dot ' + dot + '"></span><a class="wo-link" href="#/work-order?id=' + w.id + '">WO #' + esc(w.id) + '</a></span>' +
+      '<span class="ops-issue">' + esc(w.issue) + '</span>' +
+      '<span class="ops-asset">' + esc(w.equip) + ' &middot; ' + esc(w.machine) + '</span>' +
+      '<span class="ops-who">' + esc(w.assignee || '—') + '</span>' +
+      '<span class="ops-due">' + esc(w.due || '—') + '</span>' +
+      '<span class="ops-status"><span class="ops-chip ' + statusCls + '">' + esc(statusLabel) + '</span></span>' +
+      '<span class="ops-act">' + (waiting ? '<button class="btn btn-primary btn-sm" type="button" data-approve="' + appr.order + '">Approve</button>' : '') + '</span>' +
     '</li>';
   }
   function renderOps() {
     var host = el.querySelector('#ops-host');
     if (stopOrders) { stopOrders(); stopOrders = null; }
-    var apprs = SE.pendingApprovals();
-    var orders = active().slice(0, Math.max(0, 5 - apprs.length));
-    var html = apprs.map(apprCard).join('') + orders.map(orderRow).join('');
-    host.innerHTML = html ? '<ul class="ops-list">' + html + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
+    var all = active().slice(0, 5);
+    host.innerHTML = all.length
+      ? '<ul class="ops-list">' + OPS_HEAD + all.map(opsRow).join('') + '</ul>'
+      : '<p class="empty">No active work orders at this location.</p>';
   }
   function renderOrders() { renderOps(); }
 
@@ -179,7 +180,7 @@ SE.views.home = function (el, p) {
   }
   function approve(btn) {
     if (btn.disabled || SE.work.apprState(SE.approval(btn.dataset.approve)) !== 'pending') return;
-    var order = btn.dataset.approve, c = btn.closest('.appr');
+    var order = btn.dataset.approve, c = btn.closest('.ops-row');
     btn.disabled = true; btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<svg class="spin" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2.4"/><path d="M9 1.5A7.5 7.5 0 0 1 16.5 9" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round"/></svg>Approving';
     setTimeout(function () {
@@ -192,7 +193,7 @@ SE.views.home = function (el, p) {
       } catch (err) { btn.disabled = false; btn.removeAttribute('aria-busy'); btn.textContent = 'Approve'; SE.toast('Approval needs review: ' + err.message, 'exclamation'); return; }
       SE.toast('Order #' + order + ' approved', 'check');
       s.refresh();
-      SE.animate(c, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.97)' }], { duration: 240 }).then(function () {
+      SE.animate(c, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }).then(function () {
         renderOps(); renderQuick();
       });
     }, SE.reducedMotion ? 0 : 650);

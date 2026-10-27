@@ -336,8 +336,7 @@
   .qt.on span { color: var(--brand-on); }
   .qt.on:hover { border-color: var(--brand-pressed); background: var(--brand-pressed); }
 
-  /* news bar: small button top-right above the dashboard, opens dropdown overlay */
-  .news-bar { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+  /* news button: inline in qa-sec sec-head, opens dropdown overlay */
   .news-anchor { position: relative; }
   .news-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 10px; background: var(--container); border: 1px solid var(--rule); border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; }
   .news-btn:hover { background: var(--hover); border-color: var(--line-strong); }

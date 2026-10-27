@@ -156,11 +156,32 @@
   .ap-meta { font-size: 14px; line-height: 20px; }
 }
 
-/* Home combined ops list (approvals + work orders) */
+/* Home combined ops list: grid-column rows */
 @layer components {
-  .ops-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
-  .ops-list .appr-row:last-child,
-  .ops-list .wo-row:last-child { border-bottom: none; }
+  .ops-list { list-style: none; padding: 0; margin: 0; }
+  .ops-head,
+  .ops-row { display: grid; grid-template-columns: 140px 1fr 170px 90px 80px 130px 90px; gap: 0 14px; align-items: center; }
+  .ops-head { padding: 0 0 6px; border-bottom: 1px solid var(--rule); }
+  .ops-head > span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+  .ops-row { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .ops-row:last-child { border-bottom: none; }
+  .ops-id { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .ops-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .ops-dot-high { background: #e94444; }
+  .ops-dot-med  { background: #f59d00; }
+  .ops-dot-low  { background: var(--subtle); }
+  .ops-issue { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ops-asset { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ops-who   { font-size: 13px; white-space: nowrap; }
+  .ops-due   { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .ops-status { white-space: nowrap; }
+  .ops-chip  { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .ops-s-active  { background: var(--tint-ok, rgba(0,180,90,.12)); color: var(--ok, #00a852); }
+  .ops-s-pending { background: var(--tint-warning, rgba(255,170,0,.13)); color: var(--warning, #c97c00); }
+  .ops-s-appr    { background: var(--chip-high-bg); color: var(--chip-high-ink); }
+  .ops-s-neutral { background: var(--hover); color: var(--muted); }
+  .ops-act   { display: flex; justify-content: flex-end; }
+  .btn-sm    { height: 30px; padding: 0 12px; font-size: 12px; }
 }
 
 /* Home work order list view */
