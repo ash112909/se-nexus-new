@@ -336,18 +336,15 @@
   .qt.on span { color: var(--brand-on); }
   .qt.on:hover { border-color: var(--brand-pressed); background: var(--brand-pressed); }
 
-  .news-toggle { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 0; background: none; border: none; border-bottom: 1px solid var(--rule); font-family: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; text-align: left; }
-  .news-toggle:hover { color: var(--brand); }
-  .news-toggle > .i:first-child { width: 16px; height: 16px; color: var(--subtle); flex-shrink: 0; }
-  .news-toggle > span { flex: 1; }
-  .news-toggle-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .news-toggle-right .i:last-child { width: 16px; height: 16px; color: var(--subtle); transition: transform .2s; }
-  .news-toggle[aria-expanded="true"] .news-toggle-right .i:last-child { transform: rotate(90deg); }
-  .news-toggle-viewall { font-size: 13px; font-weight: 500; color: var(--brand); }
-  .news-body { padding: 16px 0; }
-  .news-grid-inner { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; list-style: none; margin: 0; padding: 0; }
-  @container (max-width: 559px) { .news-grid-inner { grid-template-columns: minmax(0, 1fr); } }
-  .news-grid-inner > li { display: flex; min-width: 0; }
+  .news-panel { padding: 0; overflow: hidden; }
+  .news-panel-head { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 20px; background: none; border: none; font-family: inherit; cursor: pointer; gap: 12px; text-align: left; }
+  .news-panel-head:hover { background: var(--hover); }
+  .news-panel-title { font-size: 14px; font-weight: 700; color: var(--ink); flex: 1; }
+  .news-panel-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .news-panel-right .i { transition: transform .2s; color: var(--subtle); }
+  .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; padding: 0 20px 20px; }
+  @container (max-width: 559px) { .news-grid { grid-template-columns: minmax(0, 1fr); } }
+  .news-grid > li { display: flex; min-width: 0; }
   .news-card { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 20px; color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
   .news-card:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
   .news-k { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
