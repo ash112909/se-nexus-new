@@ -51,13 +51,6 @@ SE.views.home = function (el, p) {
           : '<button class="btn btn-card" type="button" data-go="machine" data-m="' + machineKey(w) + '" data-wo="' + w.id + '">Search parts</button>') + '</div>' +
     '</article>';
   }
-  function noteRow(n) {
-    var unread = n.unread && !SE.state.read[n.id];
-    var tone = n.tone === 'neutral' ? 'success' : n.tone;
-    return '<li><button type="button" class="note' + (unread ? ' unread' : '') + '" data-note="' + n.id + '"><span class="note-mark ' + tone + '">' + icon(n.icon) + '</span>' +
-      '<span class="note-text"><b>' + esc(n.title) + '</b><span>' + esc(n.sub) + '</span></span>' +
-      '<time>' + esc(n.time) + '</time><span class="note-dot ' + tone + '" aria-label="' + (unread ? 'Unread' : 'Read') + '"></span></button></li>';
-  }
 
   // ---------- quick actions (branding reference web.svg: 2 x 2 count tiles, the one that needs you in yellow)
   function qtiles() {
@@ -111,8 +104,8 @@ SE.views.home = function (el, p) {
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec lay-8 news-sec" aria-labelledby="h-news">' +
-        '<div class="sec-head"><h2 id="h-news">Fleet news &amp; updates</h2><a class="sec-action" href="#/kb">View all' + icon('arrow-small-right') + '</a></div>' +
-        '<ul class="news-grid">' + newsCards() + '</ul>' +
+        '<div class="sec-head news-sec-head" data-news-toggle aria-expanded="false" aria-controls="news-grid"><h2 id="h-news">Fleet news &amp; updates' + icon('chevron-right') + '</h2><a class="sec-action" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a></div>' +
+        '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
       '</section>' +
       '<section class="sec lay-4 net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
       // 1021 (owner, 2026-10-22): then the operational layers, approvals and active work orders
@@ -121,13 +114,6 @@ SE.views.home = function (el, p) {
         '<div class="sec-head"><h2 id="h-orders">Active work orders</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
         '<p class="muted">Active means a work order at the selected location that is not done' + (SE.twin ? ' or cancelled' : ', cancelled or archived') + '.</p><div id="orders-host"></div>' +
       '</section>' +
-      (SE.mkt ? SE.mkt.recommendedRow() : '') +
-      // web-twin (SE.twin, no marketing kit): Notifications takes the whole layer
-      '<section class="sec' + (SE.mkt ? ' lay-8' : '') + '" aria-labelledby="h-notes">' +
-        '<div class="sec-head"><h2 id="h-notes">Notifications</h2><div class="sec-actions"><button class="sec-action" type="button" data-markall>' + icon('check') + 'Mark all read</button><a class="sec-action" href="#/notifications">View all' + icon('arrow-small-right') + '</a></div></div>' +
-        '<ul class="notes" id="notes"></ul>' +
-      '</section>' +
-      (SE.mkt ? SE.mkt.early().replace('<section class="sec"', '<section class="sec lay-4"') : '') +
       '</div>',
     onLocation: function () { el.querySelector('#subline').textContent = subline(); renderOrders(); renderQuick(); },
   });
@@ -154,23 +140,9 @@ SE.views.home = function (el, p) {
     el.querySelectorAll('#orders-host .order').forEach(function (c) { var on = c.dataset.woCard === id; c.classList.toggle('selected', on); c.setAttribute('aria-current', String(on)); });
   }
 
-  // ---------- notifications: the 3 newest; a row opens what it is about
-  function renderNotes() {
-    el.querySelector('#notes').innerHTML = D.notifications.slice(0, 3).map(noteRow).join('');
-    el.querySelector('[data-markall]').disabled = !SE.unread();
-  }
-
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button, article.order');
     if (!t || t.dataset.go) return;
-    if (t.hasAttribute('data-markall')) { D.notifications.forEach(function (n) { SE.state.read[n.id] = true; }); SE.save(); renderNotes(); s.refresh(); SE.toast('All notifications marked read', 'check'); return; }
-    if (t.dataset.note) {
-      var n = D.notifications.find(function (x) { return x.id === t.dataset.note; });
-      SE.state.read[n.id] = true; SE.save();
-      var parts = n.go.split('?');
-      SE.go(parts[0], { params: Object.fromEntries(new URLSearchParams(parts[1] || '')) });
-      return;
-    }
     if (t.matches('article.order')) select(t.dataset.woCard);
   });
 
@@ -179,20 +151,21 @@ SE.views.home = function (el, p) {
   // 1016 (review F03, F06): branch and the reason for sign-off on every card; 1019: every card offers Review and Approve
   function apprCard(a) {
     var branch = (SE.loc(a.shipTo) || {}).name || '';
-    return '<article class="card appr" data-order="' + a.order + '" aria-label="Order #' + a.order + ', ' + esc(branch) + ', needs approval">' +
-      '<div class="appr-top">' + '<span class="ap-pill">Needs approval</span>' + '<span class="muted">' + esc(a.when) + '</span></div>' +
-      '<div class="appr-title"><b>Order #' + a.order + '</b><b>' + SE.money(SE.desk.apprTotal(a)) + '</b></div>' +
-      (a.why ? '<p class="appr-why">' + esc(a.why.label) + '</p>' : '') +
-      '<p class="appr-meta"><span>' + esc(a.machine) + ' · ' + a.lines + ' lines</span><span>' + esc(a.by) + ' · ' + esc(branch) + '</span></p>' +
-      '<div class="appr-actions"><button class="btn btn-secondary" type="button" data-go="approval" data-id="' + a.order + '">Review</button><button class="btn btn-primary" type="button" data-approve="' + a.order + '">Approve</button>' +
-      '</div></article>';
+    return '<li class="appr-row" data-order="' + a.order + '">' +
+      '<div class="appr-row-info">' +
+        '<div class="appr-row-head"><b>Order #' + a.order + '</b><span class="appr-total">' + SE.money(SE.desk.apprTotal(a)) + '</span><span class="muted appr-when">' + esc(a.when) + '</span></div>' +
+        '<p class="appr-meta">' + esc(a.machine) + ' · ' + a.lines + ' line' + (a.lines === 1 ? '' : 's') + ' · ' + esc(a.by) + ' · ' + esc(branch) + '</p>' +
+        (a.why ? '<p class="appr-reason">' + esc(a.why.label) + '</p>' : '') +
+      '</div>' +
+      '<div class="appr-row-acts"><button class="btn btn-secondary" type="button" data-go="approval" data-id="' + a.order + '">Review</button><button class="btn btn-primary" type="button" data-approve="' + a.order + '">Approve</button></div>' +
+    '</li>';
   }
   function renderAppr() {
     var host = el.querySelector('#appr-host'), list = SE.pendingApprovals();
-    if (stopAppr) stopAppr();
-    host.innerHTML = SE.ui.carousel({ id: 'appr-crsl', label: 'Orders to approve', cls: 'crsl-3', slides: list.length ? list.map(apprCard)
-      : ['<article class="card appr done"><span class="es-ico t-success">' + icon('check') + '</span><b>All caught up</b><p class="muted">No orders are waiting for your approval.</p></article>'] });
-    stopAppr = SE.ui.carousel.bind(host);
+    if (stopAppr) { stopAppr(); stopAppr = null; }
+    host.innerHTML = list.length
+      ? '<ul class="appr-list">' + list.map(apprCard).join('') + '</ul>'
+      : '<p class="empty">No orders waiting for your approval.</p>';
   }
   function approve(btn) {
     if (btn.disabled || SE.work.apprState(SE.approval(btn.dataset.approve)) !== 'pending') return;
@@ -222,9 +195,14 @@ SE.views.home = function (el, p) {
 
   renderAppr();
   renderOrders();
-  renderNotes();
   function renderQuick() { el.querySelector('#qtiles').innerHTML = qtiles(); }
   renderQuick();
+  el.querySelector('[data-news-toggle]').addEventListener('click', function (e) {
+    if (e.target.closest('a')) return;
+    var grid = el.querySelector('#news-grid'), open = grid.hidden;
+    grid.hidden = !open;
+    this.setAttribute('aria-expanded', String(open));
+  });
   el.querySelector('[data-net-q]').addEventListener('input', function (e) {
     var q = e.target.value.trim().toLowerCase(), n = 0;
     el.querySelectorAll('[data-net-name]').forEach(function (li) { var hit = !q || li.dataset.netName.indexOf(q) >= 0; li.hidden = !hit; if (hit) n++; });
