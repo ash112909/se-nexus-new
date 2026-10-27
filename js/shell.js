@@ -21,7 +21,7 @@
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 
     ['#', 'Parts'], ['search', 'Search Parts', 'search'], ['grid-alt', 'Parts Catalog', 'catalog'], ['star', 'Recommended Parts', 'recommended'], ['list', 'Shopping Lists', 'lists'], ['shopping-cart', 'Cart', 'cart'],
-    ['#', 'Knowledge'], ['book-alt', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['bell', 'Notifications', 'notifications'],
+    ['#', 'Knowledge'], ['book-alt', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['bell', 'Notifications', 'notifications'], ['pulse', 'Diagnostics', null],
   ];
   function count(route) {
     if (route === 'approvals') return SE.pendingApprovals().length;
@@ -60,9 +60,8 @@
       '</nav>';
     }
     function quick(withSettings) {
-      var u = SE.unread(), c = SE.cartCount();
+      var u = SE.unread();
       return '<a class="qa" href="#/notifications" aria-label="Notifications, ' + u + ' unread">' + icon('bell') + '<span class="qa-badge dot" data-qa="notes"' + (u ? '' : ' hidden') + '></span></a>' +
-        '<a class="qa" href="#/cart" aria-label="Cart, ' + c + ' items">' + icon('shopping-cart') + '<span class="qa-badge dot" data-qa="cart" aria-hidden="true"' + (c ? '' : ' hidden') + '></span></a>' +
         '<span class="qa-div" aria-hidden="true"></span>' +
         '<button class="qa" type="button" aria-label="Account and locations" aria-haspopup="dialog" aria-expanded="false" data-account>' + icon('user') + '</button>' +
         (withSettings ? '<button class="qa" type="button" aria-label="Settings" data-out="Settings">' + icon('settings') + '</button>' : '');
@@ -185,8 +184,7 @@
 
     api.refresh = function () {
       el.querySelectorAll('[data-count]').forEach(function (b) { var n = count(b.dataset.count); b.textContent = n || ''; b.hidden = !n; });
-      el.querySelectorAll('[data-qa="cart"]').forEach(function (b) { var n = SE.cartCount(); b.hidden = !n; b.parentNode.setAttribute('aria-label', 'Cart, ' + n + ' items'); });
-      el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unread(); b.hidden = !n; b.parentNode.setAttribute('aria-label', 'Notifications, ' + n + ' unread'); });
+el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unread(); b.hidden = !n; b.parentNode.setAttribute('aria-label', 'Notifications, ' + n + ' unread'); });
     };
     SE.refreshShell = api.refresh;
 
