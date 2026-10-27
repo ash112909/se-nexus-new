@@ -104,8 +104,13 @@ SE.views.home = function (el, p) {
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec lay-8 news-sec" aria-labelledby="h-news">' +
-        '<div class="sec-head news-sec-head" data-news-toggle aria-expanded="false" aria-controls="news-grid"><h2 id="h-news">Fleet news &amp; updates' + icon('chevron-right') + '</h2><a class="sec-action" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a></div>' +
-        '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
+        '<div class="card news-panel">' +
+          '<button class="news-panel-head" type="button" data-news-toggle aria-expanded="false" aria-controls="news-grid">' +
+            '<span class="news-panel-title" id="h-news">Fleet news &amp; updates</span>' +
+            '<span class="news-panel-right"><a class="sec-action" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a>' + icon('chevron-right') + '</span>' +
+          '</button>' +
+          '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
+        '</div>' +
       '</section>' +
       '<section class="sec lay-4 net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
       // 1021 (owner, 2026-10-22): then the operational layers, approvals and active work orders
@@ -122,28 +127,34 @@ SE.views.home = function (el, p) {
   headEl.innerHTML = headEl.innerHTML.replace('__TOOLS__', SE.tools());
   if (SE.searchBox) { var f = headEl.querySelector('[data-search]'); if (f) SE.searchBox(f); }
 
-  // ---------- active orders: the shared carousel (2 a view from 720 wide), a card selects on click or Enter
+  // ---------- active orders: list view
   var stopOrders = null;
+  function orderRow(w) {
+    var appr = D.approvals.find(function (a) { return a.wo === w.id; });
+    var waiting = appr && !SE.state.approved[appr.order] && !SE.state.returned[appr.order];
+    var pri = w.priority === 'High' ? '<span class="chip high">HIGH</span>' : w.priority === 'Medium' ? '<span class="chip">MEDIUM</span>' : '';
+    return '<li class="wo-row">' +
+      '<div class="wo-row-info">' +
+        '<div class="wo-row-head"><a class="wo-link" href="#/work-order?id=' + w.id + '">#' + w.id + '</a><span class="wo-machine">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</span>' +
+          '<div class="chips chips-inline">' + '<span class="chip">' + esc(w.status.toUpperCase()) + '</span>' + pri + '</div>' +
+        '</div>' +
+        '<p class="wo-issue muted">' + esc(w.issue) + '</p>' +
+        '<p class="wo-meta muted">' + icon('shopping-cart') + (waiting ? appr.lines + ' lines awaiting approval' : appr ? appr.lines + ' lines approved' : 'No parts ordered yet') + ' · ' + icon('calendar') + 'Opened ' + esc(w.opened) + '</p>' +
+      '</div>' +
+      '<div class="wo-row-acts">' +
+        (waiting ? '<button class="btn btn-primary" type="button" data-go="approval" data-id="' + appr.order + '">Review approval</button>' : '<button class="btn btn-secondary" type="button" data-go="machine" data-m="' + machineKey(w) + '" data-wo="' + w.id + '">Search parts</button>') +
+      '</div>' +
+    '</li>';
+  }
   function renderOrders() {
     var list = active(), host = el.querySelector('#orders-host');
-    if (!selected || !list.some(function (w) { return w.id === selected; })) selected = list.length ? list[0].id : null;
-    if (stopOrders) stopOrders();
-    host.innerHTML = list.length ? SE.ui.carousel({ id: 'orders-crsl', label: 'Active work orders', cls: 'crsl-2', slides: list.map(orderCard) }) : '<p class="empty">No active work orders at this location.</p>';
-    stopOrders = SE.ui.carousel.bind(host);
-  }
-  el.querySelector('#orders-host').addEventListener('keydown', function (e) {
-    var c = e.target.closest && e.target.closest('article.order');
-    if (c && (e.key === 'Enter' || e.key === ' ') && e.target === c) { e.preventDefault(); select(c.dataset.woCard); }
-  });
-  function select(id) {
-    selected = id;
-    el.querySelectorAll('#orders-host .order').forEach(function (c) { var on = c.dataset.woCard === id; c.classList.toggle('selected', on); c.setAttribute('aria-current', String(on)); });
+    if (stopOrders) { stopOrders(); stopOrders = null; }
+    host.innerHTML = list.length ? '<ul class="wo-list">' + list.map(orderRow).join('') + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
   }
 
   el.addEventListener('click', function (e) {
-    var t = e.target.closest('button, article.order');
-    if (!t || t.dataset.go) return;
-    if (t.matches('article.order')) select(t.dataset.woCard);
+    var t = e.target.closest('button');
+    if (!t || t.dataset.go || t.hasAttribute('data-news-toggle')) return;
   });
 
   // ---------- approvals waiting (the phone's approval cards): Approve signs off in place
@@ -202,6 +213,7 @@ SE.views.home = function (el, p) {
     var grid = el.querySelector('#news-grid'), open = grid.hidden;
     grid.hidden = !open;
     this.setAttribute('aria-expanded', String(open));
+    this.querySelector('.i').style.transform = open ? 'rotate(90deg)' : '';
   });
   el.querySelector('[data-net-q]').addEventListener('input', function (e) {
     var q = e.target.value.trim().toLowerCase(), n = 0;
