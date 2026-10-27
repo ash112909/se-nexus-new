@@ -156,6 +156,13 @@
   .ap-meta { font-size: 14px; line-height: 20px; }
 }
 
+/* Home combined ops list (approvals + work orders) */
+@layer components {
+  .ops-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+  .ops-list .appr-row:last-child,
+  .ops-list .wo-row:last-child { border-bottom: none; }
+}
+
 /* Home work order list view */
 @layer components {
   .wo-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }

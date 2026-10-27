@@ -93,41 +93,36 @@ SE.views.home = function (el, p) {
       '__TOOLS__</header>',
     body:
       '<div id="push-slot">' + (SE.push.due() ? SE.push.card() : '') + '</div>' +
-      // 1016 (review F07): operational work first; the Updates carousel follows the work orders
-      // 1017 (owner): Home is a stack of full-width layers on a 12-column grid. 1021 (branding reference web.svg, owner
-      // 2026-10-22, replaces review F07's operational-first order): on top the Updates carousel (8) beside 4 quick
-      // actions in a 2 x 2 grid (4), then Fleet news and updates (8) beside the Supplier network (4), then the rest.
-      // web-twin has no marketing kit: the quick actions run 4 across. Stacked below 1000px of content.
+      '<div class="news-bar">' +
+        '<div class="news-anchor" id="news-anchor">' +
+          '<button class="news-btn" type="button" data-news-toggle aria-expanded="false" aria-controls="news-drop">' +
+            icon('newspaper') + 'Fleet news &amp; updates' + icon('chevron-down') +
+          '</button>' +
+          '<div class="news-drop" id="news-drop" hidden>' +
+            '<div class="news-drop-hd"><b id="h-news">Fleet news &amp; updates</b><a class="sec-action" href="#/kb">View all' + icon('arrow-small-right') + '</a></div>' +
+            '<ul class="news-grid">' + newsCards() + '</ul>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
       '<div class="dash" id="dash">' +
       (SE.mkt ? SE.mkt.hero().replace('<section class="sec"', '<section class="sec lay-8 lay-hero"') : '') +
       '<section class="sec qa-sec' + (SE.mkt ? ' lay-4' : '') + '" aria-labelledby="h-quick">' +
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
-      '<section class="sec news-sec" aria-labelledby="h-news">' +
-        '<div class="card news-panel">' +
-          '<button class="news-panel-head" type="button" data-news-toggle aria-expanded="false" aria-controls="news-grid">' +
-            '<span class="news-panel-title" id="h-news">Fleet news &amp; updates</span>' +
-            '<span class="news-panel-right"><a class="sec-action" href="#/kb" onclick="event.stopPropagation()">View all' + icon('arrow-small-right') + '</a>' + icon('chevron-right') + '</span>' +
-          '</button>' +
-          '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
-        '</div>' +
+      '<section class="sec lay-8 ops-sec" aria-labelledby="h-ops">' +
+        '<div class="sec-head"><h2 id="h-ops">Work orders &amp; approvals</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
+        '<div id="ops-host"></div>' +
       '</section>' +
-      '<section class="sec net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
-      // 1021 (owner, 2026-10-22): then the operational layers, approvals and active work orders
-      '<section class="sec" id="appr-sec" aria-labelledby="h-appr"' + (SE.pendingApprovals().length ? '' : ' hidden') + '><div class="sec-head"><h2 id="h-appr">Waiting for your approval <span class="h-note">All branches</span></h2><a class="sec-action" href="#/approvals">All approvals' + icon('arrow-small-right') + '</a></div><div id="appr-host"></div></section>' +
-      '<section class="sec" aria-labelledby="h-orders">' +
-        '<div class="sec-head"><h2 id="h-orders">Active work orders</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
-        '<p class="muted">Active means a work order at the selected location that is not done' + (SE.twin ? ' or cancelled' : ', cancelled or archived') + '.</p><div id="orders-host"></div>' +
-      '</section>' +
+      '<section class="sec lay-4 net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
       '</div>',
-    onLocation: function () { el.querySelector('#subline').textContent = subline(); renderOrders(); renderQuick(); },
+    onLocation: function () { el.querySelector('#subline').textContent = subline(); renderOps(); renderQuick(); },
   });
   // the Home head keeps the greeting layout of the frame, with the shared tools beside it
   var headEl = el.querySelector('.page-head');
   headEl.innerHTML = headEl.innerHTML.replace('__TOOLS__', SE.tools());
   if (SE.searchBox) { var f = headEl.querySelector('[data-search]'); if (f) SE.searchBox(f); }
 
-  // ---------- active orders: list view
+  // ---------- combined ops list: pending approvals first, then active work orders
   var stopOrders = null;
   function orderRow(w) {
     var appr = D.approvals.find(function (a) { return a.wo === w.id; });
@@ -146,11 +141,15 @@ SE.views.home = function (el, p) {
       '</div>' +
     '</li>';
   }
-  function renderOrders() {
-    var list = active().slice(0, 5), host = el.querySelector('#orders-host');
+  function renderOps() {
+    var host = el.querySelector('#ops-host');
     if (stopOrders) { stopOrders(); stopOrders = null; }
-    host.innerHTML = list.length ? '<ul class="wo-list">' + list.map(orderRow).join('') + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
+    var apprs = SE.pendingApprovals();
+    var orders = active().slice(0, Math.max(0, 5 - apprs.length));
+    var html = apprs.map(apprCard).join('') + orders.map(orderRow).join('');
+    host.innerHTML = html ? '<ul class="ops-list">' + html + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
   }
+  function renderOrders() { renderOps(); }
 
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button');
@@ -194,26 +193,25 @@ SE.views.home = function (el, p) {
       SE.toast('Order #' + order + ' approved', 'check');
       s.refresh();
       SE.animate(c, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.97)' }], { duration: 240 }).then(function () {
-        renderAppr(); renderOrders(); renderQuick();
-        if (!SE.pendingApprovals().length) foldTimer = setTimeout(function () {
-          var sec = el.querySelector('#appr-sec');
-          SE.animate(sec, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }).then(function () { sec.hidden = true; });
-        }, SE.reducedMotion ? 1200 : 2800);
+        renderOps(); renderQuick();
       });
     }, SE.reducedMotion ? 0 : 650);
   }
   el.addEventListener('click', function (e) { var b = e.target.closest('[data-approve]'); if (b && !b.disabled) approve(b); });
 
-  renderAppr();
-  renderOrders();
+  renderOps();
   function renderQuick() { el.querySelector('#qtiles').innerHTML = qtiles(); }
   renderQuick();
   el.querySelector('[data-news-toggle]').addEventListener('click', function (e) {
     if (e.target.closest('a')) return;
-    var grid = el.querySelector('#news-grid'), open = grid.hidden;
-    grid.hidden = !open;
+    var drop = el.querySelector('#news-drop'), open = drop.hidden;
+    drop.hidden = !open;
     this.setAttribute('aria-expanded', String(open));
-    this.querySelector('.i').style.transform = open ? 'rotate(90deg)' : '';
+  });
+  document.addEventListener('click', function closeNews(e) {
+    if (!el.isConnected) { document.removeEventListener('click', closeNews); return; }
+    var anchor = el.querySelector('#news-anchor');
+    if (anchor && !anchor.contains(e.target)) { var d = el.querySelector('#news-drop'); if (d) { d.hidden = true; var btn = el.querySelector('[data-news-toggle]'); if (btn) btn.setAttribute('aria-expanded', 'false'); } }
   });
   el.querySelector('[data-net-q]').addEventListener('input', function (e) {
     var q = e.target.value.trim().toLowerCase(), n = 0;
