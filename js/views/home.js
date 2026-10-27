@@ -54,11 +54,11 @@ SE.views.home = function (el, p) {
 
   // ---------- quick actions (branding reference web.svg: 2 x 2 count tiles, the one that needs you in yellow)
   function qtiles() {
-    var n = SE.pendingApprovals().length, sups = D.suppliers.filter(function (x) { return x.active; }).length;
+    var n = SE.pendingApprovals().length, sups = D.suppliers.length;
     var T = [['shopping-cart-check', n, n === 1 ? 'Approval waiting' : 'Approvals waiting', 'approvals', n > 0],
       ['clipboard-list', active().length, 'Active work orders', 'work-orders'],
       ['tractor', Object.keys(D.machines).length, 'Assets', 'fleet'],
-      ['box', sups, 'Suppliers connected', 'catalog']];
+      ['box', sups, 'Suppliers', 'catalog']];
     return T.map(function (t) {
       return '<li><a class="qt' + (t[4] ? ' on' : '') + '" href="#/' + t[3] + '">' + icon(t[0]) + '<b>' + t[1] + '</b><span>' + esc(t[2]) + '</span></a></li>';
     }).join('');
@@ -76,13 +76,11 @@ SE.views.home = function (el, p) {
   // ---------- Supplier network (web.svg): search, then every supplier with its mark; web-full offers Request connection
   function supMark(x) { var w = x.name.split(' '); return w.length === 1 ? x.name.slice(0, 3) : w.slice(0, 2).map(function (y) { return y.charAt(0); }).join(''); }
   function supplierNet() {
-    var on = D.suppliers.filter(function (x) { return x.active; }).length;
-    return '<div class="sec-head"><h2 id="h-net">Supplier network</h2><span class="h-note">' + on + ' of ' + D.suppliers.length + ' connected</span></div>' +
-      '<div class="card net' + (SE.mkt ? ' mk-net' : '') + '"><label class="search net-search">' + icon('search') + '<span class="sr-only">Search suppliers</span><input type="search" placeholder="Search network" autocomplete="off" data-net-q></label>' +
+    return '<div class="sec-head"><h2 id="h-net">Supplier network</h2><span class="h-note">' + D.suppliers.length + ' available</span></div>' +
+      '<div class="card net"><label class="search net-search">' + icon('search') + '<span class="sr-only">Search suppliers</span><input type="search" placeholder="Search network" autocomplete="off" data-net-q></label>' +
       '<ul class="net-list" data-net-list>' + D.suppliers.map(function (x) {
         var mark = '<span class="net-mark" aria-hidden="true">' + esc(supMark(x)) + '</span>';
-        var row = x.active ? '<a class="net-row" href="#/supplier?sup=' + x.id + '">' + mark + '<span><b>' + esc(x.name) + '</b><small>Connected</small></span>' + icon('angle-small-right') + '</a>'
-          : '<div class="net-row">' + mark + '<span><b>' + esc(x.name) + '</b><small>' + esc(x.tagline) + '</small></span>' + (SE.mkt ? SE.mkt.suppliers.req(x) : '') + '</div>';
+        var row = '<a class="net-row" href="#/supplier?sup=' + x.id + '">' + mark + '<span><b>' + esc(x.name) + '</b><small>' + esc(x.tagline) + '</small></span>' + icon('angle-small-right') + '</a>';
         return '<li data-net-name="' + esc(x.name.toLowerCase()) + '">' + row + '</li>';
       }).join('') + '<li class="net-none" hidden>No supplier matches</li></ul></div>';
   }
