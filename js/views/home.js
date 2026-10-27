@@ -125,7 +125,7 @@ SE.views.home = function (el, p) {
 
   // ---------- combined ops list: clean grid-column rows
   var stopOrders = null;
-  var OPS_HEAD = '<li class="ops-head" aria-hidden="true"><span>WO #</span><span>Issue</span><span>Asset</span><span>Assignee</span><span>Due</span><span>Status</span><span></span></li>';
+  var OPS_HEAD = '<li class="ops-head" aria-hidden="true"><span>WO #</span><span>Issue</span><span>Assignee</span><span>Due</span><span>Status</span><span></span></li>';
   function opsRow(w) {
     var appr = D.approvals.find(function (a) { return a.wo === w.id; });
     var waiting = appr && !SE.state.approved[appr.order] && !SE.state.returned[appr.order];
@@ -134,8 +134,7 @@ SE.views.home = function (el, p) {
     var statusCls = waiting ? 'ops-s-appr' : w.status.toLowerCase() === 'active' ? 'ops-s-active' : w.status.toLowerCase() === 'pending' || w.status.toLowerCase() === 'awaiting approval' ? 'ops-s-pending' : 'ops-s-neutral';
     return '<li class="ops-row">' +
       '<span class="ops-id"><span class="ops-dot ' + dot + '"></span><a class="wo-link" href="#/work-order?id=' + w.id + '">WO #' + esc(w.id) + '</a></span>' +
-      '<span class="ops-issue">' + esc(w.issue) + '</span>' +
-      '<span class="ops-asset">' + esc(w.equip) + ' &middot; ' + esc(w.machine) + '</span>' +
+      '<span class="ops-issue-cell"><span class="ops-issue">' + esc(w.issue) + '</span><span class="ops-asset-sub">' + esc(w.equip) + ' &middot; ' + esc(w.machine) + '</span></span>' +
       '<span class="ops-who">' + esc(w.assignee || '—') + '</span>' +
       '<span class="ops-due">' + esc(w.due || '—') + '</span>' +
       '<span class="ops-status"><span class="ops-chip ' + statusCls + '">' + esc(statusLabel) + '</span></span>' +
