@@ -1,0 +1,23 @@
+/* Boot, Figma 00a / 00b at xl 1280 x 832: brand background, wordmark 284 x 79 centred between
+   equal spacers, Web/BootFoot pill (40 high, radius 20, #18181B, padding 11 / 18, gap 10, 12/17
+   white text, spinner 18 with a #BABABA track and brand arc) 48 above the bottom edge. */
+@layer components {
+  .boot {
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh; min-height: 100dvh;
+    padding-bottom: 48px; background: #000; cursor: pointer; /* Mid-County Rental identity: light wordmark on black */
+  }
+  .boot::before, .boot::after { content: ""; flex: 1; }
+  .boot-mark { order: 0; width: min(320px, 72vw); }
+  .boot-mark .logo { display: block; width: 100%; height: auto; }
+  .boot-foot { box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); }
+  .boot::before { order: -1; }
+  .boot::after { order: 1; }
+  .boot-foot {
+    order: 2; display: inline-flex; align-items: center; gap: 12px; height: 40px; padding: 11px 20px;
+    border-radius: 20px; background: var(--tip); color: var(--on-tip); font-size: 12px; line-height: 17px; white-space: nowrap; overflow: hidden;
+  }
+  .boot-foot .spin { width: 18px; height: 18px; }
+  .boot-foot .i { width: 18px; height: 18px; color: var(--on-tip); }
+  .boot-skip { order: 3; position: absolute; left: 16px; top: 16px; padding: 8px 12px; border-radius: 10px; background: var(--tip); color: var(--on-tip); font-size: 12px; transform: translateY(-200%); }
+  .boot-skip:focus-visible { transform: none; }
+}

@@ -1,0 +1,375 @@
+/* Home, Figma "Web / landing / light / xl 1280 · rail open | rail collapsed".
+   Rail: #18181B; open 256 (padding 24 / 16, gap 24), collapsed 88; items 44, radius 10, padding 12,
+   gap 12, 14/20 white; current item in the brand fill with ink text; group labels 12 bold #AEB0BB;
+   collapse button 32 circle #2F2F2F. Main: padding 32 / 40, content gap 32.
+   Header: greeting 28/34 bold, sub 14/20 muted, gap 6; tools 48 high, gap 16: search (radius 12,
+   1px #919191, padding 16, gap 12, 15 text, voice 32) and quick bar (radius 12, 1px #E6E6E6,
+   padding 4, gap 10, 40 buttons, 1 x 24 divider).
+   Order cards: 2 up, gap 24, radius 16, padding 20, gap 16, selected = 2px accent border.
+   Tiles: 3 up, gap 16, radius 12, padding 16, gap 8. Notifications: rows 72, radius 12, gap 8. */
+@layer components {
+  .shell { --rail-w: 256px; display: grid; grid-template-columns: var(--rail-w) minmax(0, 1fr); min-height: 100vh; min-height: 100dvh; background: var(--sunken); }
+  .shell[data-rail="collapsed"] { --rail-w: 88px; }
+  .shell:not([data-rail="drawer"]) { background: linear-gradient(to right, var(--rail) var(--rail-w), var(--sunken) var(--rail-w)); }
+  .shell[data-rail="drawer"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+
+  .skip-link { position: fixed; z-index: 60; left: 16px; top: 12px; padding: 12px 16px; border-radius: 10px; background: var(--tip); color: var(--on-tip); font-weight: 600; transform: translateY(-160%); }
+  .skip-link:focus-visible { transform: none; }
+
+  /* ---------- rail */
+  .rail { position: sticky; top: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; gap: 24px; padding: 24px 16px; background: var(--rail); color: #FFF; overflow-y: auto; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail-brand { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 0 0 4px; }
+  .rail-lockup { display: flex; align-items: center; gap: 12px; color: #FFF; text-decoration: none; border-radius: 10px; }
+  .mc-40 { width: 40px; height: 40px; font-size: 16px; background: var(--rail-plate); }
+  .mc-32 { width: 32px; height: 32px; font-size: 13px; border-radius: 8px; background: var(--rail-plate); }
+  /* the fleet's identity: the Mid-County Rental wordmark; the collapsed rail keeps its roof chevron */
+  .rail-wordmark .logo { display: block; width: 148px; height: auto; }
+  .rail-chev { display: none; place-items: center; width: 40px; height: 40px; }
+  .rail-chev svg { width: 32px; height: auto; display: block; }
+  .shell[data-rail="collapsed"] .rail-wordmark { display: none; }
+  .shell[data-rail="collapsed"] .rail-chev { display: grid; }
+  .rail-name b { display: block; font-size: 16px; font-weight: 700; line-height: 20px; }
+  .rail-name small { display: block; font-size: 12px; font-weight: 600; line-height: 16px; letter-spacing: 2px; color: var(--rail-muted); }
+  .rail-toggle { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--rail-plate); color: #FFF; flex: none; }
+  .rail-toggle:hover { background: #3A3A3D; }
+  .rail-nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; width: 100%; height: 44px; padding: 0 12px; border-radius: 10px; color: #FFF; font-size: 14px; line-height: 20px; text-decoration: none; text-align: left; white-space: nowrap; }
+  .nav-item:hover { background: rgba(255, 255, 255, .08); }
+  .nav-item[aria-current="page"] { background: var(--nav-active-bg); color: var(--nav-active-ink); font-weight: 600; }
+  .nav-item[aria-current="page"]:hover { background: var(--brand-pressed); }
+  .nav-group span { display: block; height: 14px; font-size: 12px; font-weight: 700; line-height: 14px; letter-spacing: .6px; color: var(--rail-muted); }
+  .rail-powered { margin-top: auto; display: flex; justify-content: center; }
+  .rp-full { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; line-height: 17px; color: var(--rail-muted); }
+  .rp-full .se-logo { --se-w: 130px; }
+  .rp-full .mc-logo { width: 96px; }
+  /* collapsed rail: the wrench from the SmartEquip wordmark (above the i in Equip) stands in for "Powered by" */
+  .rp-wrench { display: none; place-items: center; width: 28px; height: 28px; color: #FFF; }
+  .rp-wrench .se-logo { --se-w: 22px; }
+
+  /* collapsed rail (Figma 88): brand stacks mark over the expand button, labels hide, group labels
+     become 40 x 1 breaks, tooltips name each item */
+  .shell[data-rail="collapsed"] .rail { padding: 24px 16px; align-items: center; }
+  .shell[data-rail="collapsed"] .rail-brand { flex-direction: column; height: auto; gap: 16px; padding: 0; }
+  .shell[data-rail="collapsed"] .rail-name, .shell[data-rail="collapsed"] .nav-label { display: none; }
+  .shell[data-rail="collapsed"] .rail-nav { width: 56px; }
+  .shell[data-rail="collapsed"] .nav-item { justify-content: center; padding: 0; }
+  .shell[data-rail="collapsed"] .nav-group span { height: 1px; width: 40px; margin: 0 auto; overflow: hidden; white-space: nowrap; text-indent: 100%; background: var(--rail-break); }
+  .shell[data-rail="collapsed"] .rp-full { display: none; }
+  .shell[data-rail="collapsed"] .rp-wrench { display: grid; }
+  .shell[data-rail="collapsed"] .nav-item { position: relative; }
+  .shell[data-rail="collapsed"] .nav-item:is(:hover, :focus-visible)::after {
+    content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); z-index: 30;
+    padding: 8px 12px; border-radius: 8px; background: var(--tip); color: var(--on-tip); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); pointer-events: none;
+  }
+
+  /* drawer (under 1024): app bar on top, rail slides in over the page */
+  .appbar { display: none; }
+  .shell[data-rail="drawer"] .appbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 12px 0 8px; background: var(--rail); color: #FFF; }
+  .appbar-menu { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--brand); }
+  .appbar-menu .i { width: 22px; height: 22px; }
+  .appbar-org { display: flex; align-items: center; gap: 12px; min-width: 0; font-size: 15px; }
+  .appbar-org b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .appbar-quick { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+  .appbar-quick .qa { color: #FFF; }
+  .appbar-quick .qa:hover { background: rgba(255, 255, 255, .08); }
+  .appbar-quick .qa-div { background: var(--rail-plate); }
+  .shell[data-rail="drawer"] .rail { position: fixed; z-index: 40; left: 0; top: 0; width: min(256px, 86vw); transform: translateX(-100%); transition: transform .28s cubic-bezier(.2, 0, 0, 1); box-shadow: 8px 0 32px rgba(0, 0, 0, .3); }
+  .shell[data-rail="drawer"].drawer-open .rail { transform: none; }
+  .rail-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, .4); }
+
+  /* ---------- main */
+  .main { min-width: 0; padding: 32px 40px; outline: none; }
+  .shell[data-rail="drawer"] .main { padding: 24px 16px 32px; }
+  .content { container-type: inline-size; display: flex; flex-direction: column; gap: 32px; max-width: 1200px; margin: 0 auto; }
+  .page-head { display: flex; flex-direction: column; gap: 16px; }
+  .greeting { display: flex; flex-direction: column; gap: 8px; }
+  .greeting h1 { font-size: 28px; font-weight: 700; line-height: 34px; letter-spacing: -.01em; }
+  .greeting p { font-size: 14px; line-height: 20px; color: var(--muted); }
+  .tools { display: flex; gap: 16px; height: 48px; }
+  /* wide content: search and the icon bar move up beside the greeting, anchored right on the heading's level */
+  @container (min-width: 1000px) {
+    .page-head { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .greeting { min-width: 0; }
+    .page-head .tools { flex: none; align-items: center; gap: 12px; height: 40px; margin-top: -3px; }
+    .page-head .search { flex: 0 1 480px; width: 480px; height: 40px; border-color: var(--line); transition: flex-basis .2s cubic-bezier(.32,.72,0,1), width .2s cubic-bezier(.32,.72,0,1); }
+    /* 1019 (owner): the search page widens its header search (js/views/search.js adds .on-page and focuses it) */
+    .page-head .search.on-page { flex-basis: 640px; width: 640px; }
+    /* 1026 (CR-01): the bar carries the scope and model selects, so it is 480 (640 on the results page) */
+    .page-head .search input { font-size: 14px; }
+    .page-head .quickbar { height: 40px; padding: 0; gap: 4px; border: 0; background: none; }
+    .page-head .quickbar .qa { width: 36px; height: 36px; }
+  }
+  .search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 8px 0 16px; border: 1px solid var(--line-field); border-radius: 12px; background: var(--surface); }
+  .search:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+  .search > .i { color: var(--muted); }
+  .search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; font-size: 15px; line-height: 21px; }
+  .search input::placeholder { color: var(--muted); opacity: 1; }
+  .search input::-webkit-search-cancel-button { display: none; }
+  .voice { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--muted); }
+  .voice:hover { background: var(--container-low); }
+  .quickbar { display: flex; align-items: center; gap: 12px; height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); flex: none; }
+  .shell[data-rail="drawer"] .quickbar { display: none; }
+  .qa { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; color: var(--ink); }
+  .qa:hover { background: var(--container-low); }
+  .qa[aria-expanded="true"] { background: var(--container); }
+  .qa-div { width: 1px; height: 24px; background: var(--line-strong); }
+
+  .sec { display: flex; flex-direction: column; gap: 16px; }
+  .sec-head { display: flex; align-items: center; justify-content: space-between; height: 32px; }
+  .sec-head.short { height: 14px; }
+  .sec-head h2 { font-size: 12px; font-weight: 700; line-height: 14px; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .sec-action { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 12px; font-weight: 500; line-height: 16px; color: var(--muted); }
+  .sec-action .i { width: 16px; height: 16px; }
+  .sec-action:hover { background: var(--container-low); }
+  .sec-action:disabled { opacity: .5; cursor: default; }
+
+  /* active orders */
+  .track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 24px) / 2); gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; outline-offset: 4px; border-radius: 14px; }
+  .track::-webkit-scrollbar { display: none; }
+  @container (max-width: 719px) { .track { grid-auto-columns: 100%; } }
+  .order { scroll-snap-align: start; display: flex; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .order:hover { border-color: var(--line-strong); }
+  .order.selected { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+  .order-sum { display: flex; gap: 16px; }
+  .thumb { display: grid; place-items: center; width: 64px; height: 64px; flex: none; border: 1px solid var(--line); border-radius: 12px; background: var(--sunken); color: var(--muted); }
+  .thumb .i { width: 28px; height: 28px; }
+  .order-det { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .chips { display: flex; justify-content: space-between; gap: 8px; }
+  .wo-no { font-size: 12px; line-height: 17px; color: var(--subtle); }
+  .order h3 { font-size: 17px; font-weight: 600; line-height: 22px; overflow-wrap: break-word; }
+  .issue { font-size: 14px; line-height: 20px; color: var(--muted); }
+  .warr { display: flex; }
+  .rule { height: 1px; margin: 0; border: 0; background: var(--line); }
+  .order-foot { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; line-height: 17px; color: var(--muted); }
+  .meta span { display: inline-flex; align-items: center; gap: 8px; }
+  .meta .i { width: 16px; height: 16px; }
+  .btn-card { width: 100%; border: 1px solid var(--line-field); background: var(--surface); color: var(--ink); font-size: 14px; line-height: 20px; }
+  .btn-card:hover { background: var(--container-low); }
+  .empty { padding: 32px; border: 1px dashed var(--line-strong); border-radius: 16px; color: var(--muted); text-align: center; }
+  .pager { display: flex; justify-content: center; gap: 8px; height: 8px; margin-top: 0; }
+  /* page indicator: equal segments across the carousel width, the current one in brand yellow */
+  .pager { gap: 8px; height: 6px; }
+  .dot { position: relative; flex: 1 1 0; height: 6px; border-radius: 3px; background: #B3B3B8; transition: background-color .25s; }
+  .dot::after { content: ""; position: absolute; inset: -12px 0; }
+  .dot.on { background: var(--brand); }
+
+  /* quick actions */
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  @container (max-width: 879px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @container (max-width: 319px) { .tiles { grid-template-columns: minmax(0, 1fr); } }
+  @container (max-width: 459px) { .tile { min-height: 0; } }
+  .tile { display: flex; flex-direction: column; gap: 8px; width: 100%; min-height: 109px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; transition: border-color .15s, box-shadow .15s; }
+  .tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
+  .tile .i { width: 24px; height: 24px; }
+  .tile b { font-size: 14px; font-weight: 600; line-height: 20px; }
+  .tile span { font-size: 12px; line-height: 17px; color: var(--muted); }
+
+  /* notifications */
+  .notes { display: flex; flex-direction: column; gap: 8px; }
+  .note { display: grid; grid-template-columns: 44px minmax(0, 1fr) 92px 10px; align-items: center; gap: 16px; min-height: 72px; padding: 16px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .note-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; }
+  .note-mark.info { background: var(--tint-info); color: var(--info); }
+  .note-mark.warning { background: var(--chip-high-bg); color: var(--chip-high-ink); }
+  .note-mark.success { background: var(--sunken); border: 1px solid var(--line); color: var(--chip-warranty-ink); }
+  .note-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .note-text b { font-size: 14px; font-weight: 600; line-height: 20px; }
+  .note-text span { font-size: 12px; line-height: 17px; color: var(--muted); }
+  .note time { font-size: 12px; line-height: 17px; color: var(--subtle); }
+  .note-dot { width: 10px; height: 10px; border-radius: 5px; }
+  .note.unread .note-dot.info { background: var(--dot-info); }
+  .note.unread .note-dot.warning { background: var(--dot-warning); }
+  @container (max-width: 559px) {
+    .note { grid-template-columns: 44px minmax(0, 1fr) 10px; gap: 12px; }
+    .note time { grid-column: 2; grid-row: 2; margin-top: -8px; }
+  }
+
+  /* account popover */
+  .account { position: absolute; z-index: 50; width: 320px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 16px 40px rgba(0, 0, 0, .18); }
+  .shell { position: relative; }
+  .acc-head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 16px; border-bottom: 1px solid var(--line); }
+  .acc-avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: #FFF; font-size: 14px; font-weight: 700; flex: none; }
+  .acc-head b { display: block; font-size: 14px; font-weight: 600; line-height: 20px; }
+  .acc-head small { display: block; font-size: 12px; line-height: 17px; color: var(--muted); }
+  .acc-label { padding: 12px 12px 8px; font-size: 12px; font-weight: 700; line-height: 14px; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .acc-loc { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 12px; border-radius: 10px; text-align: left; }
+  .acc-loc:hover { background: var(--container-low); }
+  .acc-loc[aria-checked="true"] { background: var(--tint-select); }
+  .acc-loc > .i { color: var(--muted); }
+  .acc-loc span { flex: 1; min-width: 0; }
+  .acc-loc b { display: block; font-size: 14px; font-weight: 600; line-height: 20px; }
+  .acc-loc small { display: block; font-size: 12px; line-height: 17px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acc-loc .tick { visibility: hidden; color: var(--ink); }
+  .acc-loc[aria-checked="true"] .tick { visibility: visible; }
+  .acc-out { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 8px; padding: 12px 12px; border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; font-weight: 500; }
+  .acc-out:hover { background: var(--container-low); }
+
+  @media (max-width: 599px) {
+    .greeting h1 { font-size: 24px; line-height: 30px; }
+    .order { padding: 16px; }
+  }
+}
+@media (prefers-reduced-motion: reduce) { .shell[data-rail="drawer"] .rail, .dot { transition: none; } }
+
+/* 1016: Appearance in the account popover (System, Light, Dark) */
+@layer components {
+  .acc-theme { display: flex; gap: 4px; margin: 0 12px 4px; padding: 4px; border-radius: 10px; background: var(--container-low); }
+  .acc-theme button { flex: 1 1 0; height: 32px; border-radius: 8px; font-size: 13px; font-weight: 500; line-height: 16px; color: var(--muted); text-align: center; }
+  .acc-theme button:hover { color: var(--ink); }
+  .acc-theme button[aria-checked="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, .12), 0 0 0 1px var(--line); }
+}
+
+/* 1016 (review F01): section headers grow and wrap with their heading and action, instead of a fixed 32px row */
+@layer components {
+  .sec-head { height: auto; min-height: 32px; flex-wrap: wrap; gap: 8px 12px; }
+  .sec-head.short { height: auto; min-height: 14px; }
+  .sec-action { height: auto; min-height: 32px; padding-block: 6px; }
+}
+
+/* 1017 (owner): Home dashboard as full-width layers on a 12-column grid, 24px gutter, 32px between layers; no
+   masonry. The one split layer is Notifications (8 columns) beside Coming soon (4): both are a heading and 1 box, so
+   the headings share a baseline and the boxes stretch to 1 bottom line. Each layer is a size container. */
+@layer components {
+  .dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 32px; align-items: stretch; }
+  .dash > * { grid-column: 1 / -1; container-type: inline-size; min-width: 0; margin: 0; }
+  .dash > [hidden] { display: none; }
+  @container (min-width: 1000px) {
+    .dash > .lay-8 { grid-column: span 8; }
+    .dash > .lay-4 { grid-column: span 4; }
+    .dash > :is(.lay-8, .lay-4) { display: flex; flex-direction: column; }
+  }
+  /* inside the split layer (these query each section's own width, so they sit outside the rule above): the boxes
+     fill the layer's height; Coming soon in a narrow column puts its icon beside the title */
+  .dash > .lay-4 > .card { flex: 1 1 auto; }
+  /* 4-across rows inside a full-width layer use the grid's 24px gutter, so their edges fall on columns 3, 6 and 9 and
+     line up with the 8 + 4 split and the 3 recommended cards */
+  @container (min-width: 880px) { .dash .tiles, .dash .mk-sups { column-gap: 24px; } }
+  @container (max-width: 559px) {
+    .lay-4 .mk-early { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 12px 12px; align-content: start; align-items: center; }
+    .lay-4 .mk-early > div { display: contents; }
+    .lay-4 .mk-early-ico { grid-column: 1; grid-row: 1; width: 40px; height: 40px; border-radius: 12px; }
+    .lay-4 .mk-early-ico .i { width: 22px; height: 22px; }
+    .lay-4 .mk-early h3 { grid-column: 2; grid-row: 1; font-size: 17px; line-height: 22px; }
+    .lay-4 .mk-early p { grid-column: 1 / -1; grid-row: 2; align-self: start; }
+    .lay-4 .mk-early .btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
+  }
+}
+}
+
+
+/* Quick actions under 880px of width (layout review VR08): a compact list-style tile, icon beside a 2-line label,
+   so the 8 entries stay a scan list instead of a 4-row wall; wider, they run 4 across */
+@layer components {
+  @container (max-width: 879px) {
+    .dash .tiles { gap: 12px; }
+    .dash .tile { display: grid; grid-template-columns: 24px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 12px; row-gap: 2px; align-content: center; min-height: 64px; padding: 12px 14px; }
+    .dash .tile > .i { grid-row: 1 / 3; align-self: center; }
+  }
+}
+
+/* 1021 branding reference (1021_2/branding_ref/web.svg, 1440 x 900). Owner rule (2026-10-22): the designer decides
+   color and visual effect, the current solution decides layout and structure. So only colors, fills, edges, corners
+   and type weight come from the frame: the rail is pure black with 12px right corners; the current item is a yellow
+   band from edge to edge (its text stays where it was); icons #AEB0BB; the first name yellow over an ink sub line;
+   search #F8F8F8 with a #80828A edge; quick buttons get a #E6E5E6 fill, the account button yellow; section links are
+   quiet caps; pager bars #AEB0BB with the current one yellow. Sizes, gaps and positions stay as in 1019.
+   Tokens in shared/theme.css. */
+@layer components {
+  .shell:not([data-rail="drawer"]) { background: var(--sunken); }
+  .shell:not([data-rail="drawer"]) .rail { border-radius: 0 12px 12px 0; }
+  .shell:not([data-rail="collapsed"]) .rail-nav .nav-item { width: calc(100% + 32px); margin-inline: -16px; padding: 0 28px; border-radius: 0; }
+  .rail .nav-item:focus-visible { outline-offset: -3px; }
+  .rail .nav-item:not([aria-current="page"]) .i { color: #AEB0BB; }
+  .rail .nav-item:not([aria-current="page"]):hover .i { color: #FFF; }
+
+  .greeting .greet-name { color: var(--land-name); }
+  .greeting p { color: var(--ink); font-weight: 500; }
+  .search { background: var(--field-fill); border-color: var(--line-field); }
+  .page-head .search { border-color: var(--line-field); border-radius: 10px; }
+  .page-head .search .voice, .search .voice { background: var(--quiet); color: var(--ink); }
+  .quickbar .qa { background: var(--quiet); }
+  .quickbar .qa-div { display: none; }   /* owner, 2026-10-22: no divider in the icon group */
+  .quickbar .qa:hover, .quickbar .qa[aria-expanded="true"] { background: var(--quiet-pressed); }
+  .quickbar .qa[data-account] { background: var(--brand); color: var(--brand-on); }
+  .quickbar .qa[data-account]:hover, .quickbar .qa[data-account][aria-expanded="true"] { background: var(--brand-pressed); }
+  .qa-badge.dot { background: var(--dot-notify); }
+
+  .sec-head h2 { color: var(--subtle); font-weight: 600; }
+  .sec-action { border: 0; background: none; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .sec-action:hover { background: none; color: var(--ink); }
+
+  .pager .dot { background: var(--land-bar); }
+
+  /* 1021 (owner, web frame): the collapse arrow sits in the rail's top-right corner, a bare chevron, no round plate */
+  .rail-toggle { width: 32px; height: 32px; border-radius: 8px; background: none; color: #AEB0BB; }
+  .rail-toggle:hover { background: rgba(255, 255, 255, .08); color: #FFF; }
+  /* both rail states (owner, 2026-10-22): the arrow stays in the top-right corner; it never drops under the logo */
+  .shell:not([data-rail="drawer"]) .rail-toggle { position: absolute; top: 4px; right: 6px; }
+  /* collapsed (88 wide): the roof mark sits below the arrow, centred, instead of stacked over it */
+  .shell[data-rail="collapsed"] .rail-brand { height: auto; padding-top: 16px; gap: 0; }
+  .rail-toggle:focus-visible { outline-offset: -2px; }   /* inset: the rail's rounded corner would clip an outer ring */
+  .shell:not([data-rail="collapsed"]):not([data-rail="drawer"]) .rail-brand { height: 32px; }   /* the 1019 row height (it was the arrow's) */
+  /* "Powered by" and the SmartEquip wordmark read as 1 lockup (see mobile/styles/app.css) */
+  .rp-full { gap: 0; }
+  .rp-full .se-logo { margin-top: calc(var(--se-w) * -.0565 + 2px); }
+  .pager .dot.on { background: var(--brand); }
+}
+
+/* 1021 Home layers (branding reference web.svg, owner 2026-10-22). Quick actions: 4 count tiles, 2 x 2 beside the
+   Updates carousel (their grid fills the carousel's height), 4 across when they have the row (web-twin, narrow);
+   the tile that needs you is yellow. Fleet news and updates: cards 2 a row, kicker (tone + icon), title, summary.
+   Supplier network: search over a scrolling list of marks and names, as tall as the news beside it. */
+@layer components {
+  .qtiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  @container (max-width: 559px) { .qtiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .lay-4 .qtiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; flex: 1 1 auto; margin-bottom: var(--qa-under, 0px); }
+  .qtiles > li { display: flex; min-width: 0; }
+  .qt { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 104px; padding: 16px; border: var(--edge-w) solid var(--edge); border-radius: 14px; background: var(--surface); color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+  /* hover (owner): the brand yellow, as the tile that needs you */
+  .qt:hover { border-color: var(--brand); background: var(--brand); color: var(--brand-on); }
+  .qt:hover span { color: var(--brand-on); }
+  .qt .i { width: 24px; height: 24px; margin-bottom: auto; }
+  .qt b { margin-top: 12px; font-size: 22px; font-weight: 700; line-height: 26px; font-variant-numeric: tabular-nums; }
+  .qt span { font-size: 13px; font-weight: 600; line-height: 18px; color: var(--muted); }
+  .qt.on { border-color: var(--brand); background: var(--brand); color: var(--brand-on); }
+  .qt.on span { color: var(--brand-on); }
+  .qt.on:hover { border-color: var(--brand-pressed); background: var(--brand-pressed); }
+
+  .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
+  @container (max-width: 559px) { .news-grid { grid-template-columns: minmax(0, 1fr); } }
+  .news-grid > li { display: flex; min-width: 0; }
+  .news-card { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 20px; color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+  .news-card:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
+  .news-k { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .news-k .i { width: 18px; height: 18px; }
+  .news-k.t-danger { color: var(--danger); }
+  .news-k.t-warning { color: var(--warning); }
+  .news-k.t-warning .i, .news-k.t-danger .i { color: var(--attn); }
+  .news-card b { font-size: 15px; font-weight: 700; line-height: 21px; }
+  .news-t { font-size: 13px; line-height: 18px; color: var(--muted); }
+
+  .net { display: flex; flex-direction: column; gap: 12px; min-height: 0; padding: 16px; }
+  .net-search { flex: none; height: 44px; }
+  .net-list { flex: 1 1 auto; min-height: 0; max-height: 360px; overflow-y: auto; margin: 0 -8px; padding: 0 8px; }
+  .net-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+  a.net-row:hover { background: var(--container-low); }
+  a.net-row:focus-visible { outline-offset: -2px; }
+  .net-row > span:not(.net-mark) { flex: 1; min-width: 0; }
+  .net-row b { display: block; font-size: 14px; font-weight: 600; line-height: 20px; overflow-wrap: anywhere; }
+  .net-row small { display: block; font-size: 12px; line-height: 16px; color: var(--muted); }
+  .net-row > .i { width: 16px; height: 16px; color: var(--subtle); }
+  .net-row .mk-req { flex: none; height: 32px; padding: 0 12px; font-size: 13px; }
+  .net-mark { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border: var(--edge-w) solid var(--edge); border-radius: 10px; background: var(--surface); font-size: 13px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--ink); }
+  .net-none { padding: 16px 8px; font-size: 14px; color: var(--muted); }
+}
+/* the panel takes the height of the news beside it: its list scrolls, its own content does not size the layer */
+/* (the section is a child of .dash, so this query is evaluated against .content, like the 8 + 4 split itself; a
+   rule on .net would query the section) */
+@container (min-width: 1000px) {
+  .dash > .net-sec { contain: size; min-height: 360px; }
+  .dash > .net-sec > .net { flex: 1 1 0; }
+  .dash > .net-sec .net-list { max-height: none; }
+  /* beside the carousel the tiles end on the photo's bottom edge; the carousel's 16px gap + 20px bar row sit under it */
+  .dash > .lay-hero + .qa-sec { --qa-under: 36px; }
+}

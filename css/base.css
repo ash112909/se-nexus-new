@@ -1,0 +1,111 @@
+/* Shared base and components for the SmartEquip web app.
+   Components follow the Figma masters in DesignHandoff-0925-Dev (exported 2026-09-29):
+   Core/Button (Platform=Web: Brand, BrandPressed, Primary, Secondary, Sso, Link), Web/FieldEmail and
+   Web/FieldPassword (Rest, Focus, Invalid). Type is Inter throughout, as in the web frames. */
+@layer base, components, utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    min-height: 100vh; min-height: 100dvh; background: var(--sunken); color: var(--ink);
+    font: 400 14px/20px Inter, -apple-system, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, p { margin: 0; }
+  ul, ol { list-style: none; margin: 0; padding: 0; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; padding: 0; text-align: inherit; }
+  a { color: var(--link); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  [data-focus]:focus { outline: none; }
+  #app { position: relative; min-height: 100vh; min-height: 100dvh; }
+  .route { min-height: 100vh; min-height: 100dvh; }
+}
+
+@layer components {
+  .i { width: 20px; height: 20px; flex: none; display: block; }
+  .logo { display: block; height: auto; }
+  .mc { display: inline-grid; place-items: center; flex: none; border-radius: 10px; background: #1E1E1E; color: var(--brand); font-weight: 800; letter-spacing: -.04em; }
+  .mc svg { display: block; width: 70%; height: auto; }
+
+  /* Core/Button, Platform=Web: 44 high, radius 12, 15/21 semibold, padding 16 */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 12px; font-size: 15px; font-weight: 600; line-height: 21px; white-space: nowrap; transition: background-color .15s, border-color .15s, box-shadow .15s; }
+  .btn .i { width: 18px; height: 18px; }
+  .btn-brand { background: var(--action); color: var(--on-action); }
+  .btn-brand:hover { background: var(--action-pressed); }
+  .btn-brand:active { background: var(--action-pressed); }
+  .btn-primary { background: var(--cta-default); color: var(--cta-ink); }
+  .btn-primary:hover, .btn-primary:active { background: var(--cta-pressed); }
+  .btn-sso, .btn-secondary { background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); }
+  .btn-sso:hover, .btn-secondary:hover { background: var(--container-low); }
+  .btn-link { height: 40px; padding: 12px 12px; border-radius: 10px; font-size: 14px; line-height: 20px; color: var(--link); }
+  .btn-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .btn[aria-busy="true"] { pointer-events: none; }
+  .btn .spin { width: 18px; height: 18px; }
+
+  /* Web/FieldEmail, Web/FieldPassword: label 12/16 medium, field 48 radius 12, input 16/24 */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field > label { font-size: 12px; font-weight: 500; line-height: 16px; color: var(--muted); }
+  .control { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px 0 16px; border: 1px solid var(--line-field); border-radius: 12px; background: var(--surface); transition: border-color .15s, box-shadow .15s; }
+  .control input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; font-size: 16px; line-height: 24px; color: var(--ink); }
+  .control input::placeholder { color: var(--muted); opacity: 1; }
+  .control > .i, .control .reveal { color: var(--muted); }
+  .control .reveal { display: grid; place-items: center; width: 32px; height: 32px; margin-right: -8px; border-radius: 8px; }
+  .control .reveal:hover { background: var(--container-low); }
+  .control:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+  .field.invalid .control { border-color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger); }
+  .field-error { display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: 12px; line-height: 17px; color: var(--danger); }
+  .field-error .i { width: 14px; height: 14px; }
+
+  /* chips: 24 high, radius 12, 12/16 medium */
+  .chip { display: inline-flex; align-items: center; height: 24px; padding: 4px 11px; border-radius: 12px; font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; background: var(--sunken); color: var(--muted); }
+  .chip.high { background: var(--chip-high-bg); color: var(--chip-high-ink); }
+  .chip.warranty { background: var(--chip-warranty-bg); color: var(--chip-warranty-ink); }
+
+  .spin { display: block; animation: se-spin .8s linear infinite; }
+  .spin .track { stroke: var(--boot-track); }
+  .spin .arc { stroke: var(--brand); stroke-linecap: round; }
+
+  .toast {
+    position: fixed; z-index: 100; left: 50%; bottom: 24px; display: flex; align-items: center; gap: 12px;
+    max-width: calc(100vw - 32px); min-height: 44px; padding: 12px 16px; border-radius: 12px;
+    background: var(--cta-default); color: var(--cta-ink); font-size: 14px; font-weight: 600; line-height: 20px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
+    transform: translate(-50%, 12px); opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s cubic-bezier(.2, 0, 0, 1);
+  }
+  .toast .i { color: var(--brand); }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .noscript { padding: 24px; }
+}
+
+@layer utilities {
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  [hidden] { display: none; }
+}
+
+@keyframes se-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } .toast { transition: none; } }
+
+/* 1016 (review F05): identifiers in running text never break at their hyphen; a recall note sits above the page body */
+@layer components {
+  .nw { white-space: nowrap; }
+  #ap-body > .banner, #wo-body > .banner, .content > .banner:has(+ .fa-grid) { margin-bottom: 16px; }
+}
+
+/* 1016 (review F01): action rows inside cards wrap, and their buttons grow, when the text is larger */
+@layer components {
+  :is(.appr-actions, .ap-btns, .mk-sup, .rv-acts, .push-btns, .ap-decide, .order-btns, .mk-part-f) .btn { height: auto; min-height: 44px; padding-block: 10px; white-space: normal; text-align: center; }
+  .ap-btns { display: flex; flex-wrap: wrap; }
+  .ap-btns .btn { flex: 1 1 140px; }
+}
+@layer components {
+  .order-btns { display: flex; flex-wrap: wrap; }
+  .order-btns .btn { flex: 1 1 140px; }
+  /* rail labels and tags wrap rather than run out of the rail or their option card */
+  .nav-item { height: auto; min-height: 44px; padding-block: 6px; }
+  .nav-label { min-width: 0; overflow-wrap: anywhere; }
+  .ck-rec { max-width: 100%; white-space: normal; }
+}
+

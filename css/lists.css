@@ -1,0 +1,153 @@
+/* Shopping lists pages (lists, list) and the list editor and delete dialogs. Reuses the cart's
+   .oc-* grid for the quantity review; the container is .content (container-type: inline-size). */
+@layer components {
+  /* ---------- lists index */
+  #lw-body { display: flex; flex-direction: column; gap: 20px; }
+  .lw-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .lw-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+  @container (max-width: 719px) { .lw-grid { grid-template-columns: minmax(0, 1fr); } }
+  .lw-card { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+  .lw-card:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
+  .lw-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .lw-top b { font-size: 17px; font-weight: 600; line-height: 24px; }
+  .lw-total { display: flex; flex-direction: column; align-items: flex-end; flex: none; font-size: 17px; font-weight: 600; line-height: 24px; font-variant-numeric: tabular-nums; }
+  .lw-total small { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--muted); }
+  .lw-desc { font-size: 14px; line-height: 20px; color: var(--muted); }
+  .lw-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 13px; line-height: 18px; }
+  .lw-chips > span:not(.chip) { display: inline-flex; align-items: center; gap: 8px; }
+  .lw-chips .i { width: 16px; height: 16px; color: var(--muted); }
+  .lw-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; line-height: 16px; color: var(--muted); }
+  .lw-flag { display: inline-flex; align-items: center; gap: 8px; height: 24px; padding: 0 12px; border-radius: 12px; background: var(--tint-warning); color: var(--chip-warning); font-weight: 700; }
+  .lw-flag .i { width: 14px; height: 14px; }
+
+  /* ---------- list page: quantity review */
+  .lv-grid { grid-template-columns: minmax(0, 1fr) 340px; }
+  .lv-card .oc-sup-head { align-items: center; }
+  .lv-lines { margin: 0; padding: 0; list-style: none; }
+  .lv-line { padding: 16px 20px; }
+  .lv-line + .lv-line { border-top: 1px solid var(--line); }
+  .lv-row { display: grid; grid-template-columns: 44px 44px minmax(0, 1fr) 80px 116px 92px; align-items: center; gap: 12px 16px; }
+  .lv-row .oc-info .stock { margin-top: 4px; font-size: 13px; }
+  .lv-line.skipped .oc-name, .lv-line.skipped .oc-unit, .lv-line.skipped .oc-total b { color: var(--muted); }
+  .lv-line.skipped .pthumb { opacity: .6; }
+  .lv-check { position: relative; display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; }
+  .lv-check input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .lv-check .ck { display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid var(--line-field); border-radius: 6px; background: var(--surface); color: transparent; transition: background-color .15s, border-color .15s; }
+  .lv-check .ck .i { width: 16px; height: 16px; }
+  .lv-check input:checked + .ck { border-color: var(--cta-default); background: var(--cta-default); color: var(--cta-ink); }
+  .lv-check input:disabled { cursor: default; }
+  .lv-check input:disabled + .ck { border-style: dashed; opacity: .6; }
+  .lv-check input:focus-visible + .ck { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .lv-issue { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 12px 0 0 60px; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 20px; }
+  .lv-issue > .i { flex: none; width: 20px; height: 20px; align-self: flex-start; margin-top: 0; }
+  .lv-issue > div:not(.control):not(.seg) { flex: 1 1 240px; min-width: 0; }
+  .lv-issue b { display: block; font-weight: 700; }
+  .lv-issue p { color: var(--ink); font-size: 13px; line-height: 18px; }
+  .lv-issue.t-warning { background: var(--tint-warning); color: var(--chip-warning); }
+  .lv-issue.t-success { background: var(--tint-success); color: var(--success); }
+  .lv-issue .btn { flex: none; }
+  .lv-unit { flex: 1 1 220px; min-width: 0; max-width: 320px; height: 44px; color: var(--ink); }
+  .lv-unit select { min-width: 0; }
+  .lv-unit select { padding-right: 4px; -webkit-appearance: none; appearance: none; }
+  .lv-unit .i { width: 18px; height: 18px; color: var(--muted); }
+  .lv-choice { flex: none; background: var(--surface); }
+  .lv-choice button { min-width: 72px; justify-content: center; }
+  .lv-added { display: flex; align-items: center; gap: 8px; color: var(--success); font-weight: 600; }
+  .lv-added .i { width: 18px; height: 18px; }
+  #lv-aside .kv dd .chip { vertical-align: middle; }
+  .oc-cta .i { width: 18px; height: 18px; }
+  @container (max-width: 1099px) { .lv-grid { grid-template-columns: minmax(0, 1fr) 300px; } }
+  @container (max-width: 979px) { .lv-grid { grid-template-columns: minmax(0, 1fr); } .lv-grid .oc-aside { position: static; } }
+  @container (max-width: 640px) {
+    .lv-line { padding: 16px 12px 16px 4px; }
+    .lv-row { grid-template-columns: 44px 44px minmax(0, 1fr) auto; grid-template-areas: "c t i i" "c t u tot" ". . q q"; row-gap: 8px; column-gap: 12px; }
+    .lv-row .lv-check { grid-area: c; align-self: start; }
+    .lv-row > .pthumb { grid-area: t; align-self: start; }
+    .lv-row .oc-info { grid-area: i; }
+    .lv-row .oc-unit { grid-area: u; flex-direction: row; gap: 8px; align-items: baseline; justify-self: start; }
+    .lv-row .oc-total { grid-area: tot; flex-direction: row; gap: 8px; align-items: baseline; }
+    .lv-row .oc-qty { grid-area: q; }
+    .lv-issue { margin-left: 44px; }
+  }
+
+  /* ---------- buttons used by the dialogs */
+  .icon-btn { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; color: var(--ink); }
+  .icon-btn:hover { background: var(--container-low); }
+  .icon-btn:disabled { color: var(--line-strong); cursor: default; }
+  .icon-btn:disabled:hover { background: none; }
+  .icon-btn .i { width: 20px; height: 20px; }
+  .icon-btn .i.up { transform: rotate(180deg); }
+  .icon-btn.danger { color: var(--danger); }
+  .icon-btn.danger:hover { background: var(--tint-danger); }
+  .btn-danger-fill { background: var(--danger); color: var(--on-solid); }
+  .btn-danger-fill:hover { filter: brightness(.88); }
+  .page-actions .btn .i { width: 18px; height: 18px; }
+
+  /* ---------- list editor dialog */
+  .le-form { display: flex; flex-direction: column; gap: 20px; }
+  .le-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 640px) { .le-grid { grid-template-columns: minmax(0, 1fr); } }
+  .le-grid .control select { cursor: pointer; -webkit-appearance: none; appearance: none; }
+  .le-grid .control > .i { width: 18px; height: 18px; color: var(--muted); }
+  .le-lbl { font-size: 12px; font-weight: 500; line-height: 16px; color: var(--muted); }
+  .le-tags { align-self: flex-start; }
+  .le-list { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .le-m { display: flex; align-items: center; gap: 12px; padding: 12px 12px; background: var(--surface); }
+  .le-m + .le-m { border-top: 1px solid var(--line); }
+  .le-pos { flex: none; width: 24px; height: 24px; border-radius: 12px; background: var(--container); font-size: 12px; font-weight: 700; line-height: 24px; text-align: center; color: var(--muted); }
+  .le-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .le-info b { font-size: 14px; font-weight: 600; line-height: 20px; }
+  .le-info small { font-size: 13px; line-height: 18px; color: var(--muted); }
+  .le-warn { font-size: 12px; font-weight: 700; line-height: 16px; color: var(--chip-warning); }
+  .le-move { display: flex; flex: none; }
+  .le-m .stepper button:disabled { opacity: .3; }
+  .le-none { padding: 16px 16px; border: 1px dashed var(--line-strong); border-radius: 12px; font-size: 14px; line-height: 20px; color: var(--muted); }
+  .le-add .control > .i { width: 18px; height: 18px; color: var(--muted); }
+  .pk-list { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .pk-list li { display: flex; align-items: center; gap: 12px; padding: 12px 12px; }
+  .pk-list li + li { border-top: 1px solid var(--line); }
+  .pk-list .stock { flex: none; font-size: 13px; }
+  .pk-add { flex: none; height: 40px; padding: 0 16px 0 12px; }
+  .pk-done { display: inline-flex; align-items: center; gap: 4px; flex: none; min-width: 96px; font-size: 13px; font-weight: 600; color: var(--success); }
+  .pk-done .i { width: 16px; height: 16px; }
+  .pk-rep { flex: none; max-width: 140px; font-size: 12px; font-weight: 700; line-height: 16px; color: var(--chip-warning); text-align: right; }
+  @media (max-width: 640px) {
+    .le-m { flex-wrap: wrap; }
+    .le-m .le-info { flex-basis: calc(100% - 36px); }
+    .le-m .stepper { margin-left: 36px; }
+    .le-m .le-move { margin-left: auto; }
+    .pk-list li { flex-wrap: wrap; }
+    .pk-list .le-info { flex-basis: calc(100% - 60px); }
+    .pk-list .stock { margin-left: 56px; }
+    .pk-add, .pk-done, .pk-rep { margin-left: auto; }
+  }
+  .ld-text { font-size: 15px; line-height: 22px; }
+  .ld-meta { margin-top: 8px; font-size: 13px; line-height: 18px; color: var(--muted); }
+}
+
+/* 1017 (V2): a list prepared for 1 unit, adjusted by its service history */
+@layer components {
+  .lv-for { margin-bottom: 16px; padding: 16px 20px; }
+  .lv-for-hd { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+  .lv-for-hd > .i { flex: none; width: 20px; height: 20px; color: var(--info); }
+  .lv-for-hd > div:not(.control) { flex: 1 1 220px; min-width: 0; }
+  .lv-for-hd h2 { font-size: 16px; line-height: 22px; }
+  .lv-for-hd p { margin: 2px 0 0; font-size: 13px; line-height: 18px; }
+  .lv-prep-sel { flex: 0 1 340px; min-width: 220px; }
+  .lv-hist { display: flex; flex-direction: column; gap: 6px; list-style: none; margin: 14px 0 0; padding: 0; }
+  .lv-hist li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; font-size: 14px; line-height: 20px; }
+  .lv-hist time { font-weight: 600; color: var(--muted); }
+  .lv-hist-none, .lv-for-sum { margin: 10px 0 0; font-size: 13px; line-height: 18px; }
+  .lv-issue.t-info { background: var(--tint-info); color: var(--ink); }
+  .lv-issue.t-info > .i { color: var(--info); }
+}
+/* 1021 (owner): the list line's picture column fits the shared 64px line thumbnail, as on the cart line (the 96px
+   placeholder ran under the name, part number and stock) */
+@layer components {
+  .lv-row { grid-template-columns: 44px 64px minmax(0, 1fr) 80px 116px 92px; }
+  .lv-row > .img-slot.thumb { width: 64px; height: 64px; border-radius: 12px; }
+}
+@container (max-width: 640px) {
+  .lv-row { grid-template-columns: 44px 64px minmax(0, 1fr) auto; }
+  .lv-row > .img-slot.thumb { grid-area: t; align-self: start; }
+}

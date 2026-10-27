@@ -1,0 +1,274 @@
+/* ARA themes: light (default) and dark. 1 file, copied by _src/build.mjs into mobile/shared/ and web-full/css/.
+   Linked last in each index.html. The theme is the data-theme attribute on <html>: "light" or "dark".
+   It is set by ?theme=dark|light in the URL, or stamped into the page by _src/themes.mjs for the
+   instances in themes/ (mobile-light, mobile-dark, web-light, web-dark).
+
+   Dark values come from the SmartEquip Journey Design System V6.6 dark mode (0918/tokens/_out/variables.css):
+   surface ladder 141416 / 1B1C21 / 25262A / 2E2F35 / 323339, ink FFF / C9C9C9 / AEB0BB, lines 3A3B41 / 55565C /
+   74757C, focus and link 8CAADF, status tints 4D2B29 / 1E4430 / 513122 / 28334A, on-tint text FF8A7A / 86E9AE /
+   FFC48F. Brand yellow and the black header stay as they are in both themes. */
+@layer base, components, utilities;
+
+/* light: tokens.css as it is, plus 1 token for the "Powered by" SmartEquip wordmark (was a fixed #3C3835) */
+:root { --wordmark: #3C3835; --cta-ink: #FFFFFF; --on-solid: #FFFFFF; --ios-tint: #0A66D6; }
+/* 1017 landing (image 2): band = status bar and home-indicator strip, panel = content, card and tile surfaces and edges */
+:root { --land-band: #F8F7F4; --land-panel: #FFFFFF; --land-card: #F8F7F4; --land-edge: #85878E; --land-tile-edge: #E6E5E6; --land-bar: #BABABA; --land-name: #9C6900; }
+/* light keeps contrast where the dark reference relies on dark surfaces: card edge 3.35:1, name 4.74:1 */
+
+/* 1017 branding (BRANDING-UPDATE-PLAN.md): roles from the SmartEquip sources, contrast-checked.
+   identity  --brand #F4A800 stays: logo, tenant chevron, selection, indicators (Brand Guidelines 1543:81283)
+   action    gold product buttons #FDB721, pressed #C08A0A, ink #25262A (UI Elements 579:2213 / 579:2215); 8.6 and 4.95:1
+   attention the approved "Needs approval" pill #FF5D00 with near-black ink (white on it is 3.1:1)
+   neutrals  ink #25262A, muted #55565C, page #F8F7F4, line #E6E5E6; subtle text #6B6C72 (4.9:1 on the page; the
+             palette's #80828A is 3.6:1, too light for small text)
+   link, focus and info #3266CC (5.4:1); danger text #C42F1C (the palette's #DC3B26 is 4.47:1); warning text and
+   tints move to the orange family #A8480A on #FFDECA (5.8 and 4.6:1). Dark keeps the Journey values below. */
+:root {
+  --action: #FDB721; --action-pressed: #C08A0A; --on-action: #25262A;
+  --attn: #FF5D00; --on-attn: #000000;
+  --ink: #25262A; --muted: #55565C; --subtle: #6B6C72; --line: #E6E5E6; --sunken: #F8F7F4; --placeholder: #6B6C72;
+  --focus: #3266CC; --link: #3266CC; --info: #3266CC; --dot-info: #3266CC; --tint-info: #EBF2FF;
+  --danger: #C42F1C; --tint-danger: #FCEBE8;
+  --warning: #A8480A; --chip-warning: #A8480A; --tint-warning: #FFDECA; --chip-high-bg: #FFDECA; --chip-high-ink: #A8480A;
+  --success: #00745E; --chip-warranty-ink: #00745E;
+  --tint-select: #FFF7E3; /* selected row or option: brand/100, not the warning tint */
+}
+/* --ios-tint: iOS controls' tint (date picker); a darker system blue so day numbers clear 4.5:1 */
+/* --cta-ink: text and icons on --cta-default. --on-solid: text and icons on a solid status fill (danger, success,
+   warning, focus): white on the deep light-theme fills, near-black on the light dark-theme fills */
+:root[data-theme="light"] { color-scheme: light; }
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --sunken: #141416;
+  --surface: #1B1C21;
+  --raised: #25262A;
+  --inverse: #F8F7F4;
+  --ink: #FFFFFF;
+  --muted: #C9C9C9;
+  --subtle: #AEB0BB;
+  --ink-inverse: #25262A;
+  --line: #3A3B41;
+  --line-strong: #74757C;   /* Journey has #55565C; lifted so control outlines (outline buttons, steppers, option cards,
+                               checkboxes) keep 3:1 against dark surfaces (WCAG 1.4.11) */
+  --line-control: #74757C;
+  --line-field: #74757C;
+  --focus: #8CAADF;
+  --danger: #FF8A7A;
+  --success: #86E9AE;
+  --warning: #FFC48F;
+  --info: #8CAADF;
+  --tint-danger: #4D2B29;
+  --tint-success: #1E4430;
+  --tint-warning: #513122;
+  --tint-info: #28334A;
+  --brand: #F4A800;
+  --brand-pressed: #DA9500;
+  --brand-on: #000000;
+  --nav-active-bg: #F4A800;
+  --nav-active-ink: #000000;
+  --nav-support: #AEB0BB;
+  --link: #8CAADF;
+  --placeholder: #AEB0BB;
+  --row-pressed: #2E2F35;
+  --plate: #2F2F2F;
+  --on-plate: #FFFFFF;
+  --on-plate-muted: #AEB0BB;
+  --container-low: #25262A;
+  --container: #2E2F35;
+  --container-high: #323339;
+  --header: #000000;
+  --scrim: rgba(0, 0, 0, .62);
+  --accent-text: #FDB721;
+  --chip-warning: #FFC48F;
+  --cta-default: #F8F7F4;   /* the near-black CTA inverts, as iOS and Material do in dark */
+  --cta-pressed: #E6E5E6;
+  --cta-ink: #18181B;
+  --on-solid: #141416;
+  --ios-tint: #409CFF;
+  --rail: #0B0B0D;
+  --rail-plate: #2F2F2F;
+  --rail-muted: #AEB0BB;
+  --rail-break: #2F2F2F;
+  --chip-high-bg: #513122;
+  --chip-high-ink: #FFC48F;
+  --chip-warranty-bg: #1E4430;
+  --chip-warranty-ink: #86E9AE;
+  --dot-info: #8CAADF;
+  --dot-warning: #FDB721;
+  --boot-track: #55565C;
+  --wordmark: #E6E5E6;
+  --tint-select: #3A3322;
+  --land-band: #141416;
+  --land-panel: #25262A;
+  --land-card: #323339;
+  --land-edge: #80828A;
+  --land-tile-edge: #3A3B41;
+  --land-bar: #AEB0BB;
+  --land-name: #F4A800;
+  --action: #FDB721;
+  --action-pressed: #C08A0A;
+  --on-action: #25262A;
+  --attn: #FF5D00;
+  --on-attn: #000000;
+}
+
+/* ---------- SmartEquip artwork (1017, _src/branding): drawn on the surface with its clear space, never in a shape.
+   --se-w is the artwork width (130px minimum for the full wordmark); the padding is the clear space from the
+   draft guideline (symbol width each side, half its height above and below), so it is reserved in the layout.
+   'auto' artwork shows the positive version in light and the negative one in dark. */
+@layer components {
+  .se-logo { --se-w: 130px; display: inline-flex; flex: none; box-sizing: content-box; width: var(--se-w); padding: calc(var(--se-w) * .0565) calc(var(--se-w) * .098); }
+  .se-logo .se-art { display: block; width: 100%; height: auto; }
+  .se-logo.se-symbol { --se-w: 22px; padding: 0; }
+  .se-auto .v-dark { display: none; }
+}
+@layer utilities {
+  [data-theme="dark"] .se-auto .v-light { display: none; }
+  [data-theme="dark"] .se-auto .v-dark { display: block; }
+}
+
+/* ---------- switching on the fly (shared/theme.js): no component transitions for the frame of the swap, and a short
+   cross-fade of the whole page where the browser has view transitions */
+@layer utilities {
+  .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none; }
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .22s; }
+
+/* ---------- dark: places that draw a fixed light colour instead of a token */
+@layer utilities {
+  /* both builds: search highlight, solid warning pills (amber turns light, so the text turns dark), placeholders, quote bubble */
+  [data-theme="dark"] .mark-hl { background: rgba(244, 168, 0, .34); }
+  [data-theme="dark"] .ph.ph { background-color: #25262A; background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgba(235, 235, 245, .07) 9px 10px); }
+  [data-theme="dark"] .ta-ico.ph { background-color: #25262A; background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(235, 235, 245, .07) 7px 8px); }
+  [data-theme="dark"] .avatar, [data-theme="dark"] .acc-avatar { background: #55565C; color: #FFF; }
+  [data-theme="dark"] .ap-bubble { background: #2E2F35; color: #FFF; }
+  [data-theme="dark"] .ap-bubble::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 18'%3E%3Cpath d='M9 0C9 8.5 6.5 14.5 0 18C6.5 18 12 16.5 16 13V0Z' fill='%232E2F35'/%3E%3C/svg%3E"); }
+  /* manual pages and thumbnails stay paper white: they are scans of printed documents */
+
+  /* mobile: the browser page around the iPhone frame is white in dark (owner, 2026-10-18); the screens stay dark.
+     Not in captures (transparent) or full-screen on a phone (body.device) */
+  [data-theme="dark"] body:has(> #stage #device):not(.capture):not(.device) { background: #FFFFFF; }
+  /* mobile: system chrome follows iOS dark appearance */
+  [data-theme="dark"] #device[data-status="dark"] .statusbar { color: #FFF; }
+  [data-theme="dark"] #device[data-indicator="dark"] .home-indicator { background: #FFF; }
+  /* search fields on the black header: the light theme draws them white; in dark they keep a 1px edge so they do not
+     melt into the header */
+  [data-theme="dark"] .nav-search .field, [data-theme="dark"] .nav-search .fake-field, [data-theme="dark"] .s-field { box-shadow: inset 0 0 0 1px var(--line-control); }
+  [data-theme="dark"] .home .search-field { background: var(--surface); border-color: var(--line-control); }
+  [data-theme="dark"] .nav-search .field:focus-within { box-shadow: 0 0 0 3px rgba(140, 170, 223, .55); }
+  [data-theme="dark"] .s-field:focus-within { box-shadow: 0 0 0 3px rgba(140, 170, 223, .3); }
+  [data-theme="dark"] .top-blur { background: rgba(20, 20, 22, .78); }
+  [data-theme="dark"] .bottom-bar { background: rgba(27, 28, 33, .94); }
+  [data-theme="dark"] .field input, [data-theme="dark"] .s-field input { caret-color: #0A84FF; }
+  [data-theme="dark"] .segi { background: rgba(118, 118, 128, .24); }
+  [data-theme="dark"] .segi-thumb { background: #636366; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); }
+  [data-theme="dark"] .segi-btn + .segi-btn::before { background: rgba(84, 84, 88, .65); }
+  [data-theme="dark"] .segi-btn .n { background: rgba(255, 255, 255, .16); }
+  [data-theme="dark"] .pill-f { background: rgba(118, 118, 128, .24); }
+  [data-theme="dark"] .pill-f[aria-selected="true"] { background: var(--brand); }
+  [data-theme="dark"] .pill-f:not([aria-selected="true"]) .n { background: rgba(255, 255, 255, .16); }
+  /* action sheet and alert: iOS dark materials; increased-contrast system blue and red (review F13) */
+  [data-theme="dark"] .as-group { background: rgba(37, 37, 37, .86); }
+  [data-theme="dark"] .as-head { border-bottom-color: rgba(84, 84, 88, .65); }
+  [data-theme="dark"] .as-head b, [data-theme="dark"] .as-head p { color: #8D8D93; }
+  [data-theme="dark"] .as-btn { color: #409CFF; }
+  [data-theme="dark"] .as-btn + .as-btn { border-top-color: rgba(84, 84, 88, .65); }
+  [data-theme="dark"] .as-btn.destructive { color: #FF6961; }
+  [data-theme="dark"] .as-btn.cancel { background: #2C2C2E; }
+  [data-theme="dark"] .ios-alert { background: rgba(37, 37, 37, .86); }
+  [data-theme="dark"] .ia-text b, [data-theme="dark"] .ia-text p { color: #FFF; }
+  [data-theme="dark"] .ia-btns, [data-theme="dark"] .ia-btns button + button { border-color: rgba(84, 84, 88, .65); }
+  [data-theme="dark"] .ia-btns button { color: #409CFF; }
+  [data-theme="dark"] .ia-btns button:active { background: rgba(255, 255, 255, .08); }
+  /* keyboard: iOS dark keyboard */
+  [data-theme="dark"] .kb { background: rgba(43, 43, 45, .96); color: #FFF; }
+  [data-theme="dark"] .kb-bar .sugg:active { background: rgba(255, 255, 255, .1); }
+  [data-theme="dark"] .kb-bar i { background: rgba(255, 255, 255, .18); }
+  [data-theme="dark"] .key { background: #6B6B6B; box-shadow: 0 1px 0 #1E1E1E; }
+  [data-theme="dark"] .key.fn, [data-theme="dark"] .key.down { background: #464646; }
+  [data-theme="dark"] .key.fn.on, [data-theme="dark"] .key.fn.down, [data-theme="dark"] .key.go.down { background: #6B6B6B; color: #FFF; }
+  [data-theme="dark"] .kb-foot { color: #C9C9C9; }
+  [data-theme="dark"] .key-pop { background: #6B6B6B; color: #FFF; }
+
+  /* web: count on the selected segment (yellow) and the account avatar (ink is white in dark) */
+  [data-theme="dark"] .seg button[aria-selected="true"] .n { color: #000; }
+  [data-theme="dark"] .dp-day.on { color: #141416; }
+  [data-theme="dark"] .acc-theme button[aria-checked="true"] { background: var(--container-high); box-shadow: none; }
+  [data-theme="dark"] .mw-lang-b[aria-checked="true"] span { background: rgba(0, 0, 0, .1); }
+  [data-theme="dark"] .btn-k:active, [data-theme="dark"] .btn-primary:hover { background: var(--cta-pressed); }
+}
+
+/* ---------- 1021 branding reference (1021_2/branding_ref: landing_light, landing_dark, web; branding designer).
+   Measured from the SVGs:
+   - 1 yellow, #F4A800, for every fill: primary buttons, the selected rail item, the account button, the first name,
+     the outline of the card that needs you, the active pager bar. #FDB721 is only the notification dot. This replaces
+     the 1017 split (product gold #FDB721 for buttons, identity #F4A800 for selection).
+   - Light: page #F8F7F4, cards white with a 1.5px #AEB0BB outline and 14px corners, fields #F8F8F8, quiet buttons
+     #E6E5E6, rail and header pure black. Field and control edges use the palette's #80828A (3.7:1), not #AEB0BB
+     (2.1:1), so a field's boundary still reaches 3:1 (WCAG 1.4.11).
+   - Dark: page #25262A, cards #323339 with a #3A3B41 outline, header and rail black, status band #141416. */
+:root {
+  --brand: #F4A800; --brand-pressed: #DA9500; --brand-on: #000000;
+  --action: #F4A800; --action-pressed: #DA9500; --on-action: #000000;
+  --cta-default: #F4A800; --cta-pressed: #DA9500; --cta-ink: #000000;
+  --dot-notify: #FDB721;
+  --mc-ink: #1E1E1E;                         /* Mid-County wordmark letters on the page (light); black surfaces pass #FFF */
+  --tip: #18181B; --on-tip: #FFFFFF;          /* tooltips, skip link, boot pill: were drawn in the (black) CTA colour */
+  --edge: #AEB0BB; --edge-w: 1.5px;          /* card outline */
+  --line-field: #80828A; --line-control: #80828A;
+  --field-fill: #F8F8F8; --quiet: #E6E5E6; --quiet-pressed: #D9D9D9;
+  --rail: #000000; --header: #000000;
+  --sunken: #F8F7F4; --surface: #FFFFFF;
+  /* landing */
+  --land-top: #000000;                       /* light: the black header runs up under the status bar */
+  --land-band: #F8F7F4; --land-panel: #F8F7F4; --land-card: #FFFFFF;
+  --land-edge: #F4A800;                      /* the card that needs you */
+  --land-tile-edge: #AEB0BB; --land-bar: #AEB0BB; --land-name: #F4A800;
+  --land-field: #F8F8F8; --land-field-edge: #C6C5C5; --land-field-ink: #6B6C72; --land-field-icon: #000000;
+  --land-mic: #E6E5E6; --land-mic-ink: #25262A;
+  --land-review: #FFFFFF; --land-review-edge: #323339; --land-tile-icon: #80828A;
+  --land-tile-shadow: 0 0 4px rgba(0, 0, 0, .25); --land-card-shadow: none;   /* landing_light: tiles only */
+}
+:root[data-theme="dark"] {
+  --sunken: #25262A; --surface: #323339; --raised: #2E2F35;
+  --container-low: #2E2F35; --container: #3A3B41; --container-high: #44454C; --row-pressed: #3A3B41;
+  --line: #48494F;                           /* dividers inside #323339 cards (1.3:1; #3A3B41 would vanish) */
+  --edge: #3A3B41; --edge-w: 1.5px;
+  --cta-default: #F4A800; --cta-pressed: #DA9500; --cta-ink: #000000;
+  --action: #F4A800; --action-pressed: #DA9500; --on-action: #000000;
+  --tip: #2E2F35; --on-tip: #FFFFFF;
+  --field-fill: #2E2F35; --quiet: #2E2F35; --quiet-pressed: #3A3B41;
+  --mc-ink: #F8F7F4;
+  --rail: #000000;
+  --line-strong: #80828A; --line-control: #80828A; --line-field: #80828A;   /* 3.2:1 on the #323339 cards (#74757C was 2.7) */
+  --land-top: #141416; --land-band: #141416; --land-panel: #25262A; --land-card: #323339;
+  --land-edge: #80828A; --land-tile-edge: #3A3B41; --land-bar: #AEB0BB; --land-name: #F4A800;
+  --land-field: #2E2F35; --land-field-edge: #3A3B41; --land-field-ink: #AEB0BB; --land-field-icon: #AEB0BB;
+  --land-mic: #18181B; --land-mic-ink: #FFFFFF;
+  --land-review: transparent; --land-review-edge: #80828A; --land-tile-icon: #FFFFFF;
+  --land-tile-shadow: 0 2px 8px rgba(0, 0, 0, .55); --land-card-shadow: 0 2px 8px rgba(0, 0, 0, .55);   /* landing_dark: card and tiles */
+}
+/* cards: 1 outline for every card-like surface in both builds. Same selectors as their own rules and declared later
+   in the same layer, so :hover, .selected, .unread and the like (more specific) still win. */
+@layer components {
+  .card, .order, .tile, .note, .ap-card, .mach-card, .line-card, .lw-card, .mw-card, .hero, .auth-card, .tbl-wrap,
+  .split > .panel, .ri-stat, .pd-alt, .res-card, .alt-card, .unit-sum, .an-kpi, .an-card, .wo-desc, .wo-log, .list,
+  .timeline, .account { border-width: var(--edge-w); border-color: var(--edge); }
+  .card, .order, .tile, .ap-card, .mach-card, .line-card, .lw-card, .mw-card, .res-card, .alt-card, .an-card, .ri-stat { border-radius: 14px; }
+}
+@layer utilities {
+  [data-theme="dark"] .mark-hl { color: #FFFFFF; }               /* highlight over a #323339 card: muted text fell to 3.9:1 */
+  [data-theme="dark"] .mw-fmt.f-mixed { border-color: #7A4A30; } /* the warning tint melted into the #323339 card */
+
+  /* 1026 (CR-02): scoped search surfaces in dark (CR-05: the model level is now the supplier select) */
+  [data-theme="dark"] .search.scoped { background: var(--field-fill); border-color: var(--line-field); }
+  [data-theme="dark"] .search.scoped .ss-sel { background: var(--container); color: var(--ink); border-color: var(--line); }
+  [data-theme="dark"] .search.scoped .ss-sel option:disabled { color: var(--muted); }
+  [data-theme="dark"] .search.scoped .ss-sel:hover { background: var(--quiet-pressed); border-color: var(--line-strong); }
+  [data-theme="dark"] .search.scoped input:disabled,
+  [data-theme="dark"] .search.scoped input:disabled::placeholder { color: var(--muted); opacity: 1; }
+  [data-theme="dark"] .search.scoped [data-voice]:disabled { color: var(--muted); opacity: .65; }
+  [data-theme="dark"] .pal { border: 1px solid var(--edge); }
+  [data-theme="dark"] .fb-chip { border: 1px solid var(--line); }
+}

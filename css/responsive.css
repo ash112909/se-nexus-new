@@ -1,0 +1,44 @@
+/* 1026 (CR-02): viewport-level composition for the scoped web search and shared page shell.
+   Component-internal container queries stay in their own stylesheets. Test widths: 1440, 1280, 1024, 768, 520, 390. */
+@layer components {
+  .page-head .search,
+  .page-head .search.on-page { max-width: 100%; }
+
+  @media (max-width: 1279px) {
+    .page-head .search.on-page { flex-basis: min(640px, 100%); width: min(640px, 100%); }
+  }
+
+  @media (max-width: 1023px) {
+    .page-head .tools { width: 100%; }
+    .page-head .search,
+    .page-head .search.on-page { width: 100%; max-width: 640px; flex: 1 1 auto; }
+    .main { padding-inline: 24px; }
+  }
+
+  @media (max-width: 767px) {
+    .main { padding: 20px 16px 28px; }
+    .content { gap: 24px; }
+    .tools { gap: 8px; height: auto; min-height: 48px; }
+    .search.scoped { gap: 6px; padding-inline: 6px; }
+    .search.scoped > .kbd { display: none; }
+    .fbd-grid { grid-template-columns: minmax(0, 1fr); }
+    .pal-host { padding: 16px 12px; }
+  }
+
+  @media (max-width: 519px) {
+    .greeting h1 { font-size: 24px; line-height: 30px; }
+    .search.scoped {
+      display: grid;
+      grid-template-columns: minmax(0, auto) minmax(0, auto) 32px;
+      grid-template-areas: "scope supplier mic" "query query query";
+      height: auto; min-height: 48px; padding: 6px;
+    }
+    .search.scoped > .i, .search.scoped > .ss-div { display: none; }
+    .search.scoped .ss-scope { grid-area: scope; }
+    .search.scoped .ss-supplier { grid-area: supplier; }
+    .search.scoped #q { grid-area: query; width: 100%; min-height: 40px; padding-inline: 8px; }
+    .search.scoped [data-voice] { grid-area: mic; }
+    .search.scoped .ss-sel { max-width: 100%; }
+    .order { padding: 16px; }
+  }
+}

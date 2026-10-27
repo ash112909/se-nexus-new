@@ -1,0 +1,76 @@
+/* fleet pages (DES-28): fleet table with scoped search, asset page. Also the scoped search bar, recent
+   search chips and result count shared by the Fleet, Manuals and Order history searches (DES-26). */
+@layer components {
+  /* ---------- scoped search bar: labelled field + the section's filter */
+  .sx-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+  .sx-field { display: flex; flex-direction: column; gap: 8px; flex: 1 1 320px; max-width: 520px; min-width: 0; }
+  .sx-lbl { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--ink); }
+  .sx-find { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 4px 0 16px; border: 1px solid var(--line-field); border-radius: 12px; background: var(--surface); color: var(--muted); }
+  .sx-find:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+  .sx-find > .i { width: 18px; height: 18px; flex: none; }
+  .sx-find input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; font-size: 15px; color: var(--ink); }
+  .sx-find input::placeholder { color: var(--muted); opacity: 1; }
+  .sx-x { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 8px; color: var(--muted); }
+  .sx-x:hover { background: var(--container-low); color: var(--ink); }
+  .sx-x[hidden] { display: none; }
+  .sx-x .i { width: 18px; height: 18px; }
+  .sx-recent { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .sx-recent-l { display: inline-flex; align-items: center; gap: 8px; margin-right: 4px; font-size: 13px; color: var(--muted); }
+  .sx-recent-l .i { width: 16px; height: 16px; }
+  .sx-chip { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .sx-chip:hover { background: var(--container-low); }
+  .sx-count { margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+  #fl-recent:empty, #oh-recent:empty, #mw-recent:empty { display: none; }
+
+  /* ---------- fleet */
+  .fl-sub { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .fl-sub > .i { width: 16px; height: 16px; }
+  .fl-sub b { color: var(--ink); font-weight: 600; }
+  .fl-chg { height: 32px; margin-left: 4px; padding: 8px 8px; }
+  .fl-tbl { min-width: 0; }
+  .fl-eq { font-weight: 700; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .fl-eq:hover { color: var(--link); text-decoration: underline; }
+  .fl-serial { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  @container (max-width: 760px) {
+    .fl-tbl thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .fl-tbl, .fl-tbl tbody { display: block; }
+    .fl-tbl tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "eq st" "mm mm" "se yr" "lo hr"; gap: 4px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .fl-tbl tbody tr:last-child { border-bottom: 0; }
+    .fl-tbl td { display: block; padding: 0; border: 0; text-align: left; font-size: 14px; line-height: 20px; }
+    .fl-tbl td:nth-child(1) { grid-area: eq; font-size: 15px; }
+    .fl-tbl td:nth-child(2) { grid-area: mm; }
+    .fl-tbl td:nth-child(3) { grid-area: se; color: var(--muted); }
+    .fl-tbl td:nth-child(4) { grid-area: yr; color: var(--muted); text-align: right; }
+    .fl-tbl td:nth-child(5) { grid-area: lo; color: var(--muted); }
+    .fl-tbl td:nth-child(6) { grid-area: st; text-align: right; }
+    .fl-tbl td:nth-child(7) { grid-area: hr; color: var(--muted); text-align: right; }
+    .fl-tbl tr:hover td { background: none; }
+    .fl-tbl tr:hover { background: var(--container-low); }
+  }
+
+  /* ---------- asset page */
+  .fa-grid { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .fa-card { display: flex; flex-direction: column; gap: 16px; }
+  .fa-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .fa-head h2 { font-size: 20px; line-height: 26px; font-weight: 700; }
+  .fa-mono { font-variant-numeric: tabular-nums; }
+  .fa-side { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+  .fa-n { min-width: 24px; height: 24px; padding: 0 8px; border-radius: 12px; background: var(--container); font-size: 12px; font-weight: 700; line-height: 24px; text-align: center; }
+  .fa-none { display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); font-size: 14px; color: var(--muted); }
+  .fa-none .i { width: 18px; height: 18px; flex: none; }
+  .fa-tbl { min-width: 620px; }
+  .fa-tbl td a { color: var(--ink); text-decoration: none; }
+  .fa-tbl td a:hover { color: var(--link); text-decoration: underline; }
+  @container (max-width: 879px) { .fa-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- order history search (DES-32) */
+  .oh-hit { display: block; margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--muted); white-space: nowrap; }
+  .oh-hit b { color: var(--ink); font-weight: 500; }
+}
+
+/* 1016 (review F09): the unit's thumbnail sits in its heading row */
+@layer components {
+  .fa-head:has(> .thumb) h2 { flex: 1; min-width: 0; }
+  .fa-head .img-slot.ph.thumb { width: 72px; height: 72px; flex: none; border-radius: 12px; }
+}
+

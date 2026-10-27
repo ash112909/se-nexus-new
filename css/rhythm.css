@@ -1,0 +1,61 @@
+/* Layout and vertical rhythm, from the design system's spacing scale (Journey V6.6, 0918/tokens: "08 · Size/
+   Space", 4px x N). Every spacing value in web-full is a multiple of 4; these names give the page its 4
+   steps, loaded last so every page follows them:
+     section  32   between the blocks of a page (.content)
+     block    16   inside a section: heading to body, body to controls; a page head to its actions
+     stack    12   a card's own stack of lines
+     tight     8   label to field, title to its sub line */
+@layer base {
+  :root {
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-16: 64px;
+    --rhythm-section: var(--sp-8); --rhythm-block: var(--sp-4); --rhythm-stack: var(--sp-3); --rhythm-tight: var(--sp-2);
+  }
+}
+@layer components {
+  .content { gap: var(--rhythm-section); }
+  .sec { gap: var(--rhythm-block); }
+  .content > .ann { margin-bottom: calc(var(--rhythm-block) - var(--rhythm-section)); }
+  .page-actions { margin-top: calc(var(--rhythm-block) - var(--rhythm-section)); }
+  .crsl { gap: var(--rhythm-block); }
+  .card > .sec-head + *, .sec > .sec-head + p { margin-top: 0; }
+  /* card stacks */
+  .appr, .mk-part, .mk-feat, .rc-card, .rv, .pd-cmts, .ar-main, .push-card > div:not(.push-btns) { gap: var(--rhythm-stack); }
+  .kb-row { gap: var(--rhythm-tight); }
+  .oc-aside, .wo-summary { gap: var(--rhythm-block); }
+}
+
+/* Widths: components take the width their content needs, never the width of the page. A field is as wide as
+   the longest thing it will hold (480 for a choice or a line of text, 640 for notes); a button is its label
+   plus padding; a stepper and its button stay together. Full width is kept only where the container is
+   already narrow: side panels, the cart summary, dialogs on a phone, and the 390 layout. */
+@layer components {
+  .content .form-row, .content .field { max-width: 480px; }
+  .content .form-row:has(.control.area), .dlg .form-row:has(.control.area) { max-width: 640px; }
+  .dlg .form-row:not(:has(.control.area)) .control { max-width: 480px; }
+  .ck-date { max-width: 280px; }
+  /* part card: the unit and work order choices, the buy row, the wide buttons */
+  .pd .form-row { max-width: 420px; }
+  .pd-wide { width: auto; align-self: flex-start; padding: 0 24px; }
+  .pd-buy { align-self: flex-start; }
+  .pd-add { flex: none; padding: 0 24px; }
+  .pd-added { align-self: flex-start; max-width: 100%; }
+  /* Home order card: 2 actions share the row; 1 action is its own size */
+  .order-foot > .btn-card { align-self: flex-start; width: auto; padding: 0 20px; }
+  @media (max-width: 519px) {
+    .pd-wide, .pd-buy, .pd-add { align-self: stretch; }
+    .pd-buy .pd-add { flex: 1; }
+  }
+}
+@layer components {
+  /* the part image keeps a photo's proportions instead of running the card's width as a strip */
+  .pd-graphic { width: min(100%, 360px); aspect-ratio: 4 / 3; height: auto; }
+}
+@layer components {
+  /* side summaries and decision panels: a column beside the content on wide screens; when they stack under
+     it they stay card-sized instead of stretching their buttons across the page */
+  .oc-aside, .ap-panel, .wo-panel { max-width: 560px; width: 100%; }
+}
+@layer components {
+  /* reading width: a fact and its value stay within 1 glance (640), not at the 2 ends of a wide card */
+  .pd-info > *, .ar-main > *, .wo-summary > *, .push-card p { max-width: 640px; }
+}

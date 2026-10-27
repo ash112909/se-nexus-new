@@ -1,0 +1,193 @@
+/* Search (B1) and the contextual filter bar (DES-52), web. The typeahead popover, results grid, facets and chips
+   start from css/catalog.css; this file adds the 1008 parts: filter bar and its dialog, interpretation line,
+   grouped part rows, serial-pricing gate, filter notice, command palette. */
+@layer components {
+  /* ---------- filter bar */
+  .fbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .fb-add { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 18px; background: var(--surface); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .fb-add:hover { background: var(--container-low); }
+  .fb-add.on { border-color: var(--ink); }
+  .fb-add .i { width: 18px; height: 18px; }
+  .fb-add .n { min-width: 20px; height: 20px; padding: 0 8px; border-radius: 10px; background: var(--ink); color: var(--surface); font-size: 12px; font-weight: 700; line-height: 20px; text-align: center; }
+  .fb-chip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 4px 0 12px; border-radius: 18px; background: var(--tint-info); font-size: 14px; line-height: 20px; white-space: nowrap; }
+  .fb-chip .k { font-size: 12px; font-weight: 600; color: var(--info); }
+  .fb-chip b { font-weight: 600; color: var(--ink); }
+  .fb-chip.derived { border: 1px dashed var(--line-strong); background: var(--surface); }
+  .fb-chip.derived .k { color: var(--muted); }
+  .fb-x { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--muted); }
+  .fb-x:hover { background: rgba(0, 0, 0, .06); color: var(--ink); }
+  .fb-x .i { width: 16px; height: 16px; }
+  .fb-clear.btn-link { height: 36px; padding: 0 8px; }
+  .fb-note { font-size: 12px; line-height: 17px; color: var(--muted); }
+
+  /* ---------- filters dialog */
+  .fbd-lead { margin-bottom: 16px; color: var(--muted); }
+  .fbd-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .fbd-sel { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--line-control); border-radius: 12px; background: var(--surface); font: inherit; font-size: 14px; color: var(--ink); }
+  .fbd-sel:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .fbd-derived { min-height: 20px; margin-top: 16px; font-size: 13px; line-height: 20px; color: var(--info); }
+  .dlg-foot .fbd-clear { margin-right: auto; }
+
+  /* ---------- interpretation line */
+  .s-interp { display: flex; gap: 12px; margin: 12px 0 4px; padding: 12px 16px; border-radius: 12px; background: var(--container-low); font-size: 14px; line-height: 20px; }
+  .s-interp > .i { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--muted); }
+  .s-interp .ip-k { color: var(--muted); }
+  .s-interp b { font-weight: 600; }
+  .s-interp .ip-ent { font-weight: 600; color: var(--info); }
+  .s-interp .ip-sep { color: var(--muted); }
+  .ta-list .s-interp { margin: 4px 0 8px; }
+
+  /* ---------- results */
+  .sr { gap: 16px; }
+  .sr > .sr-fbar, .sr > .s-interp, .sr > .s-hide { margin: 0; }
+  .sr-fs { margin: 0 0 16px; padding: 0; border: 0; min-width: 0; }
+  .sr-fs .sr-flabel { padding: 0; }
+  .sr-hint { margin: -4px 0 12px; color: var(--muted); }
+  .sr-ctxall { margin-top: 12px; }
+  .sr-ctxall a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--link); }
+  .sr-ctxall .i { width: 16px; height: 16px; }
+  .sr-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .sr-tbl .cell-part > span:not(.pthumb) { display: flex; flex-direction: column; min-width: 0; }
+  .tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; background: var(--container); color: var(--muted); font-size: 12px; font-weight: 600; line-height: 16px; white-space: nowrap; }
+  .tag.oem { background: var(--tint-success); color: var(--success); }
+  .tag.sup { background: var(--tint-info); color: var(--info); }
+  .sr-tbl .pr { font-weight: 600; }
+  .sr-tbl .uom, .sr-tbl .from { font-size: 12px; color: var(--muted); }
+  .pr-gate { display: block; max-width: 180px; margin-left: auto; font-size: 12px; line-height: 17px; font-weight: 600; color: var(--warning); white-space: normal; text-align: right; }
+  .pr-set { margin-top: 4px; font-size: 12px; line-height: 17px; font-weight: 600; color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+  .sr-tbl tr.sr-grp td { border-bottom-color: transparent; background: var(--sunken); }
+  .sr-tbl tr.sr-grp td.muted { color: var(--muted); }
+  .sr-tbl tr.sr-opt td { background: var(--sunken); }
+  .sr-tbl tr.sr-opt td:first-child { padding-left: 72px; }
+  .cell-opt { font-weight: 500; }
+  .sr-tbl tr.sr-opt:hover td { background: var(--container-low); }
+  .tbl tr[data-line] { cursor: pointer; }
+  .tbl tr[data-line]:hover td { background: var(--container-low); }
+  /* 1026: 1 ring on the row (as tr[data-go] in work.css): rings on each cell were clipped by the rounded
+     table wrapper when the row is the only one (a supplier-line part, AW32 oil at JLG) */
+  .tbl tr[data-line]:focus-visible td { background: var(--container-low); }
+  .tbl tr[data-line]:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  .sr-oth .snip { display: block; max-width: 520px; margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--ink); }
+  .sr-oth .cell-part > span:not(.sym) { display: flex; flex-direction: column; }
+
+  /* ---------- empty state: the filter that hides results */
+  .s-hide { display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 12px 16px; border-radius: 12px; background: var(--tint-warning); }
+  .s-hide > .i { width: 20px; height: 20px; flex: none; color: var(--warning); }
+  .s-hide p { flex: 1; }
+  .s-hide .btn { flex: none; height: 40px; }
+  .sr-dym b { font-weight: 600; }
+
+  /* ---------- typeahead additions */
+  .ta-tip { padding: 12px 8px 4px; font-size: 12px; line-height: 17px; color: var(--muted); }
+  .ta-tip .kbd { margin: 0 4px; }
+  .ta-ico.ph { background-color: #ECECEE; background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(60, 60, 67, .1) 7px 8px); }
+  .search .kbd[role="button"] { cursor: pointer; }
+
+  /* ---------- command palette (Cmd+K) */
+  .pal-host { position: fixed; inset: 0; z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px; }
+  .pal-scrim { position: absolute; inset: 0; background: var(--scrim); }
+  .pal { position: relative; display: flex; flex-direction: column; width: min(640px, 100%); max-height: min(560px, 76vh); overflow: hidden; border-radius: 16px; background: var(--surface); box-shadow: 0 24px 64px rgba(0, 0, 0, .28); }
+  .pal-field { display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+  .pal-field > .i { width: 20px; height: 20px; flex: none; color: var(--muted); }
+  .pal-field input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; font: inherit; font-size: 17px; color: var(--ink); }
+  .pal-field input::placeholder { color: var(--placeholder); opacity: 1; }
+  .pal-list { flex: 1; min-height: 0; overflow-y: auto; padding: 8px; }
+  .pal-label { padding: 12px 8px 4px; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .pal-opt { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 8px; border-radius: 10px; cursor: pointer; }
+  .pal-opt[aria-selected="true"] { background: var(--container); box-shadow: inset 0 0 0 2px var(--focus); }
+  .pal-opt .ta-main b { font-weight: 500; }
+  .pal-kind { flex: none; font-size: 12px; line-height: 16px; color: var(--muted); }
+  .pal-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--sunken); font-size: 12px; line-height: 17px; color: var(--muted); }
+  .pal-keys { display: flex; gap: 16px; }
+  .pal-keys > span { display: inline-flex; align-items: center; gap: 4px; }
+  .pal .kbd { display: inline-block; min-width: 22px; text-align: center; }
+
+  @media (max-width: 767px) {
+    .fbd-grid { grid-template-columns: minmax(0, 1fr); }
+    .pal-host { padding: 16px 12px; }
+    .pal-keys { display: none; }
+    .s-hide { flex-wrap: wrap; }
+    /* results rows stack into cards: no sideways scroll on a phone */
+    .sr-tbl thead, .sr-oth thead { display: none; }
+    .sr-tbl, .sr-tbl tbody, .sr-oth, .sr-oth tbody { display: block; }
+    .sr-tbl tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "part part" "pn price" "sup stock" "fits fits"; gap: 4px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .sr-tbl tbody tr:last-child { border-bottom: 0; }
+    .sr-tbl td { display: block; padding: 0; border: 0; }
+    .sr-tbl td:nth-child(1) { grid-area: part; }
+    .sr-tbl td:nth-child(2) { grid-area: pn; }
+    .sr-tbl td:nth-child(3) { grid-area: fits; font-size: 12px; line-height: 17px; color: var(--muted); }
+    .sr-tbl td:nth-child(4) { grid-area: sup; }
+    .sr-tbl td:nth-child(5) { grid-area: price; }
+    .sr-tbl td:nth-child(6) { grid-area: stock; justify-self: end; }
+    .sr-tbl tr.sr-grp { border-bottom: 0; padding-bottom: 4px; }
+    .sr-tbl tr.sr-grp td:nth-child(2), .sr-tbl tr.sr-grp td:nth-child(3) { display: none; }
+    .sr-tbl tr.sr-opt { padding-left: 32px; background: var(--sunken); }
+    .sr-tbl tr.sr-opt td:first-child { padding-left: 0; }
+    .sr-tbl tr.sr-grp, .sr-tbl tr.sr-grp td, .sr-tbl tr.sr-opt td { background: var(--sunken); }
+    .sr-oth tr { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .sr-oth td { display: block; padding: 0; border: 0; }
+    .sr-oth td:first-child { width: 100%; }
+    .sr-oth .num { text-align: left; }
+  }
+}
+
+/* 1026 (CR-01, scoped search; CR-05 supplier level): the header bar starts with the scope select, then (Parts)
+   the Supplier select, then the words. Native selects sized to their choice (field-sizing), on the quiet fill,
+   a chevron drawn over them; a divider before the words. */
+@layer components {
+  .search.scoped { gap: 8px; padding-left: 4px; }
+  .search.scoped > .i { margin-left: 4px; }
+  .ss-pick { position: relative; display: inline-flex; align-items: center; flex: none; }
+  .ss-pick[hidden] { display: none; }
+  .ss-sel { appearance: none; field-sizing: content; min-width: 72px; max-width: 180px; height: 30px; padding: 0 28px 0 10px; border: 1px solid transparent; border-radius: 8px;
+    background: var(--quiet); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; line-height: 20px; text-overflow: ellipsis; cursor: pointer; }
+  .ss-sel:hover { border-color: var(--line-strong); }
+  .ss-sel:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .ss-pick > .i { position: absolute; right: 8px; width: 14px; height: 14px; color: var(--ink); pointer-events: none; }
+  .ss-div { flex: none; width: 1px; height: 20px; background: var(--line); }
+}
+@layer components {
+  /* 1026: the 480 header bar keeps its room for the words; the ⌘K hint stays on the wider results-page bar */
+  .page-head .search.scoped:not(.on-page) > .kbd { display: none; } /* only the bar's own hint: the popover inside the form keeps its keys */
+}
+@layer components {
+  /* 1026: the typeahead's key hints (arrows Move, Enter Open, esc Close) are for a keyboard; a phone-width
+     window has none, so the footer goes below 768 */
+  @media (max-width: 767px) { .search .ta-foot, .search .ta-tip-k { display: none; } }
+}
+
+/* 1026 (CR-05): the Supplier select greys the suppliers that are not connected (disabled options); "Also from"
+   is a tag that runs the same words on the other supplier */
+@layer components {
+  .ss-sel option:disabled { color: var(--muted); }
+  .sr-tags .tag.also { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font: inherit; font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
+  .sr-tags .tag.also:hover { border-color: var(--ink); }
+  .sr-tags .tag.also:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .sr-scope-note { margin: 0 0 16px; }
+}
+
+/* 1026 (CR-05): the Suppliers dropdown. A button that looks like the scope select, and a panel headed
+   "Suppliers": connected suppliers as choices (the chosen one ticked), the others greyed under
+   "Not connected yet". Colours are tokens, so dark follows. */
+@layer components {
+  .ss-btn { display: inline-flex; align-items: center; max-width: 180px; overflow: hidden; white-space: nowrap; text-align: left; }
+  .ss-list { position: absolute; z-index: 60; top: calc(100% + 8px); left: 0; width: 280px; max-height: min(560px, 80vh); overflow: auto; padding: 8px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 32px rgba(0, 0, 0, .14); }
+  .ss-list[hidden] { display: none; }
+  .ss-head { padding: 8px 12px 4px; font-size: 16px; font-weight: 700; line-height: 22px; color: var(--ink); }
+  .ss-group { padding: 12px 12px 4px; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .ss-opt { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; color: var(--ink); cursor: pointer; }
+  .ss-opt .ss-name { flex: 1; min-width: 0; font-weight: 600; }
+  .ss-opt .i { width: 16px; height: 16px; flex: none; color: var(--ink); }
+  .ss-opt.act { background: var(--container-low); }
+  .ss-opt.off { color: var(--muted); cursor: default; }
+  .ss-opt.off .ss-name { font-weight: 400; }
+  .ss-opt.off.act { background: none; outline: 1px dashed var(--line-strong); outline-offset: -1px; }
+}
+@layer components {
+  /* narrow windows: the panel hangs from the whole bar, its full width, so it never leaves the viewport */
+  @media (max-width: 767px) {
+    .search.scoped .ss-supplier { position: static; }
+    .search.scoped .ss-list { left: 0; right: 0; width: auto; }
+  }
+}

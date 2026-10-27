@@ -1,0 +1,6272 @@
+{
+ "build": "web-full",
+ "platform": "Web",
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "scale": 1,
+ "when": "2026-10-27T01:02:37.880Z",
+ "runs": [
+  {
+   "id": "V1",
+   "name": "Fault to fix",
+   "sub": "KB article to part, lower MTTR",
+   "steps": [
+    {
+     "say": "Open Work Orders from the rail",
+     "kind": "click",
+     "go": null,
+     "view": "work-orders",
+     "optional": false
+    },
+    {
+     "say": "Open #100110: the platform lowers slowly, fault code 42",
+     "kind": "click",
+     "go": null,
+     "view": "work-order",
+     "optional": false
+    },
+    {
+     "say": "The fault code finds the article written for it",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Open it: the article opens for this work order",
+     "kind": "click",
+     "go": null,
+     "view": "article",
+     "optional": false
+    },
+    {
+     "say": "Step 3 names the part it needs: no 500-page PDF, no number to copy",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Click 1: Find for FL-101 opens the catalog filtered to the unit",
+     "kind": "click",
+     "go": null,
+     "view": "search",
+     "optional": false
+    },
+    {
+     "say": "The work order is the filter: equipment, serial and model",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": true
+    },
+    {
+     "say": "Click 2: the lowering valve",
+     "kind": "click",
+     "go": null,
+     "view": "part",
+     "optional": false
+    },
+    {
+     "say": "Click 3: add it to the cart for work order #100110",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "3 clicks from \"I found the problem\" to \"the part is in my cart\"",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "The cart line keeps the work order and the unit",
+     "kind": "click",
+     "go": null,
+     "view": "cart",
+     "optional": false
+    }
+   ],
+   "log": [
+    {
+     "step": 1,
+     "say": "Open Work Orders from the rail",
+     "ok": true
+    },
+    {
+     "step": 2,
+     "say": "Open #100110: the platform lowers slowly, fault code 42",
+     "ok": true
+    },
+    {
+     "step": 3,
+     "say": "The fault code finds the article written for it",
+     "ok": true
+    },
+    {
+     "step": 4,
+     "say": "Open it: the article opens for this work order",
+     "ok": true
+    },
+    {
+     "step": 5,
+     "say": "Step 3 names the part it needs: no 500-page PDF, no number to copy",
+     "ok": true
+    },
+    {
+     "step": 6,
+     "say": "Click 1: Find for FL-101 opens the catalog filtered to the unit",
+     "ok": true
+    },
+    {
+     "step": 7,
+     "say": "The work order is the filter: equipment, serial and model",
+     "ok": true
+    },
+    {
+     "step": 8,
+     "say": "Click 2: the lowering valve",
+     "ok": true
+    },
+    {
+     "step": 9,
+     "say": "Click 3: add it to the cart for work order #100110",
+     "ok": true
+    },
+    {
+     "step": 10,
+     "say": "3 clicks from \"I found the problem\" to \"the part is in my cart\"",
+     "ok": true
+    },
+    {
+     "step": 11,
+     "say": "The cart line keeps the work order and the unit",
+     "ok": true
+    },
+    {
+     "step": "done"
+    }
+   ],
+   "start": {
+    "view": "home",
+    "hash": "#/home",
+    "title": "Welcome back, Sarah",
+    "location": "all",
+    "ctx": {},
+    "cart": [],
+    "placed": [],
+    "newWOs": [],
+    "recalls": {},
+    "stockUsed": {},
+    "submissions": 0,
+    "cancelled": {},
+    "share": {
+     "items": 0,
+     "internal": 0,
+     "pct": 0
+    }
+   },
+   "snaps": [
+    {
+     "view": "work-orders",
+     "hash": "#/work-orders",
+     "title": "Work orders",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "work-order",
+     "hash": "#/work-order?id=100110",
+     "title": "Work order #100110",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "work-order",
+     "hash": "#/work-order?id=100110",
+     "title": "Work order #100110",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "article",
+     "hash": "#/article?wo=100110&id=kb-fault-42",
+     "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "article",
+     "hash": "#/article?wo=100110&id=kb-fault-42",
+     "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "search",
+     "hash": "#/search?q=JLG-4120-402",
+     "title": "Search results",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "search",
+     "hash": "#/search?q=JLG-4120-402",
+     "title": "Search results",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-402&wo=100110",
+     "title": "Lowering valve, solenoid",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-402&wo=100110",
+     "title": "Lowering valve, solenoid",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": "100110",
+       "unit": "FL-101",
+       "serial": "JL1930-03981",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-402&wo=100110",
+     "title": "Lowering valve, solenoid",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": "100110",
+       "unit": "FL-101",
+       "serial": "JL1930-03981",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": "100110",
+       "unit": "FL-101",
+       "serial": "JL1930-03981",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     }
+    }
+   ],
+   "calls": [
+    {
+     "step": 1,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.faultArticle",
+     "args": [
+      {
+       "$": "wo",
+       "id": "100110",
+       "issue": "Platform lowers slowly",
+       "equip": "FL-101",
+       "status": "Open",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": null
+      }
+     ],
+     "result": {
+      "$": "kb",
+      "id": "kb-fault-42",
+      "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+      "fault": "42",
+      "machine": "1930ES",
+      "stepParts": [
+       null,
+       null,
+       "JLG-4120-402",
+       null
+      ],
+      "steps": 4
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.stepPart",
+     "args": [
+      {
+       "$": "kb",
+       "id": "kb-fault-42",
+       "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+       "fault": "42",
+       "machine": "1930ES",
+       "stepParts": [
+        null,
+        null,
+        "JLG-4120-402",
+        null
+       ],
+       "steps": 4
+      },
+      0
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.stepPart",
+     "args": [
+      {
+       "$": "kb",
+       "id": "kb-fault-42",
+       "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+       "fault": "42",
+       "machine": "1930ES",
+       "stepParts": [
+        null,
+        null,
+        "JLG-4120-402",
+        null
+       ],
+       "steps": 4
+      },
+      1
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.stepPart",
+     "args": [
+      {
+       "$": "kb",
+       "id": "kb-fault-42",
+       "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+       "fault": "42",
+       "machine": "1930ES",
+       "stepParts": [
+        null,
+        null,
+        "JLG-4120-402",
+        null
+       ],
+       "steps": 4
+      },
+      2
+     ],
+     "result": {
+      "$": "part",
+      "pn": "JLG-4120-402",
+      "name": "Lowering valve, solenoid",
+      "price": 142.5,
+      "stock": "In stock",
+      "machine": "1930ES"
+     },
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.stepPart",
+     "args": [
+      {
+       "$": "kb",
+       "id": "kb-fault-42",
+       "title": "Fault code 42 on the 1930ES: lowering valve circuit",
+       "fault": "42",
+       "machine": "1930ES",
+       "stepParts": [
+        null,
+        null,
+        "JLG-4120-402",
+        null
+       ],
+       "steps": 4
+      },
+      3
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 5,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.findFor",
+     "args": [
+      "100110"
+     ],
+     "result": {
+      "$": "unit",
+      "equip": "FL-101",
+      "serial": "JL1930-03981",
+      "model": "1930ES"
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 9,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 9,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-402",
+      1,
+      "100110",
+      {
+       "unit": "FL-101",
+       "serial": "JL1930-03981"
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-402",
+      "qty": 1,
+      "wo": "100110",
+      "from": {},
+      "unit": "FL-101",
+      "serial": "JL1930-03981",
+      "shipTo": "austin",
+      "id": "line-1",
+      "quote": {
+       "part": "JLG-4120-402",
+       "unit": "FL-101",
+       "price": 142.5,
+       "currency": "USD",
+       "uom": "each",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "tx.issues",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-402",
+        "qty": 1,
+        "wo": "100110",
+        "from": {},
+        "unit": "FL-101",
+        "serial": "JL1930-03981",
+        "shipTo": "austin",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-402",
+         "unit": "FL-101",
+         "price": 142.5,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 11,
+     "fn": "ops.foreign",
+     "args": [
+      "austin"
+     ],
+     "result": false,
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": "100110",
+       "from": {},
+       "unit": "FL-101",
+       "serial": "JL1930-03981",
+       "shipTo": "austin",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-402",
+        "unit": "FL-101",
+        "price": 142.5,
+        "currency": "USD",
+        "uom": "each",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 1,
+       "from": {},
+       "costUSD": 142.5,
+       "days": 3,
+       "note": "1 × $142.50",
+       "arrive": "2026-10-12",
+       "meets": false,
+       "recommended": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "ops.internalShare",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-402",
+        "qty": 1,
+        "wo": "100110",
+        "from": {},
+        "unit": "FL-101",
+        "serial": "JL1930-03981",
+        "shipTo": "austin",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-402",
+         "unit": "FL-101",
+         "price": 142.5,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 12,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 1,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    }
+   ],
+   "frames": [
+    "V1-01.jpg",
+    "V1-02.jpg",
+    "V1-03.jpg",
+    "V1-04.jpg",
+    "V1-05.jpg",
+    "V1-06.jpg",
+    "V1-07.jpg",
+    "V1-08.jpg",
+    "V1-09.jpg",
+    "V1-10.jpg",
+    "V1-11.jpg"
+   ],
+   "errors": []
+  },
+  {
+   "id": "V2",
+   "name": "Proactive fleet maintenance",
+   "sub": "kit to cart, less downtime",
+   "steps": [
+    {
+     "say": "Open Shopping Lists from the rail",
+     "kind": "click",
+     "go": null,
+     "view": "lists",
+     "optional": false
+    },
+    {
+     "say": "Open the annual inspection kit: the template for the ANSI annual",
+     "kind": "click",
+     "go": null,
+     "view": "list",
+     "optional": false
+    },
+    {
+     "say": "Prepare it for FL-118: it has service history",
+     "kind": "select",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Its history: drift, then a seep at the lift cylinder",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "So the kit adds a lift cylinder seal kit, with the reason",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "The brush set was replaced: use its successor",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Add every included part for FL-118 in 1 action",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "View the cart: 1 trip, no $5 gasket left behind",
+     "kind": "click",
+     "go": null,
+     "view": "cart",
+     "optional": false
+    }
+   ],
+   "log": [
+    {
+     "step": 1,
+     "say": "Open Shopping Lists from the rail",
+     "ok": true
+    },
+    {
+     "step": 2,
+     "say": "Open the annual inspection kit: the template for the ANSI annual",
+     "ok": true
+    },
+    {
+     "step": 3,
+     "say": "Prepare it for FL-118: it has service history",
+     "ok": true
+    },
+    {
+     "step": 4,
+     "say": "Its history: drift, then a seep at the lift cylinder",
+     "ok": true
+    },
+    {
+     "step": 5,
+     "say": "So the kit adds a lift cylinder seal kit, with the reason",
+     "ok": true
+    },
+    {
+     "step": 6,
+     "say": "The brush set was replaced: use its successor",
+     "ok": true
+    },
+    {
+     "step": 7,
+     "say": "Add every included part for FL-118 in 1 action",
+     "ok": true
+    },
+    {
+     "step": 8,
+     "say": "View the cart: 1 trip, no $5 gasket left behind",
+     "ok": true
+    },
+    {
+     "step": "done"
+    }
+   ],
+   "start": {
+    "view": "home",
+    "hash": "#/home",
+    "title": "Welcome back, Sarah",
+    "location": "all",
+    "ctx": {},
+    "cart": [],
+    "placed": [],
+    "newWOs": [],
+    "recalls": {},
+    "stockUsed": {},
+    "submissions": 0,
+    "cancelled": {},
+    "share": {
+     "items": 0,
+     "internal": 0,
+     "pct": 0
+    }
+   },
+   "snaps": [
+    {
+     "view": "lists",
+     "hash": "#/lists",
+     "title": "Shopping Lists",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "list",
+     "hash": "#/list?id=sl-insp-1930",
+     "title": "Annual inspection kit, JLG 1930ES",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-415",
+       "qty": 2,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-2",
+       "pn": "JLG-4120-520",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-3",
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-4",
+       "pn": "JLG-4120-329",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-5",
+       "pn": "JLG-4120-118",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 6,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "all",
+     "ctx": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-415",
+       "qty": 2,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-2",
+       "pn": "JLG-4120-520",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-3",
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-4",
+       "pn": "JLG-4120-329",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      },
+      {
+       "id": "line-5",
+       "pn": "JLG-4120-118",
+       "qty": 1,
+       "wo": null,
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 6,
+      "internal": 0,
+      "pct": 0
+     }
+    }
+   ],
+   "calls": [
+    {
+     "step": 1,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-112"
+     ],
+     "result": [
+      {
+       "date": "Oct 5, 2026",
+       "event": "Slow lowering, fault code 42",
+       "pn": "JLG-4120-402"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-113"
+     ],
+     "result": [
+      {
+       "date": "Sep 20, 2026",
+       "event": "Annual inspection booked, WO #100102"
+      }
+     ],
+     "n": 7
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-118"
+     ],
+     "result": [
+      {
+       "date": "Oct 3, 2026",
+       "event": "Hydraulic return filter swapped, WO #100071"
+      },
+      {
+       "date": "Oct 1, 2026",
+       "event": "Hydraulic seep at the lift cylinder gland",
+       "pn": "JLG-4120-118"
+      },
+      {
+       "date": "Sep 12, 2026",
+       "event": "Lift cylinder drift reported by the operator",
+       "pn": "JLG-4120-118"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-101"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-102"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-104"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-107"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-115"
+     ],
+     "result": [],
+     "n": 9
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-103"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-108"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-110"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-116"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-105"
+     ],
+     "result": [],
+     "n": 7
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-109"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-111"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 2,
+     "fn": "ops.history",
+     "args": [
+      "FL-117"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 3,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "setContext",
+     "args": [
+      {
+       "equip": "FL-118",
+       "wo": null
+      }
+     ],
+     "result": {
+      "$": "unit",
+      "equip": "FL-118",
+      "serial": "JL1930-05108",
+      "model": "1930ES"
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.kit",
+     "args": [
+      {
+       "$": "list",
+       "id": "sl-insp-1930",
+       "name": "Annual inspection kit, JLG 1930ES",
+       "items": 4
+      },
+      "FL-118"
+     ],
+     "result": {
+      "unit": {
+       "$": "unit",
+       "equip": "FL-118",
+       "serial": "JL1930-05108",
+       "model": "1930ES",
+       "machine": "JLG 1930ES",
+       "location": "Austin Branch",
+       "status": "In service"
+      },
+      "history": [
+       {
+        "date": "Oct 3, 2026",
+        "event": "Hydraulic return filter swapped, WO #100071"
+       },
+       {
+        "date": "Oct 1, 2026",
+        "event": "Hydraulic seep at the lift cylinder gland",
+        "pn": "JLG-4120-118"
+       },
+       {
+        "date": "Sep 12, 2026",
+        "event": "Lift cylinder drift reported by the operator",
+        "pn": "JLG-4120-118"
+       }
+      ],
+      "adds": [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 1,
+        "events": [
+         {
+          "date": "Sep 12, 2026",
+          "event": "Lift cylinder drift reported by the operator",
+          "pn": "JLG-4120-118"
+         },
+         {
+          "date": "Oct 1, 2026",
+          "event": "Hydraulic seep at the lift cylinder gland",
+          "pn": "JLG-4120-118"
+         }
+        ]
+       }
+      ],
+      "flagged": []
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.because",
+     "args": [
+      [
+       {
+        "date": "Sep 12, 2026",
+        "event": "Lift cylinder drift reported by the operator",
+        "pn": "JLG-4120-118"
+       },
+       {
+        "date": "Oct 1, 2026",
+        "event": "Hydraulic seep at the lift cylinder gland",
+        "pn": "JLG-4120-118"
+       }
+      ]
+     ],
+     "result": "lift cylinder drift reported by the operator on Sep 12 and hydraulic seep at the lift cylinder gland on Oct 1",
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-112"
+     ],
+     "result": [
+      {
+       "date": "Oct 5, 2026",
+       "event": "Slow lowering, fault code 42",
+       "pn": "JLG-4120-402"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-113"
+     ],
+     "result": [
+      {
+       "date": "Sep 20, 2026",
+       "event": "Annual inspection booked, WO #100102"
+      }
+     ],
+     "n": 7
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-118"
+     ],
+     "result": [
+      {
+       "date": "Oct 3, 2026",
+       "event": "Hydraulic return filter swapped, WO #100071"
+      },
+      {
+       "date": "Oct 1, 2026",
+       "event": "Hydraulic seep at the lift cylinder gland",
+       "pn": "JLG-4120-118"
+      },
+      {
+       "date": "Sep 12, 2026",
+       "event": "Lift cylinder drift reported by the operator",
+       "pn": "JLG-4120-118"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-101"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-102"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-104"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-107"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-115"
+     ],
+     "result": [],
+     "n": 9
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-103"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-108"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-110"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-116"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-105"
+     ],
+     "result": [],
+     "n": 7
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-109"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-111"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 3,
+     "fn": "ops.history",
+     "args": [
+      "FL-117"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 4,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 5,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-112"
+     ],
+     "result": [
+      {
+       "date": "Oct 5, 2026",
+       "event": "Slow lowering, fault code 42",
+       "pn": "JLG-4120-402"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-113"
+     ],
+     "result": [
+      {
+       "date": "Sep 20, 2026",
+       "event": "Annual inspection booked, WO #100102"
+      }
+     ],
+     "n": 7
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-118"
+     ],
+     "result": [
+      {
+       "date": "Oct 3, 2026",
+       "event": "Hydraulic return filter swapped, WO #100071"
+      },
+      {
+       "date": "Oct 1, 2026",
+       "event": "Hydraulic seep at the lift cylinder gland",
+       "pn": "JLG-4120-118"
+      },
+      {
+       "date": "Sep 12, 2026",
+       "event": "Lift cylinder drift reported by the operator",
+       "pn": "JLG-4120-118"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-101"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-102"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-104"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-107"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-115"
+     ],
+     "result": [],
+     "n": 9
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-103"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-108"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-110"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-116"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-105"
+     ],
+     "result": [],
+     "n": 7
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-109"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-111"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 6,
+     "fn": "ops.history",
+     "args": [
+      "FL-117"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 7,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-415",
+      2,
+      null,
+      {
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "backorderAccepted": false
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-415",
+      "qty": 2,
+      "wo": null,
+      "from": {},
+      "unit": "FL-118",
+      "serial": "JL1930-05108",
+      "shipTo": "austin",
+      "id": "line-1",
+      "quote": {
+       "part": "JLG-4120-415",
+       "unit": "FL-118",
+       "price": 24.8,
+       "currency": "USD",
+       "uom": "each",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-520",
+      1,
+      null,
+      {
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "backorderAccepted": false
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-520",
+      "qty": 1,
+      "wo": null,
+      "from": {},
+      "unit": "FL-118",
+      "serial": "JL1930-05108",
+      "shipTo": "austin",
+      "id": "line-2",
+      "quote": {
+       "part": "JLG-4120-520",
+       "unit": "FL-118",
+       "price": 66.9,
+       "currency": "USD",
+       "uom": "each",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-402",
+      1,
+      null,
+      {
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "backorderAccepted": false
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-402",
+      "qty": 1,
+      "wo": null,
+      "from": {},
+      "unit": "FL-118",
+      "serial": "JL1930-05108",
+      "shipTo": "austin",
+      "id": "line-3",
+      "quote": {
+       "part": "JLG-4120-402",
+       "unit": "FL-118",
+       "price": 142.5,
+       "currency": "USD",
+       "uom": "each",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-329",
+      1,
+      null,
+      {
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "backorderAccepted": false
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-329",
+      "qty": 1,
+      "wo": null,
+      "from": {},
+      "unit": "FL-118",
+      "serial": "JL1930-05108",
+      "shipTo": "austin",
+      "id": "line-4",
+      "quote": {
+       "part": "JLG-4120-329",
+       "unit": "FL-118",
+       "price": 61.75,
+       "currency": "USD",
+       "uom": "set",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-118",
+      1,
+      null,
+      {
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "backorderAccepted": false
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-118",
+      "qty": 1,
+      "wo": null,
+      "from": {},
+      "unit": "FL-118",
+      "serial": "JL1930-05108",
+      "shipTo": "austin",
+      "id": "line-5",
+      "quote": {
+       "part": "JLG-4120-118",
+       "unit": "FL-118",
+       "price": 96.4,
+       "currency": "USD",
+       "uom": "kit",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-112"
+     ],
+     "result": [
+      {
+       "date": "Oct 5, 2026",
+       "event": "Slow lowering, fault code 42",
+       "pn": "JLG-4120-402"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-113"
+     ],
+     "result": [
+      {
+       "date": "Sep 20, 2026",
+       "event": "Annual inspection booked, WO #100102"
+      }
+     ],
+     "n": 7
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-118"
+     ],
+     "result": [
+      {
+       "date": "Oct 3, 2026",
+       "event": "Hydraulic return filter swapped, WO #100071"
+      },
+      {
+       "date": "Oct 1, 2026",
+       "event": "Hydraulic seep at the lift cylinder gland",
+       "pn": "JLG-4120-118"
+      },
+      {
+       "date": "Sep 12, 2026",
+       "event": "Lift cylinder drift reported by the operator",
+       "pn": "JLG-4120-118"
+      }
+     ],
+     "n": 4
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-101"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-102"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-104"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-107"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-115"
+     ],
+     "result": [],
+     "n": 9
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-103"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-108"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-110"
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-116"
+     ],
+     "result": [],
+     "n": 6
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-105"
+     ],
+     "result": [],
+     "n": 7
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-109"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-111"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 7,
+     "fn": "ops.history",
+     "args": [
+      "FL-117"
+     ],
+     "result": [],
+     "n": 5
+    },
+    {
+     "step": 8,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 6,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "tx.issues",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-415",
+        "qty": 2,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-415",
+         "unit": "FL-118",
+         "price": 24.8,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-520",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-2",
+        "quote": {
+         "part": "JLG-4120-520",
+         "unit": "FL-118",
+         "price": 66.9,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-402",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-3",
+        "quote": {
+         "part": "JLG-4120-402",
+         "unit": "FL-118",
+         "price": 142.5,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-329",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-4",
+        "quote": {
+         "part": "JLG-4120-329",
+         "unit": "FL-118",
+         "price": 61.75,
+         "currency": "USD",
+         "uom": "set",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-118",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-5",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": "FL-118",
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": [],
+     "n": 32
+    },
+    {
+     "step": 8,
+     "fn": "ops.foreign",
+     "args": [
+      "austin"
+     ],
+     "result": false,
+     "n": 5
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-415",
+       "qty": 2,
+       "wo": null,
+       "from": {},
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-415",
+        "unit": "FL-118",
+        "price": 24.8,
+        "currency": "USD",
+        "uom": "each",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "tr-sanmarcos",
+       "kind": "transfer",
+       "source": "sanmarcos",
+       "label": "Transfer from San Marcos Branch",
+       "take": 2,
+       "buy": 0,
+       "from": {
+        "sanmarcos": 2
+       },
+       "miles": 31,
+       "crossBorder": false,
+       "moveUSD": 38.349999999999994,
+       "costUSD": 38.349999999999994,
+       "days": 1,
+       "note": "2 of 2 · 31 mi · San Marcos keeps 4",
+       "arrive": "2026-10-08",
+       "meets": true,
+       "recommended": true,
+       "current": false,
+       "arriveText": "Oct 8"
+      },
+      {
+       "key": "tr-kyle",
+       "kind": "transfer",
+       "source": "kyle",
+       "label": "Transfer from Kyle Branch",
+       "take": 1,
+       "buy": 1,
+       "from": {
+        "kyle": 1
+       },
+       "miles": 21,
+       "crossBorder": false,
+       "moveUSD": 29.849999999999998,
+       "costUSD": 54.65,
+       "days": 3,
+       "note": "1 of 2 · 21 mi · Kyle keeps 1 · buy 1",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 12"
+      },
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 2,
+       "from": {},
+       "costUSD": 49.6,
+       "days": 3,
+       "note": "2 × $24.80",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-520",
+       "qty": 1,
+       "wo": null,
+       "from": {},
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "id": "line-2",
+       "quote": {
+        "part": "JLG-4120-520",
+        "unit": "FL-118",
+        "price": 66.9,
+        "currency": "USD",
+        "uom": "each",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 1,
+       "from": {},
+       "costUSD": 66.9,
+       "days": 3,
+       "note": "1 × $66.90",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-402",
+       "qty": 1,
+       "wo": null,
+       "from": {},
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "id": "line-3",
+       "quote": {
+        "part": "JLG-4120-402",
+        "unit": "FL-118",
+        "price": 142.5,
+        "currency": "USD",
+        "uom": "each",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 1,
+       "from": {},
+       "costUSD": 142.5,
+       "days": 3,
+       "note": "1 × $142.50",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-329",
+       "qty": 1,
+       "wo": null,
+       "from": {},
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "id": "line-4",
+       "quote": {
+        "part": "JLG-4120-329",
+        "unit": "FL-118",
+        "price": 61.75,
+        "currency": "USD",
+        "uom": "set",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 1,
+       "from": {},
+       "costUSD": 61.75,
+       "days": 3,
+       "note": "1 × $61.75",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-118",
+       "qty": 1,
+       "wo": null,
+       "from": {},
+       "unit": "FL-118",
+       "serial": "JL1930-05108",
+       "shipTo": "austin",
+       "id": "line-5",
+       "quote": {
+        "part": "JLG-4120-118",
+        "unit": "FL-118",
+        "price": 96.4,
+        "currency": "USD",
+        "uom": "kit",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "own",
+       "kind": "pick",
+       "source": "austin",
+       "label": "Own shelf, Austin Branch",
+       "take": 1,
+       "buy": 0,
+       "from": {
+        "austin": 1
+       },
+       "costUSD": 0,
+       "days": 0,
+       "note": "1 on the shelf here",
+       "arrive": "2026-10-07",
+       "meets": true,
+       "recommended": true,
+       "current": false,
+       "arriveText": "Oct 7"
+      },
+      {
+       "key": "tr-kyle",
+       "kind": "transfer",
+       "source": "kyle",
+       "label": "Transfer from Kyle Branch",
+       "take": 1,
+       "buy": 0,
+       "from": {
+        "kyle": 1
+       },
+       "miles": 21,
+       "crossBorder": false,
+       "moveUSD": 29.849999999999998,
+       "costUSD": 29.849999999999998,
+       "days": 1,
+       "note": "1 of 1 · 21 mi · Kyle keeps 2",
+       "arrive": "2026-10-08",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 8"
+      },
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 1,
+       "from": {},
+       "costUSD": 96.4,
+       "days": 3,
+       "note": "1 × $96.40",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.internalShare",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-415",
+        "qty": 2,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-415",
+         "unit": "FL-118",
+         "price": 24.8,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-520",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-2",
+        "quote": {
+         "part": "JLG-4120-520",
+         "unit": "FL-118",
+         "price": 66.9,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-402",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-3",
+        "quote": {
+         "part": "JLG-4120-402",
+         "unit": "FL-118",
+         "price": 142.5,
+         "currency": "USD",
+         "uom": "each",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-329",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-4",
+        "quote": {
+         "part": "JLG-4120-329",
+         "unit": "FL-118",
+         "price": 61.75,
+         "currency": "USD",
+         "uom": "set",
+         "date": "2026-10-07"
+        }
+       },
+       {
+        "pn": "JLG-4120-118",
+        "qty": 1,
+        "wo": null,
+        "from": {},
+        "unit": "FL-118",
+        "serial": "JL1930-05108",
+        "shipTo": "austin",
+        "id": "line-5",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": "FL-118",
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": {
+      "items": 6,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 9,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 6,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    }
+   ],
+   "frames": [
+    "V2-01.jpg",
+    "V2-02.jpg",
+    "V2-03.jpg",
+    "V2-04.jpg",
+    "V2-05.jpg",
+    "V2-06.jpg",
+    "V2-07.jpg",
+    "V2-08.jpg"
+   ],
+   "errors": []
+  },
+  {
+   "id": "V3",
+   "name": "Emergency recall response",
+   "sub": "lot to fleet, bulk action",
+   "steps": [
+    {
+     "say": "Open the Knowledge Base from the rail",
+     "kind": "click",
+     "go": null,
+     "view": "kb",
+     "optional": false
+    },
+    {
+     "say": "Recalls",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Open the Skyjack lowering valve recall, lot 2611",
+     "kind": "click",
+     "go": null,
+     "view": "article",
+     "optional": false
+    },
+    {
+     "say": "From 1 asset to the fleet: check every unit for lot 2611",
+     "kind": "click",
+     "go": null,
+     "view": "recall",
+     "optional": false
+    },
+    {
+     "say": "12 SJIII 3219 units, grouped by the lot fitted",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "FL-094 is already covered by work order #100094",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "The remediation list: 3 replacements and 2 lot checks",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Create 5 work orders in 1 action",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Scheduled 1 business day after the notice, each at its branch",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Open 1: the replacement valve is on it",
+     "kind": "click",
+     "go": null,
+     "view": "work-order",
+     "optional": false
+    }
+   ],
+   "log": [
+    {
+     "step": 1,
+     "say": "Open the Knowledge Base from the rail",
+     "ok": true
+    },
+    {
+     "step": 2,
+     "say": "Recalls",
+     "ok": true
+    },
+    {
+     "step": 3,
+     "say": "Open the Skyjack lowering valve recall, lot 2611",
+     "ok": true
+    },
+    {
+     "step": 4,
+     "say": "From 1 asset to the fleet: check every unit for lot 2611",
+     "ok": true
+    },
+    {
+     "step": 5,
+     "say": "12 SJIII 3219 units, grouped by the lot fitted",
+     "ok": true
+    },
+    {
+     "step": 6,
+     "say": "FL-094 is already covered by work order #100094",
+     "ok": true
+    },
+    {
+     "step": 7,
+     "say": "The remediation list: 3 replacements and 2 lot checks",
+     "ok": true
+    },
+    {
+     "step": 8,
+     "say": "Create 5 work orders in 1 action",
+     "ok": true
+    },
+    {
+     "step": 9,
+     "say": "Scheduled 1 business day after the notice, each at its branch",
+     "ok": true
+    },
+    {
+     "step": 10,
+     "say": "Open 1: the replacement valve is on it",
+     "ok": true
+    },
+    {
+     "step": "done"
+    }
+   ],
+   "start": {
+    "view": "home",
+    "hash": "#/home",
+    "title": "Welcome back, Sarah",
+    "location": "all",
+    "ctx": {},
+    "cart": [],
+    "placed": [],
+    "newWOs": [],
+    "recalls": {},
+    "stockUsed": {},
+    "submissions": 0,
+    "cancelled": {},
+    "share": {
+     "items": 0,
+     "internal": 0,
+     "pct": 0
+    }
+   },
+   "snaps": [
+    {
+     "view": "kb",
+     "hash": "#/kb",
+     "title": "Knowledge Base",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "kb",
+     "hash": "#/kb?kind=Recall",
+     "title": "Knowledge Base",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "article",
+     "hash": "#/article?id=nb-recall-103322",
+     "title": "Part recall: Skyjack lowering solenoid valve SKJ-103322",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [
+      {
+       "$": "wo",
+       "id": "100124",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-095",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "R. Kim",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100123",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-087",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "M. Torres",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100122",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-089",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "R. Kim",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100121",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-086",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100120",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-081",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "recalls": {
+      "nb-recall-103322": {
+       "wos": [
+        "100120",
+        "100121",
+        "100122",
+        "100123",
+        "100124"
+       ],
+       "on": "2026-10-07"
+      }
+     },
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "recall",
+     "hash": "#/recall?id=nb-recall-103322",
+     "title": "Fleet impact: Lowering solenoid valve, lot 2611",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [
+      {
+       "$": "wo",
+       "id": "100124",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-095",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "R. Kim",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100123",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-087",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "M. Torres",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100122",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-089",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "R. Kim",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100121",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-086",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100120",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-081",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "recalls": {
+      "nb-recall-103322": {
+       "wos": [
+        "100120",
+        "100121",
+        "100122",
+        "100123",
+        "100124"
+       ],
+       "on": "2026-10-07"
+      }
+     },
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "work-order",
+     "hash": "#/work-order?id=100120",
+     "title": "Work order #100120",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [
+      {
+       "$": "wo",
+       "id": "100124",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-095",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "R. Kim",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100123",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-087",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "M. Torres",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100122",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-089",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "R. Kim",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100121",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-086",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100120",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-081",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "recalls": {
+      "nb-recall-103322": {
+       "wos": [
+        "100120",
+        "100121",
+        "100122",
+        "100123",
+        "100124"
+       ],
+       "on": "2026-10-07"
+      }
+     },
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    }
+   ],
+   "calls": [
+    {
+     "step": 1,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.impact",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": {
+      "item": {
+       "$": "recall",
+       "id": "nb-recall-103322",
+       "title": "Part recall: Skyjack lowering solenoid valve SKJ-103322",
+       "lot": "2611",
+       "machine": "SJIII3219",
+       "date": "Oct 6, 2026",
+       "parts": [
+        "SKJ-103322"
+       ]
+      },
+      "part": {
+       "$": "part",
+       "pn": "SKJ-103322",
+       "name": "Lowering solenoid valve",
+       "price": 118.5,
+       "stock": "In stock",
+       "machine": "SJIII3219"
+      },
+      "rows": [
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-081",
+         "serial": "SJ3219-00512",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-081",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-086",
+         "serial": "SJ3219-00655",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-086",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-089",
+         "serial": "SJ3219-00721",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-089",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-094",
+         "serial": "SJ3219-00847",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "Down"
+        },
+        "equip": "FL-094",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100094",
+         "issue": "Scissor lift won't elevate · hydraulic fault",
+         "equip": "FL-094",
+         "status": "In progress",
+         "due": "Oct 8",
+         "assignee": "J. Carter",
+         "priority": "High",
+         "recall": null
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-087",
+         "serial": "SJ3219-00688",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Kyle Branch",
+         "status": "In service"
+        },
+        "equip": "FL-087",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-095",
+         "serial": "SJ3219-00912",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-095",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-083",
+         "serial": "SJ3219-00566",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-083",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-084",
+         "serial": "SJ3219-00590",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-084",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-088",
+         "serial": "SJ3219-00702",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-088",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-090",
+         "serial": "SJ3219-00744",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-090",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-092",
+         "serial": "SJ3219-00801",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-092",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-093",
+         "serial": "SJ3219-00822",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-093",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       }
+      ],
+      "affected": 4,
+      "unknown": 2,
+      "clear": 6,
+      "covered": 1,
+      "todo": [
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-081",
+         "serial": "SJ3219-00512",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-081",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-086",
+         "serial": "SJ3219-00655",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-086",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-089",
+         "serial": "SJ3219-00721",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-089",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-087",
+         "serial": "SJ3219-00688",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Kyle Branch",
+         "status": "In service"
+        },
+        "equip": "FL-087",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-095",
+         "serial": "SJ3219-00912",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-095",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       }
+      ]
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.done",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.impact",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": {
+      "item": {
+       "$": "recall",
+       "id": "nb-recall-103322",
+       "title": "Part recall: Skyjack lowering solenoid valve SKJ-103322",
+       "lot": "2611",
+       "machine": "SJIII3219",
+       "date": "Oct 6, 2026",
+       "parts": [
+        "SKJ-103322"
+       ]
+      },
+      "part": {
+       "$": "part",
+       "pn": "SKJ-103322",
+       "name": "Lowering solenoid valve",
+       "price": 118.5,
+       "stock": "In stock",
+       "machine": "SJIII3219"
+      },
+      "rows": [
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-081",
+         "serial": "SJ3219-00512",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-081",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-086",
+         "serial": "SJ3219-00655",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-086",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-089",
+         "serial": "SJ3219-00721",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-089",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-094",
+         "serial": "SJ3219-00847",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "Down"
+        },
+        "equip": "FL-094",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100094",
+         "issue": "Scissor lift won't elevate · hydraulic fault",
+         "equip": "FL-094",
+         "status": "In progress",
+         "due": "Oct 8",
+         "assignee": "J. Carter",
+         "priority": "High",
+         "recall": null
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-087",
+         "serial": "SJ3219-00688",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Kyle Branch",
+         "status": "In service"
+        },
+        "equip": "FL-087",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-095",
+         "serial": "SJ3219-00912",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-095",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-083",
+         "serial": "SJ3219-00566",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-083",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-084",
+         "serial": "SJ3219-00590",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-084",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-088",
+         "serial": "SJ3219-00702",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-088",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-090",
+         "serial": "SJ3219-00744",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-090",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-092",
+         "serial": "SJ3219-00801",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-092",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-093",
+         "serial": "SJ3219-00822",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-093",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       }
+      ],
+      "affected": 4,
+      "unknown": 2,
+      "clear": 6,
+      "covered": 1,
+      "todo": [
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-081",
+         "serial": "SJ3219-00512",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-081",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-086",
+         "serial": "SJ3219-00655",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-086",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-089",
+         "serial": "SJ3219-00721",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-089",
+        "lot": "2611",
+        "status": "affected",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-087",
+         "serial": "SJ3219-00688",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Kyle Branch",
+         "status": "In service"
+        },
+        "equip": "FL-087",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-095",
+         "serial": "SJ3219-00912",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-095",
+        "lot": null,
+        "status": "unknown",
+        "wo": null,
+        "todo": true
+       }
+      ]
+     },
+     "n": 2
+    },
+    {
+     "step": 4,
+     "fn": "ops.done",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": null,
+     "n": 2
+    },
+    {
+     "step": 5,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.remediate",
+     "args": [
+      "nb-recall-103322",
+      [
+       "FL-081",
+       "FL-086",
+       "FL-089",
+       "FL-087",
+       "FL-095"
+      ]
+     ],
+     "result": [
+      {
+       "$": "wo",
+       "id": "100120",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-081",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100121",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-086",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100122",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-089",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "R. Kim",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "$": "wo",
+       "id": "100123",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-087",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "M. Torres",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      },
+      {
+       "$": "wo",
+       "id": "100124",
+       "issue": "Recall: check the lowering valve lot number",
+       "equip": "FL-095",
+       "status": "Scheduled",
+       "due": "Oct 14",
+       "assignee": "R. Kim",
+       "priority": "Medium",
+       "recall": "nb-recall-103322",
+       "parts": []
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.impact",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": {
+      "item": {
+       "$": "recall",
+       "id": "nb-recall-103322",
+       "title": "Part recall: Skyjack lowering solenoid valve SKJ-103322",
+       "lot": "2611",
+       "machine": "SJIII3219",
+       "date": "Oct 6, 2026",
+       "parts": [
+        "SKJ-103322"
+       ]
+      },
+      "part": {
+       "$": "part",
+       "pn": "SKJ-103322",
+       "name": "Lowering solenoid valve",
+       "price": 118.5,
+       "stock": "In stock",
+       "machine": "SJIII3219"
+      },
+      "rows": [
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-081",
+         "serial": "SJ3219-00512",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-081",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100120",
+         "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+         "equip": "FL-081",
+         "status": "Scheduled",
+         "due": "Oct 9",
+         "assignee": "J. Carter",
+         "priority": "High",
+         "recall": "nb-recall-103322",
+         "parts": [
+          {
+           "pn": "SKJ-103322",
+           "qty": 1
+          }
+         ]
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-086",
+         "serial": "SJ3219-00655",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-086",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100121",
+         "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+         "equip": "FL-086",
+         "status": "Scheduled",
+         "due": "Oct 9",
+         "assignee": "J. Carter",
+         "priority": "High",
+         "recall": "nb-recall-103322",
+         "parts": [
+          {
+           "pn": "SKJ-103322",
+           "qty": 1
+          }
+         ]
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-089",
+         "serial": "SJ3219-00721",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-089",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100122",
+         "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+         "equip": "FL-089",
+         "status": "Scheduled",
+         "due": "Oct 9",
+         "assignee": "R. Kim",
+         "priority": "High",
+         "recall": "nb-recall-103322",
+         "parts": [
+          {
+           "pn": "SKJ-103322",
+           "qty": 1
+          }
+         ]
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-094",
+         "serial": "SJ3219-00847",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "Down"
+        },
+        "equip": "FL-094",
+        "lot": "2611",
+        "status": "affected",
+        "wo": {
+         "$": "wo",
+         "id": "100094",
+         "issue": "Scissor lift won't elevate · hydraulic fault",
+         "equip": "FL-094",
+         "status": "In progress",
+         "due": "Oct 8",
+         "assignee": "J. Carter",
+         "priority": "High",
+         "recall": null
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-087",
+         "serial": "SJ3219-00688",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Kyle Branch",
+         "status": "In service"
+        },
+        "equip": "FL-087",
+        "lot": null,
+        "status": "unknown",
+        "wo": {
+         "$": "wo",
+         "id": "100123",
+         "issue": "Recall: check the lowering valve lot number",
+         "equip": "FL-087",
+         "status": "Scheduled",
+         "due": "Oct 14",
+         "assignee": "M. Torres",
+         "priority": "Medium",
+         "recall": "nb-recall-103322",
+         "parts": []
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-095",
+         "serial": "SJ3219-00912",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-095",
+        "lot": null,
+        "status": "unknown",
+        "wo": {
+         "$": "wo",
+         "id": "100124",
+         "issue": "Recall: check the lowering valve lot number",
+         "equip": "FL-095",
+         "status": "Scheduled",
+         "due": "Oct 14",
+         "assignee": "R. Kim",
+         "priority": "Medium",
+         "recall": "nb-recall-103322",
+         "parts": []
+        },
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-083",
+         "serial": "SJ3219-00566",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-083",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-084",
+         "serial": "SJ3219-00590",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-084",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-088",
+         "serial": "SJ3219-00702",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-088",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-090",
+         "serial": "SJ3219-00744",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-090",
+        "lot": "2598",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-092",
+         "serial": "SJ3219-00801",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "Austin Branch",
+         "status": "In service"
+        },
+        "equip": "FL-092",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       },
+       {
+        "asset": {
+         "$": "unit",
+         "equip": "FL-093",
+         "serial": "SJ3219-00822",
+         "model": "SJIII3219",
+         "machine": "Skyjack SJIII 3219",
+         "location": "San Marcos Branch",
+         "status": "In service"
+        },
+        "equip": "FL-093",
+        "lot": "2704",
+        "status": "clear",
+        "wo": null,
+        "todo": false
+       }
+      ],
+      "affected": 4,
+      "unknown": 2,
+      "clear": 6,
+      "covered": 6,
+      "todo": []
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.done",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": {
+      "wos": [
+       "100120",
+       "100121",
+       "100122",
+       "100123",
+       "100124"
+      ],
+      "on": "2026-10-07"
+     },
+     "n": 2
+    },
+    {
+     "step": 8,
+     "fn": "ops.lagText",
+     "args": [
+      "nb-recall-103322"
+     ],
+     "result": "1 business day after the notice",
+     "n": 1
+    },
+    {
+     "step": 9,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.faultArticle",
+     "args": [
+      {
+       "$": "wo",
+       "id": "100120",
+       "issue": "Recall: replace the lowering solenoid valve, lot 2611",
+       "equip": "FL-081",
+       "status": "Scheduled",
+       "due": "Oct 9",
+       "assignee": "J. Carter",
+       "priority": "High",
+       "recall": "nb-recall-103322",
+       "parts": [
+        {
+         "pn": "SKJ-103322",
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    }
+   ],
+   "frames": [
+    "V3-01.jpg",
+    "V3-02.jpg",
+    "V3-03.jpg",
+    "V3-04.jpg",
+    "V3-05.jpg",
+    "V3-06.jpg",
+    "V3-07.jpg",
+    "V3-08.jpg",
+    "V3-09.jpg",
+    "V3-10.jpg"
+   ],
+   "errors": []
+  },
+  {
+   "id": "V4",
+   "name": "Global branch operations",
+   "sub": "branch to branch, routing",
+   "steps": [
+    {
+     "say": "Open the account: Sarah and her locations",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Choose Monterrey Branch, across the border",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Open the lift cylinder seal kit",
+     "kind": "go",
+     "go": "part?pn=JLG-4120-118",
+     "view": "part",
+     "optional": false
+    },
+    {
+     "say": "Monterrey sees Mexican pesos at the live rate; orders settle in USD",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "2 kits for the Monterrey units",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Add them to the cart",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Open the cart",
+     "kind": "click",
+     "go": null,
+     "view": "cart",
+     "optional": false
+    },
+    {
+     "say": "Before buying: compare sources",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Kyle and Austin shelves against buying from JLG, freight and customs included",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Choose the lowest cost: the Kyle Branch transfer",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Both items now come from your own shelves",
+     "kind": "scroll",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Go to checkout",
+     "kind": "click",
+     "go": null,
+     "view": "checkout",
+     "optional": false
+    },
+    {
+     "say": "Next day",
+     "kind": "click",
+     "go": null,
+     "view": null,
+     "optional": false
+    },
+    {
+     "say": "Submit: a branch transfer, no supplier purchase",
+     "kind": "click",
+     "go": null,
+     "view": "placed",
+     "optional": false
+    }
+   ],
+   "log": [
+    {
+     "step": 1,
+     "say": "Open the account: Sarah and her locations",
+     "ok": true
+    },
+    {
+     "step": 2,
+     "say": "Choose Monterrey Branch, across the border",
+     "ok": true
+    },
+    {
+     "step": 3,
+     "say": "Open the lift cylinder seal kit",
+     "ok": true
+    },
+    {
+     "step": 4,
+     "say": "Monterrey sees Mexican pesos at the live rate; orders settle in USD",
+     "ok": true
+    },
+    {
+     "step": 5,
+     "say": "2 kits for the Monterrey units",
+     "ok": true
+    },
+    {
+     "step": 6,
+     "say": "Add them to the cart",
+     "ok": true
+    },
+    {
+     "step": 7,
+     "say": "Open the cart",
+     "ok": true
+    },
+    {
+     "step": 8,
+     "say": "Before buying: compare sources",
+     "ok": true
+    },
+    {
+     "step": 9,
+     "say": "Kyle and Austin shelves against buying from JLG, freight and customs included",
+     "ok": true
+    },
+    {
+     "step": 10,
+     "say": "Choose the lowest cost: the Kyle Branch transfer",
+     "ok": true
+    },
+    {
+     "step": 11,
+     "say": "Both items now come from your own shelves",
+     "ok": true
+    },
+    {
+     "step": 12,
+     "say": "Go to checkout",
+     "ok": true
+    },
+    {
+     "step": 13,
+     "say": "Next day",
+     "ok": true
+    },
+    {
+     "step": 14,
+     "say": "Submit: a branch transfer, no supplier purchase",
+     "ok": true
+    },
+    {
+     "step": "done"
+    }
+   ],
+   "start": {
+    "view": "home",
+    "hash": "#/home",
+    "title": "Welcome back, Sarah",
+    "location": "all",
+    "ctx": {},
+    "cart": [],
+    "placed": [],
+    "newWOs": [],
+    "recalls": {},
+    "stockUsed": {},
+    "submissions": 0,
+    "cancelled": {},
+    "share": {
+     "items": 0,
+     "internal": 0,
+     "pct": 0
+    }
+   },
+   "snaps": [
+    {
+     "view": "home",
+     "hash": "#/home",
+     "title": "Welcome back, Sarah",
+     "location": "all",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "home",
+     "hash": "#/home",
+     "title": "Welcome back, Sarah",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-118",
+     "title": "Lift cylinder seal kit",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-118",
+     "title": "Lift cylinder seal kit",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-118",
+     "title": "Lift cylinder seal kit",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "part",
+     "hash": "#/part?pn=JLG-4120-118",
+     "title": "Lift cylinder seal kit",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {},
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {
+        "kyle": 2
+       },
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     }
+    },
+    {
+     "view": "cart",
+     "hash": "#/cart",
+     "title": "Cart",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {
+        "kyle": 2
+       },
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     }
+    },
+    {
+     "view": "checkout",
+     "hash": "#/checkout",
+     "title": "Checkout",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {
+        "kyle": 2
+       },
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     }
+    },
+    {
+     "view": "checkout",
+     "hash": "#/checkout",
+     "title": "Checkout",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [
+      {
+       "id": "line-1",
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "unit": null,
+       "serial": null,
+       "shipTo": "monterrey",
+       "from": {
+        "kyle": 2
+       },
+       "backorderAccepted": false
+      }
+     ],
+     "placed": [],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {},
+     "submissions": 0,
+     "cancelled": {},
+     "share": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     }
+    },
+    {
+     "view": "placed",
+     "hash": "#/placed?po=TR-4411",
+     "title": "Orders submitted",
+     "location": "monterrey",
+     "ctx": {},
+     "cart": [],
+     "placed": [
+      {
+       "po": "TR-4411",
+       "kind": "transfer",
+       "wo": null,
+       "supplier": "Branch transfer from Kyle Branch",
+       "from": "kyle",
+       "shipTo": "monterrey",
+       "items": [
+        {
+         "id": "line-1",
+         "pn": "JLG-4120-118",
+         "qty": 2,
+         "wo": null,
+         "unit": null,
+         "serial": null,
+         "shipTo": "monterrey",
+         "quote": {
+          "part": "JLG-4120-118",
+          "unit": null,
+          "price": 96.4,
+          "currency": "USD",
+          "uom": "kit",
+          "date": "2026-10-07"
+         }
+        }
+       ],
+       "status": "Requested",
+       "tone": "info",
+       "placed": "Oct 7, 2026",
+       "eta": "Transfer requested",
+       "carrier": "Branch van",
+       "tracking": null,
+       "needBy": "Next day, Thu, Oct 8",
+       "note": "",
+       "isNew": true,
+       "total": 0,
+       "steps": [
+        [
+         "Requested",
+         "Oct 7, 2026"
+        ],
+        [
+         "Received at destination",
+         null
+        ]
+       ]
+      }
+     ],
+     "newWOs": [],
+     "recalls": {},
+     "stockUsed": {
+      "JLG-4120-118": {
+       "kyle": 2
+      }
+     },
+     "submissions": 1,
+     "cancelled": {},
+     "share": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     }
+    }
+   ],
+   "calls": [
+    {
+     "step": 1,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 2,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 3,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 4,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 5,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 6,
+     "fn": "addToCart",
+     "args": [
+      "JLG-4120-118",
+      2,
+      null,
+      {
+       "unit": null,
+       "serial": null
+      }
+     ],
+     "result": {
+      "pn": "JLG-4120-118",
+      "qty": 2,
+      "wo": null,
+      "from": {},
+      "shipTo": "monterrey",
+      "id": "line-1",
+      "quote": {
+       "part": "JLG-4120-118",
+       "unit": null,
+       "price": 96.4,
+       "currency": "USD",
+       "uom": "kit",
+       "date": "2026-10-07"
+      }
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "tx.issues",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {},
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 7,
+     "fn": "ops.foreign",
+     "args": [
+      "monterrey"
+     ],
+     "result": true,
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.money",
+     "args": [
+      96.4,
+      "monterrey"
+     ],
+     "result": "MX$1,773.76",
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "from": {},
+       "shipTo": "monterrey",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-118",
+        "unit": null,
+        "price": 96.4,
+        "currency": "USD",
+        "uom": "kit",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "tr-austin",
+       "kind": "transfer",
+       "source": "austin",
+       "label": "Transfer from Austin Branch",
+       "take": 1,
+       "buy": 1,
+       "from": {
+        "austin": 1
+       },
+       "miles": 330,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 218.4,
+       "days": 7,
+       "note": "1 of 2 · 330 mi, customs broker included · Austin keeps 1 · buy 1",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 16"
+      },
+      {
+       "key": "tr-kyle",
+       "kind": "transfer",
+       "source": "kyle",
+       "label": "Transfer from Kyle Branch",
+       "take": 2,
+       "buy": 0,
+       "from": {
+        "kyle": 2
+       },
+       "miles": 310,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 80,
+       "days": 3,
+       "note": "2 of 2 · 310 mi, customs broker included · Kyle keeps 1",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": false,
+       "arriveText": "Oct 12"
+      },
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 2,
+       "from": {},
+       "costUSD": 234.8,
+       "days": 7,
+       "note": "2 × MX$1,773.76 · import freight MX$772.80",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": true,
+       "arriveText": "Oct 16"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 7,
+     "fn": "ops.internalShare",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {},
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "from": {},
+       "shipTo": "monterrey",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-118",
+        "unit": null,
+        "price": 96.4,
+        "currency": "USD",
+        "uom": "kit",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "tr-austin",
+       "kind": "transfer",
+       "source": "austin",
+       "label": "Transfer from Austin Branch",
+       "take": 1,
+       "buy": 1,
+       "from": {
+        "austin": 1
+       },
+       "miles": 330,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 218.4,
+       "days": 7,
+       "note": "1 of 2 · 330 mi, customs broker included · Austin keeps 1 · buy 1",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 16"
+      },
+      {
+       "key": "tr-kyle",
+       "kind": "transfer",
+       "source": "kyle",
+       "label": "Transfer from Kyle Branch",
+       "take": 2,
+       "buy": 0,
+       "from": {
+        "kyle": 2
+       },
+       "miles": 310,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 80,
+       "days": 3,
+       "note": "2 of 2 · 310 mi, customs broker included · Kyle keeps 1",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": false,
+       "arriveText": "Oct 12"
+      },
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 2,
+       "from": {},
+       "costUSD": 234.8,
+       "days": 7,
+       "note": "2 × MX$1,773.76 · import freight MX$772.80",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": true,
+       "arriveText": "Oct 16"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.foreign",
+     "args": [
+      "monterrey"
+     ],
+     "result": true,
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.money",
+     "args": [
+      218.4,
+      "monterrey"
+     ],
+     "result": "MX$4,018.56",
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.money",
+     "args": [
+      80,
+      "monterrey"
+     ],
+     "result": "MX$1,472.00",
+     "n": 1
+    },
+    {
+     "step": 8,
+     "fn": "ops.money",
+     "args": [
+      234.8,
+      "monterrey"
+     ],
+     "result": "MX$4,320.32",
+     "n": 1
+    },
+    {
+     "step": 9,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.useSource",
+     "args": [
+      {
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "from": {
+        "kyle": 2
+       },
+       "shipTo": "monterrey",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-118",
+        "unit": null,
+        "price": 96.4,
+        "currency": "USD",
+        "uom": "kit",
+        "date": "2026-10-07"
+       }
+      },
+      "tr-kyle"
+     ],
+     "result": {
+      "key": "tr-kyle",
+      "kind": "transfer",
+      "source": "kyle",
+      "label": "Transfer from Kyle Branch",
+      "take": 2,
+      "buy": 0,
+      "from": {
+       "kyle": 2
+      },
+      "miles": 310,
+      "crossBorder": true,
+      "moveUSD": 80,
+      "costUSD": 80,
+      "days": 3,
+      "note": "2 of 2 · 310 mi, customs broker included · Kyle keeps 1",
+      "arrive": "2026-10-12",
+      "meets": true,
+      "recommended": true,
+      "current": false,
+      "arriveText": "Oct 12"
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "tx.issues",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": [],
+     "n": 8
+    },
+    {
+     "step": 10,
+     "fn": "ops.foreign",
+     "args": [
+      "monterrey"
+     ],
+     "result": true,
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.money",
+     "args": [
+      96.4,
+      "monterrey"
+     ],
+     "result": "MX$1,773.76",
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.sources",
+     "args": [
+      {
+       "pn": "JLG-4120-118",
+       "qty": 2,
+       "wo": null,
+       "from": {
+        "kyle": 2
+       },
+       "shipTo": "monterrey",
+       "id": "line-1",
+       "quote": {
+        "part": "JLG-4120-118",
+        "unit": null,
+        "price": 96.4,
+        "currency": "USD",
+        "uom": "kit",
+        "date": "2026-10-07"
+       }
+      }
+     ],
+     "result": [
+      {
+       "key": "tr-austin",
+       "kind": "transfer",
+       "source": "austin",
+       "label": "Transfer from Austin Branch",
+       "take": 1,
+       "buy": 1,
+       "from": {
+        "austin": 1
+       },
+       "miles": 330,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 218.4,
+       "days": 7,
+       "note": "1 of 2 · 330 mi, customs broker included · Austin keeps 1 · buy 1",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 16"
+      },
+      {
+       "key": "tr-kyle",
+       "kind": "transfer",
+       "source": "kyle",
+       "label": "Transfer from Kyle Branch",
+       "take": 2,
+       "buy": 0,
+       "from": {
+        "kyle": 2
+       },
+       "miles": 310,
+       "crossBorder": true,
+       "moveUSD": 80,
+       "costUSD": 80,
+       "days": 3,
+       "note": "2 of 2 · 310 mi, customs broker included · Kyle keeps 1",
+       "arrive": "2026-10-12",
+       "meets": true,
+       "recommended": true,
+       "current": true,
+       "arriveText": "Oct 12"
+      },
+      {
+       "key": "buy",
+       "kind": "buy",
+       "source": null,
+       "label": "Buy from JLG",
+       "take": 0,
+       "buy": 2,
+       "from": {},
+       "costUSD": 234.8,
+       "days": 7,
+       "note": "2 × MX$1,773.76 · import freight MX$772.80",
+       "arrive": "2026-10-16",
+       "meets": true,
+       "current": false,
+       "arriveText": "Oct 16"
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.internalShare",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     },
+     "n": 1
+    },
+    {
+     "step": 10,
+     "fn": "ops.money",
+     "args": [
+      80,
+      "monterrey"
+     ],
+     "result": "MX$1,472.00",
+     "n": 1
+    },
+    {
+     "step": 11,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     },
+     "n": 1
+    },
+    {
+     "step": 12,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     },
+     "n": 1
+    },
+    {
+     "step": 12,
+     "fn": "tx.issues",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": [],
+     "n": 1
+    },
+    {
+     "step": 13,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     },
+     "n": 1
+    },
+    {
+     "step": 13,
+     "fn": "tx.guard",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ],
+      "next",
+      ""
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 14,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 2,
+      "internal": 2,
+      "pct": 100
+     },
+     "n": 1
+    },
+    {
+     "step": 14,
+     "fn": "tx.validate",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ]
+     ],
+     "result": true,
+     "n": 1
+    },
+    {
+     "step": 14,
+     "fn": "tx.guard",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ],
+      "next",
+      ""
+     ],
+     "result": null,
+     "n": 1
+    },
+    {
+     "step": 14,
+     "fn": "tx.fulfill",
+     "args": [
+      [
+       {
+        "pn": "JLG-4120-118",
+        "qty": 2,
+        "wo": null,
+        "from": {
+         "kyle": 2
+        },
+        "shipTo": "monterrey",
+        "id": "line-1",
+        "quote": {
+         "part": "JLG-4120-118",
+         "unit": null,
+         "price": 96.4,
+         "currency": "USD",
+         "uom": "kit",
+         "date": "2026-10-07"
+        }
+       }
+      ],
+      {
+       "shipTo": "monterrey",
+       "needBy": "Next day, Thu, Oct 8",
+       "note": "",
+       "from": "cart",
+       "need": "next",
+       "picked": "",
+       "idempotencyKey": "cart:line-1"
+      }
+     ],
+     "result": [
+      {
+       "po": "TR-4411",
+       "kind": "transfer",
+       "wo": null,
+       "supplier": "Branch transfer from Kyle Branch",
+       "from": "kyle",
+       "shipTo": "monterrey",
+       "items": [
+        {
+         "id": "line-1",
+         "pn": "JLG-4120-118",
+         "qty": 2,
+         "wo": null,
+         "unit": null,
+         "serial": null,
+         "shipTo": "monterrey",
+         "quote": {
+          "part": "JLG-4120-118",
+          "unit": null,
+          "price": 96.4,
+          "currency": "USD",
+          "uom": "kit",
+          "date": "2026-10-07"
+         }
+        }
+       ],
+       "status": "Requested",
+       "tone": "info",
+       "placed": "Oct 7, 2026",
+       "eta": "Transfer requested",
+       "carrier": "Branch van",
+       "tracking": null,
+       "needBy": "Next day, Thu, Oct 8",
+       "note": "",
+       "isNew": true,
+       "total": 0,
+       "steps": [
+        [
+         "Requested",
+         "Oct 7, 2026"
+        ],
+        [
+         "Received at destination",
+         null
+        ]
+       ]
+      }
+     ],
+     "n": 1
+    },
+    {
+     "step": 15,
+     "fn": "ops.internalShare",
+     "args": [],
+     "result": {
+      "items": 0,
+      "internal": 0,
+      "pct": 0
+     },
+     "n": 1
+    }
+   ],
+   "frames": [
+    "V4-01.jpg",
+    "V4-02.jpg",
+    "V4-03.jpg",
+    "V4-04.jpg",
+    "V4-05.jpg",
+    "V4-06.jpg",
+    "V4-07.jpg",
+    "V4-08.jpg",
+    "V4-09.jpg",
+    "V4-10.jpg",
+    "V4-11.jpg",
+    "V4-12.jpg",
+    "V4-13.jpg",
+    "V4-14.jpg"
+   ],
+   "errors": []
+  }
+ ]
+}

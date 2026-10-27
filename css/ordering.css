@@ -1,0 +1,140 @@
+/* Ordering branch (B3): cart, checkout, placed, order history, order detail.
+   Builds on css/kit.css (cards, kv, tables, seg, stepper, timeline, banners). Reflows on the
+   .content container: 2 columns with a summary aside from 880px, 1 column below. */
+@layer components {
+  /* ---------- cart and checkout layout */
+  .oc-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+  .oc-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .oc-aside { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .oc-aside-h, .ck-sec h2, .od-h { font-size: 16px; font-weight: 700; line-height: 22px; }
+  .oc-grand { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line); font-weight: 700; }
+  .oc-grand b { font-size: 22px; line-height: 28px; font-variant-numeric: tabular-nums; }
+  .oc-note { font-size: 13px; line-height: 18px; color: var(--muted); }
+  .oc-cta { width: 100%; }
+  .oc-empty-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+
+  .oc-sup-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .oc-sup-head h2 { font-size: 16px; font-weight: 700; }
+  .oc-sup-head span { font-size: 13px; }
+  .oc-sup-foot { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--container-low); border-top: 1px solid var(--line); color: var(--muted); }
+  .oc-sup-foot b { color: var(--ink); font-size: 16px; font-variant-numeric: tabular-nums; }
+  .oc-line { display: grid; grid-template-columns: 44px minmax(0, 1fr) 80px 116px 92px auto; align-items: center; gap: 12px 16px; padding: 16px 20px; }
+  .oc-line + .oc-line { border-top: 1px solid var(--line); }
+  .oc-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+  .oc-name { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .oc-name:hover { color: var(--link); text-decoration: underline; }
+  .oc-pn { font-size: 13px; color: var(--muted); }
+  .oc-wo { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; height: 24px; padding: 0 8px; border-radius: 12px; background: var(--container); font-size: 12px; font-weight: 700; color: var(--ink); text-decoration: none; }
+  .oc-wo:hover { background: var(--container-high); }
+  .oc-wo .i { width: 14px; height: 14px; color: var(--muted); }
+  .oc-unit, .oc-total { display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
+  .oc-total b { font-size: 15px; }
+  .oc-lbl { font-size: 12px; line-height: 16px; color: var(--subtle); }
+  .oc-line .stepper button:disabled { opacity: .3; }
+  .oc-remove { color: var(--danger); gap: 8px; }
+  .oc-remove .i { width: 16px; height: 16px; }
+
+  @container (max-width: 879px) {
+    .oc-grid { grid-template-columns: minmax(0, 1fr); }
+    .oc-aside { position: static; }
+  }
+  @container (max-width: 640px) {
+    .oc-line { grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "t i i" "t u tot" "t q rm"; row-gap: 12px; column-gap: 12px; padding: 16px; }
+    .oc-line > .pthumb { grid-area: t; align-self: start; }
+    .oc-info { grid-area: i; }
+    .oc-unit { grid-area: u; flex-direction: row; gap: 8px; align-items: baseline; justify-self: start; }
+    .oc-total { grid-area: tot; }
+    .oc-qty { grid-area: q; }
+    .oc-remove { grid-area: rm; justify-self: end; }
+    .oc-sup-head, .oc-sup-foot { padding-left: 16px; padding-right: 16px; }
+    .oc-sup-head { flex-direction: column; gap: 4px; }
+  }
+
+  /* ---------- checkout form */
+  .ck-sec { display: flex; flex-direction: column; gap: 16px; }
+  .ck-sec fieldset { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .ck-sec legend { padding: 0; margin-bottom: 16px; }
+  .ck-req { margin-left: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .ck-hint { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .ck-hint .i { width: 16px; height: 16px; }
+  .ck-opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @container (max-width: 1099px) { .ck-opts { grid-template-columns: minmax(0, 1fr); } }
+  .ck-opt { position: relative; display: flex; align-items: flex-start; gap: 12px; min-height: 64px; padding: 16px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+  .ck-opt:hover { background: var(--container-low); }
+  .ck-opt input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .ck-dot { flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; border: 2px solid var(--line-control); background: var(--surface); }
+  .ck-opt > .i { flex: none; width: 20px; height: 20px; margin-top: 1px; color: var(--muted); }
+  .ck-txt { display: flex; flex-direction: column; min-width: 0; }
+  .ck-txt b { font-weight: 600; }
+  .ck-txt small { font-size: 13px; line-height: 18px; color: var(--muted); }
+  .ck-opt:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .ck-opt input:checked + .ck-dot { border: 6px solid var(--brand); }
+  .ck-opt:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .ck-sec.invalid .ck-opt { border-color: var(--danger); }
+  .ck-sec.invalid legend h2 { color: var(--danger); }
+  .ck-po { font-variant-numeric: tabular-nums; }
+  .ck-sum { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .ck-sum-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .ck-sum-head span { font-size: 13px; }
+  .ck-sum ul { display: flex; flex-direction: column; gap: 8px; }
+  .ck-sum li { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+  .ck-sum li small { display: block; font-size: 12px; color: var(--muted); }
+  .ck-sum li b, .ck-sub b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ck-sub { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+  .ck-sub b { color: var(--ink); }
+
+  /* ---------- placed */
+  .pl-hero { display: flex; align-items: center; gap: 20px; }
+  .pl-hero h2 { font-size: 22px; line-height: 28px; font-weight: 700; }
+  .pl-ok { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--success); color: var(--on-solid); }
+  .pl-ok .i { width: 28px; height: 28px; }
+  .pl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+  .pl-card { display: flex; flex-direction: column; gap: 12px; }
+  .pl-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .pl-head h2 { font-size: 18px; font-weight: 700; line-height: 24px; }
+  .pl-btn { align-self: flex-start; }
+  .pl-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  @container (max-width: 519px) { .pl-grid { grid-template-columns: minmax(0, 1fr); } .pl-hero { flex-direction: column; align-items: flex-start; } }
+
+  /* ---------- order history */
+  .oh { display: flex; flex-direction: column; gap: 16px; }
+  .oh-bar { display: flex; flex-wrap: wrap; gap: 12px; }
+  .oh-po { font-weight: 600; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .oh-po:hover { color: var(--link); text-decoration: underline; }
+  .oh-new { display: inline-block; height: 20px; padding: 0 8px; border-radius: 10px; background: var(--brand); color: #000; font-size: 12px; font-weight: 700; line-height: 20px; }
+  .oh-tbl { min-width: 760px; }
+  .oh-tbl td a { white-space: nowrap; }
+
+  /* ---------- order detail */
+  .od-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .od-side { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .od-status { display: flex; flex-direction: column; gap: 16px; }
+  .od-status-head > div { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .od-lbl { font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .od-mono { font-variant-numeric: tabular-nums; letter-spacing: .3px; }
+  .od-h { margin-bottom: 4px; }
+  .od-items { min-width: 520px; }
+  .od-total { display: flex; justify-content: flex-end; align-items: baseline; gap: 16px; padding: 16px 16px 0; font-weight: 700; }
+  .od-total b { font-size: 20px; font-variant-numeric: tabular-nums; }
+  @container (max-width: 879px) { .od-grid { grid-template-columns: minmax(0, 1fr); } }
+}
+
+/* the fieldset's 16px gap owns the space after the recommendation (layout review VR04); a standalone callout keeps its margin */
+@layer components {
+  .ck-sec fieldset > .ck-adv { margin-bottom: 0; }
+}
+
+/* 1021: the card outline is the brand gray now; an invalid delivery section shows the danger outline */
+@layer components {
+  .card.ck-sec.invalid { border-color: var(--danger); }
+}
+/* 1021 (owner): the cart line's picture column fits the shared 64px line thumbnail (the 96px placeholder ran under the
+   name, part number and work order chip) */
+@layer components {
+  .oc-line { grid-template-columns: 64px minmax(0, 1fr) 80px 116px 92px auto; }
+  .oc-line > .img-slot.thumb, .oc-line > .pthumb { width: 64px; height: 64px; border-radius: 12px; }
+}
+@container (max-width: 640px) {
+  .oc-line { grid-template-columns: 64px minmax(0, 1fr) auto; }
+  .oc-line > .img-slot.thumb { grid-area: t; align-self: start; }
+}
