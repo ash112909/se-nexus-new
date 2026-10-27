@@ -99,10 +99,11 @@ SE.views.home = function (el, p) {
       // actions in a 2 x 2 grid (4), then Fleet news and updates (8) beside the Supplier network (4), then the rest.
       // web-twin has no marketing kit: the quick actions run 4 across. Stacked below 1000px of content.
       '<div class="dash" id="dash">' +
-      '<section class="sec qa-sec" aria-labelledby="h-quick">' +
+      (SE.mkt ? SE.mkt.hero().replace('<section class="sec"', '<section class="sec lay-8 lay-hero"') : '') +
+      '<section class="sec qa-sec' + (SE.mkt ? ' lay-4' : '') + '" aria-labelledby="h-quick">' +
         '<div class="sec-head"><h2 id="h-quick">Quick actions</h2></div><ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
-      '<section class="sec lay-8 news-sec" aria-labelledby="h-news">' +
+      '<section class="sec news-sec" aria-labelledby="h-news">' +
         '<div class="card news-panel">' +
           '<button class="news-panel-head" type="button" data-news-toggle aria-expanded="false" aria-controls="news-grid">' +
             '<span class="news-panel-title" id="h-news">Fleet news &amp; updates</span>' +
@@ -111,7 +112,7 @@ SE.views.home = function (el, p) {
           '<ul class="news-grid" id="news-grid" hidden>' + newsCards() + '</ul>' +
         '</div>' +
       '</section>' +
-      '<section class="sec lay-4 net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
+      '<section class="sec net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
       // 1021 (owner, 2026-10-22): then the operational layers, approvals and active work orders
       '<section class="sec" id="appr-sec" aria-labelledby="h-appr"' + (SE.pendingApprovals().length ? '' : ' hidden') + '><div class="sec-head"><h2 id="h-appr">Waiting for your approval <span class="h-note">All branches</span></h2><a class="sec-action" href="#/approvals">All approvals' + icon('arrow-small-right') + '</a></div><div id="appr-host"></div></section>' +
       '<section class="sec" aria-labelledby="h-orders">' +
@@ -146,7 +147,7 @@ SE.views.home = function (el, p) {
     '</li>';
   }
   function renderOrders() {
-    var list = active(), host = el.querySelector('#orders-host');
+    var list = active().slice(0, 5), host = el.querySelector('#orders-host');
     if (stopOrders) { stopOrders(); stopOrders = null; }
     host.innerHTML = list.length ? '<ul class="wo-list">' + list.map(orderRow).join('') + '</ul>' : '<p class="empty">No active work orders at this location.</p>';
   }
@@ -171,7 +172,7 @@ SE.views.home = function (el, p) {
     '</li>';
   }
   function renderAppr() {
-    var host = el.querySelector('#appr-host'), list = SE.pendingApprovals();
+    var host = el.querySelector('#appr-host'), list = SE.pendingApprovals().slice(0, 5);
     if (stopAppr) { stopAppr(); stopAppr = null; }
     host.innerHTML = list.length
       ? '<ul class="appr-list">' + list.map(apprCard).join('') + '</ul>'
@@ -219,10 +220,13 @@ SE.views.home = function (el, p) {
     el.querySelectorAll('[data-net-name]').forEach(function (li) { var hit = !q || li.dataset.netName.indexOf(q) >= 0; li.hidden = !hit; if (hit) n++; });
     el.querySelector('.net-none').hidden = n > 0;
   });
-  SE.push.bind(el, null);
+  var stopMkt = SE.mkt ? SE.mkt.bind(el) : null;
+  SE.push.bind(el, function () { if (SE.mkt && !SE.state.mkt.whatsNew) SE.mkt.whatsNew(); });
   if (p.push === 'alert') SE.push.ask(function (msg, ic) { SE.state.pushAsked = true; SE.save(); var c = el.querySelector('[data-push-card]'); if (c) c.remove(); if (msg) SE.toast(msg, ic); });
+  if (SE.mkt && p.whatsnew) SE.mkt.whatsNew();
+  else if (SE.mkt && !SE.push.due() && !SE.state.mkt.whatsNew) SE.mkt.whatsNew();
   if (p.menu === 'account') s.openAccount();
   if (p.nav === 'open' && s.mode() === 'drawer') el.querySelector('.appbar-menu').click();
 
-  return function () { if (stopOrders) stopOrders(); clearTimeout(foldTimer); if (stopAppr) stopAppr(); s.cleanup(); };
+  return function () { if (stopOrders) stopOrders(); clearTimeout(foldTimer); if (stopAppr) stopAppr(); if (stopMkt) stopMkt(); s.cleanup(); };
 };
