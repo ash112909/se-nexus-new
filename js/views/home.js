@@ -57,7 +57,7 @@ SE.views.home = function (el, p) {
     var n = SE.pendingApprovals().length, sups = D.suppliers.filter(function (x) { return x.active; }).length;
     var T = [['shopping-cart-check', n, n === 1 ? 'Approval waiting' : 'Approvals waiting', 'approvals', n > 0],
       ['clipboard-list', active().length, 'Active work orders', 'work-orders'],
-      ['building', D.locations.length, 'Branches', 'fleet'],
+      ['tractor', Object.keys(D.machines).length, 'Assets', 'fleet'],
       ['box', sups, 'Suppliers connected', 'catalog']];
     return T.map(function (t) {
       return '<li><a class="qt' + (t[4] ? ' on' : '') + '" href="#/' + t[3] + '">' + icon(t[0]) + '<b>' + t[1] + '</b><span>' + esc(t[2]) + '</span></a></li>';
