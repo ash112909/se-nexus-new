@@ -386,3 +386,7 @@
   /* beside the carousel the tiles end on the photo's bottom edge; the carousel's 16px gap + 20px bar row sit under it */
   .dash > .lay-hero + .qa-sec { --qa-under: 36px; }
 }
+
+/* TEMP: SmartEquip logo hidden until re-enabled — remove these two rules to restore */
+.rail-powered { display: none; }
+.auth-se { display: none; }
