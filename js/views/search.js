@@ -64,14 +64,14 @@
 
   // ---------- 1026 (CR-05, PLAN-CR05-supplier-scope.md): the scope of a query. Parts are scoped to 1 connected
   // supplier (the back end reads 1 supplier's catalog); the other types need only the type.
-  X.connectedSuppliers = function () { return D.suppliers.filter(function (s) { return s.active; }); };
+  X.connectedSuppliers = function () { return D.suppliers; };
   function supplierOfModel(m) { return m && D.machines[m] ? D.machines[m].supplier : null; }
   // the supplier a parts search reads: the model in the filters decides when there is one, else the pick,
   // else the first connected supplier (JLG)
   X.supplierFor = function (ctx) { return supplierOfModel(X.ctxModel(ctx || X.ctx())) || X.scopeSupplier(); };
   X.scopeSupplier = function () {
     var S = X.state.search || {}, s = S.supplier && X.supplier(S.supplier);
-    if (s && s.active) return s.id;
+    if (s) return s.id;
     return supplierOfModel(X.ctxModel()) || X.connectedSuppliers()[0].id;
   };
   // the route params of a scoped query: q, type (not for parts) and supplier (parts)
@@ -94,7 +94,7 @@
   // returns the sentence that says so ('' when nothing was removed)
   X.setScopeSupplier = function (id) {
     var sp = X.supplier(id);
-    if (!sp || !sp.active) return '';
+    if (!sp) return '';
     var S = X.state.search || (X.state.search = {}), c = Object.assign({}, X.ctx()), m = X.ctxModel(c), gone = '';
     S.supplier = sp.id;
     if (m && supplierOfModel(m) !== sp.id) {
@@ -231,7 +231,7 @@
     if (!p.identity) return [];
     var mine = X.supplierOf(p.pn).id, seen = {};
     return D.parts.filter(function (x) { return x.identity === p.identity; }).map(function (x) { return X.supplierOf(x.pn); })
-      .filter(function (s) { if (!s.active || s.id === mine || seen[s.id]) return false; seen[s.id] = 1; return true; });
+      .filter(function (s) { if (s.id === mine || seen[s.id]) return false; seen[s.id] = 1; return true; });
   };
   X.groupParts = function (list) {
     var map = {}, out = [];
@@ -423,18 +423,16 @@
       '<span class="ss-div" aria-hidden="true"></span>');
     var sSel = form.querySelector('[data-scope]'), pBtn = form.querySelector('[data-supplier]'), pWrap = form.querySelector('[data-supplier-wrap]'), pList = pWrap.querySelector('.ss-list');
     var lbl = form.querySelector('label[for="q"]');
-    var off = D.suppliers.filter(function (x) { return !x.active; }), pOpts = [], pAct = -1;
-    function supOption(x, on, sel) {
-      var k = pOpts.length; pOpts.push({ id: x.id, on: on });
-      return '<div class="ss-opt' + (on ? '' : ' off') + '" role="option" id="' + id + '-sup-o' + k + '" data-sup-opt="' + x.id + '" aria-selected="' + sel + '"' + (on ? '' : ' aria-disabled="true"') + '>' +
-        '<span class="ss-name">' + esc(x.name) + '</span>' + (sel ? icon('check') : '') + (on ? '' : '<span class="sr-only">, not connected</span>') + '</div>';
+    var pOpts = [], pAct = -1;
+    function supOption(x, sel) {
+      var k = pOpts.length; pOpts.push({ id: x.id, on: true });
+      return '<div class="ss-opt" role="option" id="' + id + '-sup-o' + k + '" data-sup-opt="' + x.id + '" aria-selected="' + sel + '">' +
+        '<span class="ss-name">' + esc(x.name) + '</span>' + (sel ? icon('check') : '') + '</div>';
     }
     function supList(sup) {
       pOpts = [];
-      var on = X.connectedSuppliers();
       pList.innerHTML = '<p class="ss-head" aria-hidden="true">Suppliers</p>' +
-        '<p class="ss-group" id="' + id + '-sup-g1" aria-hidden="true">Connected · ' + on.length + '</p><div role="group" aria-labelledby="' + id + '-sup-g1">' + on.map(function (x) { return supOption(x, true, x.id === sup); }).join('') + '</div>' +
-        (off.length ? '<p class="ss-group" id="' + id + '-sup-g2" aria-hidden="true">Not connected yet · ' + off.length + '</p><div role="group" aria-labelledby="' + id + '-sup-g2">' + off.map(function (x) { return supOption(x, false, false); }).join('') + '</div>' : '');
+        D.suppliers.map(function (x) { return supOption(x, x.id === sup); }).join('');
     }
     function supMove(k) {
       if (!pOpts.length) return;
@@ -459,7 +457,7 @@
     function supOutside(e) { if (!pWrap.contains(e.target)) supClose(); }
     function supChoose(k) {
       var o = pOpts[k];
-      if (!o || !o.on) return; // a supplier not connected yet is a label, not a choice
+      if (!o) return;
       supClose();
       pBtn.focus();
       if (o.id === pBtn.value) return;
@@ -736,7 +734,7 @@
     var S = X.state.search || (X.state.search = {});
     S.type = type; X.save();
     var q = p.q != null ? p.q.trim() : '', ctxAll = !!p.ctx, words = null;
-    var live = D.suppliers.filter(function (s) { return s.active; });
+    var live = D.suppliers;
     var ptypes = p.ptype ? p.ptype.split(',') : [];
     var stockOnly = p.stock === '1';
     var pending = null;
