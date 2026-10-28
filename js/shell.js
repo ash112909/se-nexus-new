@@ -64,7 +64,7 @@
       return '<a class="qa" href="#/notifications" aria-label="Notifications, ' + u + ' unread">' + icon('bell') + '<span class="qa-badge dot" data-qa="notes"' + (u ? '' : ' hidden') + '></span></a>' +
         '<span class="qa-div" aria-hidden="true"></span>' +
         '<button class="qa" type="button" aria-label="Account and locations" aria-haspopup="dialog" aria-expanded="false" data-account>' + icon('user') + '</button>' +
-        (withSettings ? '<button class="qa" type="button" aria-label="Settings" data-out="Settings">' + icon('settings') + '</button>' : '');
+        (withSettings ? '<a class="qa" href="#/profile" aria-label="Profile and notifications">' + icon('settings') + '</a>' : '');
     }
     SE.searchForm = function (value) {
       return '<form class="search" role="search" data-search><label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' + icon('search') +
@@ -157,7 +157,6 @@
             '<span><b>' + esc(r.name) + '</b><small>' + esc(r.sub) + '</small></span>' + icon('check', 'tick') + '</button>';
         }).join('') + '</div>' +
         appearance() +
-        '<a class="acc-out" href="#/profile" data-acc-nav>' + icon('user') + 'Profile &amp; notifications</a>' +
         (SE.mkt ? '<button type="button" class="acc-out acc-new" data-whatsnew>' + icon('star') + 'What’s new</button>' : '') +
         '<button type="button" class="acc-out" data-signout>' + icon('sign-out-alt') + 'Sign out</button>';
       window.ARATheme.bind(account.querySelector('.acc-theme'));
@@ -206,7 +205,6 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
         setTimeout(function () { closeAccount(true); }, 160);
         return;
       }
-      if (t.hasAttribute('data-acc-nav')) { closeAccount(false); return; }
       if (t.hasAttribute('data-signout')) { closeAccount(false); SE.confirmSignOut(); return; }
       if (t.hasAttribute('data-ann-x')) { SE.mkt.dismiss(t); return; }
       if (t.hasAttribute('data-whatsnew')) { closeAccount(false); if (SE.mkt) SE.mkt.whatsNew(); return; }
