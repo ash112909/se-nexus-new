@@ -388,7 +388,7 @@
     });
     if (type === 'fleet') return X.searchFleet(q).slice(0, n).map(function (a) { return ['asset', { id: a.equip }, null, X.hl(a.equip + ' · ' + a.machine, q), X.hl(a.serial, q) + ' · ' + X.hl(a.location, q) + ' · ' + esc(a.status), 'Asset']; });
     if (type === 'manuals') return X.searchManuals(q, X.scopeSupplier()).slice(0, n).map(function (x) { return ['manual', { id: x.m.id, page: x.page }, 'book-alt', X.hl(x.m.title, q), esc(x.m.type) + ' · ' + esc(x.m.edition) + ' · ' + x.m.pages + (x.m.pages === 1 ? ' page' : ' pages'), 'Manual']; });
-    if (type === 'orders') return X.searchOrders(q).slice(0, n).map(function (o) { return ['order', { po: o.po }, 'receipt', X.hl(o.po, q), X.hl(o.supplier, q) + (o.wo ? ' · WO ' + X.hl(o.wo, q) : '') + ' · ' + esc(o.status), 'Order']; });
+    if (type === 'orders') return X.searchOrders(q).slice(0, n).map(function (o) { var w = o.wo ? X.wo(o.wo) : null; var sub = (o.wo ? 'WO #' + X.hl(o.wo, q) : '') + (w && w.equip ? ' · ' + X.hl(w.equip, q) : '') + (o.placed ? ' · ' + esc(o.placed) : '') + ' · ' + X.chip(o.status, o.tone); return ['order', { po: o.po }, 'receipt', X.hl(o.po, q), sub.replace(/^\s*·\s*/, ''), 'Order']; });
     if (type === 'news' || type === 'kb') return (type === 'news' ? X.searchNews(q) : X.searchKb(q)).slice(0, n).map(function (x) { return ['article', { id: x.id }, type === 'kb' ? 'notebook' : 'megaphone', X.hl(x.title, q), esc(x.kind) + ' · ' + esc(x.meta), x.kind === 'Article' ? 'Article' : x.kind]; });
     if (type === 'wo') {
       var tk = X.qTokens(q);
