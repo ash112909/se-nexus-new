@@ -146,20 +146,20 @@
     function openAccount(btn) {
       accBtn = btn;
       var rows = [{ id: 'all', name: 'All locations', sub: 'Cross-location view' }].concat(D.locations.map(function (l) { return { id: l.id, name: l.name, sub: l.units + ' units · ' + l.address }; }));
-      var accAv = SE.store.getLocal(‘avatar’);
-      var accAvHTML = accAv ? ‘<img src="’ + esc(accAv) + ‘" alt="Profile photo">’ : esc(D.user.initials);
+      var accAv = SE.store.getLocal('avatar');
+      var accAvHTML = accAv ? '<img src="' + esc(accAv) + '" alt="Profile photo">' : esc(D.user.initials);
       account.innerHTML =
-        ‘<div class="acc-head"><span class="acc-avatar">’ + accAvHTML + ‘</span><span><b>’ + esc(D.user.name) + ‘</b><small>’ + esc(D.user.role + ‘ · ‘ + D.fleet.name) + ‘</small></span></div>’ +
-        ‘<p class="acc-label" id="acc-loc">Locations</p>’ +
-        ‘<div role="radiogroup" aria-labelledby="acc-loc" class="acc-locs" data-select="manual">’ + rows.map(function (r) {
+        '<div class="acc-head"><span class="acc-avatar">' + accAvHTML + '</span><span><b>' + esc(D.user.name) + '</b><small>' + esc(D.user.role + ' · ' + D.fleet.name) + '</small></span></div>' +
+        '<p class="acc-label" id="acc-loc">Locations</p>' +
+        '<div role="radiogroup" aria-labelledby="acc-loc" class="acc-locs" data-select="manual">' + rows.map(function (r) {
           var on = SE.state.location === r.id;
-          return ‘<button type="button" role="radio" class="acc-loc" aria-checked="’ + on + ‘" data-loc="’ + r.id + ‘">’ + icon(r.id === ‘all’ ? ‘apps’ : ‘marker’) +
-            ‘<span><b>’ + esc(r.name) + ‘</b><small>’ + esc(r.sub) + ‘</small></span>’ + icon(‘check’, ‘tick’) + ‘</button>’;
-        }).join(‘’) + ‘</div>’ +
+          return '<button type="button" role="radio" class="acc-loc" aria-checked="' + on + '" data-loc="' + r.id + '">' + icon(r.id === 'all' ? 'apps' : 'marker') +
+            '<span><b>' + esc(r.name) + '</b><small>' + esc(r.sub) + '</small></span>' + icon('check', 'tick') + '</button>';
+        }).join('') + '</div>' +
         appearance() +
-        ‘<a class="acc-out" href="#/profile" data-acc-nav>’ + icon(‘user’) + ‘Profile &amp; notifications</a>’ +
-        (SE.mkt ? ‘<button type="button" class="acc-out acc-new" data-whatsnew>’ + icon(‘star’) + ‘What’s new</button>’ : ‘’) +
-        ‘<button type="button" class="acc-out" data-signout>’ + icon(‘sign-out-alt’) + ‘Sign out</button>’;
+        '<a class="acc-out" href="#/profile" data-acc-nav>' + icon('user') + 'Profile &amp; notifications</a>' +
+        (SE.mkt ? '<button type="button" class="acc-out acc-new" data-whatsnew>' + icon('star') + 'What’s new</button>' : '') +
+        '<button type="button" class="acc-out" data-signout>' + icon('sign-out-alt') + 'Sign out</button>';
       window.ARATheme.bind(account.querySelector('.acc-theme'));
       var r = btn.getBoundingClientRect(), host = shell.getBoundingClientRect();
       account.style.top = (r.bottom - host.top + 8) + 'px';
