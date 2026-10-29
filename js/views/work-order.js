@@ -1,6 +1,7 @@
 /* Work order detail (B4, legacy web 18, 28 to 30). Left: issue and description, the parts request and
    its state (awaiting approval, approved with its PO, returned with the reason), orders placed against
-   the work order, activity log. Right panel: status, unit (asset, serial, branch), assignee and dates.
+   the work order, notes timeline with add-note input, activity log. Right panel: status, unit (asset,
+   serial, branch), assignee and dates.
    Actions: Find parts (catalog keeps the work order) and Cancel work order (dialog with a reason).
    Done and cancelled work orders show no actions.
    Supervisor desk (web-full W4): status, priority, assignee and due date are edited in the details panel and
@@ -19,7 +20,7 @@ SE.views['work-order'] = function (el, p) {
   }
   var unit = W.unit(w.equip) || {}, K = SE.desk;
   var ED = SE.state.woEdits || (SE.state.woEdits = {});
-  function edits() { return ED[w.id] || (ED[w.id] = { set: {}, log: [] }); }
+  function edits() { return ED[w.id] || (ED[w.id] = { set: {}, log: [], notes: [] }); }
   function change(field, label, value, shown) {
     var was = w[field];
     if (String(was) === String(value)) return;
@@ -30,6 +31,14 @@ SE.views['work-order'] = function (el, p) {
     var f = el.querySelector('[data-edit="' + field + '"]'); if (f && !SE.capture) f.focus();
   }
   var REASONS = ['Duplicate work order', 'Fixed without parts', 'Unit sold or retired', 'Other'];
+
+  function warranty() {
+    if (!w.warranty) return '<span class="muted">Expired</span>';
+    if (typeof w.warranty === 'object') {
+      return w.warranty.active ? 'Active · Expires ' + esc(w.warranty.expiry) : 'Expired';
+    }
+    return 'Until ' + esc(w.warranty);
+  }
 
   function parts() {
     var a = W.approvalFor(w.id), h = '';
@@ -73,6 +82,17 @@ SE.views['work-order'] = function (el, p) {
       return '<li' + (i ? '' : ' class="now"') + '><span class="dot" aria-hidden="true"></span><b>' + esc(r[1]) + '</b><small>' + esc(r[0]) + '</small></li>';
     }).join('') + '</ol>';
   }
+  function notes() {
+    var e = ED[w.id], ns = (e && e.notes && e.notes.length) ? e.notes : (w.notes || []);
+    var st = W.status(w);
+    var list = ns.length
+      ? '<ol class="wo-log card">' + ns.slice().reverse().map(function (n) {
+          return '<li class="now"><span class="dot" aria-hidden="true"></span><b>' + esc(n.text) + '</b><small>' + esc(n.author || D.user.name) + (n.time ? ' · ' + esc(n.time) : '') + '</small></li>';
+        }).join('') + '</ol>'
+      : '<div class="card wo-none">' + icon('comment-alt') + '<span>No notes yet.</span></div>';
+    if (!editable(st)) return list;
+    return list + '<div class="wo-note-row"><input type="text" id="wo-note-in" class="wo-note-input" placeholder="Add a note…" aria-label="Note text"><button type="button" class="btn btn-secondary" data-add-note>' + icon('comment-alt') + 'Add note</button></div>';
+  }
   function actions(st) {
     // web-twin (SE.twin): the iPhone's work order has no archive and no header edits
     if (SE.twin && (st === 'Done' || st === 'Cancelled')) return '';
@@ -95,6 +115,35 @@ SE.views['work-order'] = function (el, p) {
   }
   function body() {
     var st = W.status(w);
+    var make = unit.make || w.make || '', model = unit.model || w.model || '';
+    var kvEdit = [
+      w.externalId ? ['ERP order', esc(w.externalId)] : null,
+      ['Type', esc(w.kind || 'Equipment repair')],
+      ['Machine', esc(w.machine)],
+      ['Asset', esc(w.equip)],
+      make ? ['Make', esc(make)] : null,
+      model ? ['Model', esc(model)] : null,
+      ['Serial', esc(unit.serial || 'Unknown')],
+      ['Branch', esc(unit.location || 'Unknown')],
+      ['Opened', esc(w.opened)],
+      ['Warranty', warranty()]
+    ].filter(Boolean);
+    var kvFull = [
+      w.externalId ? ['ERP order', esc(w.externalId)] : null,
+      ['Type', esc(w.kind || 'Equipment repair')],
+      ['Status', SE.chip(st)],
+      ['Priority', W.priority(w.priority)],
+      ['Machine', esc(w.machine)],
+      ['Asset', esc(w.equip)],
+      make ? ['Make', esc(make)] : null,
+      model ? ['Model', esc(model)] : null,
+      ['Serial', esc(unit.serial || 'Unknown')],
+      ['Branch', esc(unit.location || 'Unknown')],
+      ['Assignee', esc(w.assignee)],
+      ['Opened', esc(w.opened)],
+      ['Due', esc(w.due || 'Not set')],
+      ['Warranty', warranty()]
+    ].filter(Boolean);
     return SE.recallNote(w.equip) + '<div class="split wo-split"><div class="wo-main">' +
         '<section class="card wo-summary"><div class="chips">' + SE.chip(st) + W.priority(w.priority) + '</div>' +
           '<h2 class="wo-h">' + esc(w.issue) + '</h2><p class="muted">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</p>' +
@@ -102,14 +151,14 @@ SE.views['work-order'] = function (el, p) {
           (w.desc ? '<p class="wo-desc">' + esc(w.desc) + '</p>' : '') + '</section>' +
         troubleshoot(st) +
         SE.ui.sec('Parts', '', parts(), 'h-parts') +
+        SE.ui.sec('Notes', '', notes(), 'h-notes') +
         SE.ui.sec('Activity', '', log(), 'h-log') +
       '</div>' +
       '<aside class="panel wo-panel" aria-label="Work order details"><div class="panel-body">' +
         '<h2 class="wo-panel-h">Details</h2>' +
-        (editable(st) ? editor(st) + SE.ui.kv([['Machine', esc(w.machine)], ['Asset', esc(w.equip)], ['Serial', esc(unit.serial || 'Unknown')], ['Branch', esc(unit.location || 'Unknown')], ['Opened', esc(w.opened)], ['Warranty', w.warranty ? 'Until ' + esc(w.warranty) : '<span class="muted">Expired</span>']])
+        (editable(st) ? editor(st) + SE.ui.kv(kvEdit)
           : (W.archived(w) ? SE.ui.banner('<b>Archived.</b> Read only. Un-archive it to make changes.', 'neutral', 'box') : '') +
-            SE.ui.kv([['Status', SE.chip(st)], ['Priority', W.priority(w.priority)], ['Machine', esc(w.machine)], ['Asset', esc(w.equip)], ['Serial', esc(unit.serial || 'Unknown')], ['Branch', esc(unit.location || 'Unknown')],
-              ['Assignee', esc(w.assignee)], ['Opened', esc(w.opened)], ['Due', esc(w.due || 'Not set')], ['Warranty', w.warranty ? 'Until ' + esc(w.warranty) : '<span class="muted">Expired</span>']])) +
+            SE.ui.kv(kvFull)) +
       '</div></aside></div>';
   }
 
@@ -143,6 +192,20 @@ SE.views['work-order'] = function (el, p) {
   }
   el.addEventListener('click', function (e) {
     if (e.target.closest('[data-cancel]')) { cancel(); return; }
+    if (e.target.closest('[data-add-note]')) {
+      var inp = el.querySelector('#wo-note-in');
+      var text = inp ? inp.value.trim() : '';
+      if (!text) { if (inp) inp.focus(); return; }
+      var now = new Date();
+      var ed = edits();
+      if (!ed.notes) ed.notes = [];
+      ed.notes.push({ text: text, author: D.user.name, time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) });
+      SE.save();
+      if (inp) inp.value = '';
+      render();
+      SE.toast('Note added', 'check');
+      return;
+    }
     var ar = e.target.closest('[data-archive], [data-unarchive]');
     if (!ar) return;
     var on = ar.hasAttribute('data-archive');
@@ -150,6 +213,12 @@ SE.views['work-order'] = function (el, p) {
     edits().log.push(['Today', (on ? 'Archived' : 'Un-archived') + ' by ' + D.user.name]);
     SE.save(); render();
     SE.toast('Work order #' + w.id + (on ? ' archived' : ' back in the list'), 'box');
+  });
+  el.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.id === 'wo-note-in') {
+      var btn = el.querySelector('[data-add-note]');
+      if (btn) btn.click();
+    }
   });
   el.addEventListener('change', function (e) {
     var f = e.target.closest('[data-edit]');

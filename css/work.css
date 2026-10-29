@@ -70,6 +70,9 @@
   .wo-log b { font-weight: 500; }
   .wo-log small { font-size: 13px; color: var(--muted); white-space: nowrap; }
   .sec .banner + .tbl-wrap, .sec .tbl-wrap + .tbl-wrap { margin-top: -4px; }
+  .wo-note-row { display: flex; gap: 8px; padding: 12px 20px 16px; border-top: 1px solid var(--line); }
+  .wo-note-input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; }
+  .wo-note-input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
     .wo-log small { grid-column: 2; white-space: normal; }
