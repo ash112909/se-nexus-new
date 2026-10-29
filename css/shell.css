@@ -301,8 +301,8 @@
   .qa-badge.dot { background: var(--dot-notify); }
 
   .sec-head h2 { color: var(--subtle); font-weight: 600; }
-  .sec-action { border: 0; background: none; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
-  .sec-action:hover { background: none; color: var(--ink); }
+  .sec-action { border: 1.5px solid var(--line); background: var(--surface); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--ink); }
+  .sec-action:hover { background: var(--hover); border-color: var(--line-strong); color: var(--ink); }
 
   .pager .dot { background: var(--land-bar); }
 
@@ -355,6 +355,12 @@
   .news-btn > .i:last-child { transition: transform .2s; }
   .news-btn[aria-expanded="true"] > .i:last-child { transform: rotate(180deg); }
   .lay-hero .sec-action > .i { width: 15px; height: 15px; color: var(--subtle); }
+
+  /* red dot on News button: absolute so it never shifts the button's layout */
+  .news-unread { position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; background: #e94444; border-radius: 50%; border: 2px solid var(--surface); pointer-events: none; z-index: 1; }
+
+  /* supplier count badge inline in the h2 */
+  .net-sup-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; margin-left: 6px; border-radius: 10px; background: var(--hover); color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: none; vertical-align: middle; }
   .news-drop { position: absolute; top: calc(100% + 6px); right: 0; width: 560px; max-width: calc(100vw - 32px); background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.13); z-index: 60; overflow: hidden; }
   .news-drop-hd { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid var(--rule); }
   .news-drop-hd b { font-size: 14px; font-weight: 700; }

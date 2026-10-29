@@ -76,7 +76,7 @@ SE.views.home = function (el, p) {
   // ---------- Supplier network (web.svg): search, then every supplier with its mark; web-full offers Request connection
   function supMark(x) { var w = x.name.split(' '); return w.length === 1 ? x.name.slice(0, 3) : w.slice(0, 2).map(function (y) { return y.charAt(0); }).join(''); }
   function supplierNet() {
-    return '<div class="sec-head"><h2 id="h-net">Supplier network</h2><span class="h-note">' + D.suppliers.length + ' available</span></div>' +
+    return '<div class="sec-head"><h2 id="h-net">Supplier network<span class="net-sup-badge" aria-label="' + D.suppliers.length + ' suppliers">' + D.suppliers.length + '</span></h2></div>' +
       '<div class="card net"><label class="search net-search">' + icon('search') + '<span class="sr-only">Search suppliers</span><input type="search" placeholder="Search network" autocomplete="off" data-net-q></label>' +
       '<ul class="net-list" data-net-list>' + D.suppliers.map(function (x) {
         var mark = '<span class="net-mark" aria-hidden="true">' + esc(supMark(x)) + '</span>';
@@ -100,6 +100,7 @@ SE.views.home = function (el, p) {
             '<button class="news-btn" type="button" data-news-toggle aria-expanded="false" aria-controls="news-drop">' +
               icon('newspaper') + 'News' + icon('chevron-down') +
             '</button>' +
+            (D.news.length ? '<span class="news-unread" aria-hidden="true"></span>' : '') +
             '<div class="news-drop" id="news-drop" hidden>' +
               '<div class="news-drop-hd"><b id="h-news">Fleet news &amp; updates</b><a class="sec-action" href="#/kb">View all' + icon('arrow-small-right') + '</a></div>' +
               '<ul class="news-grid">' + newsCards() + '</ul>' +
