@@ -292,11 +292,12 @@
   .quickbar .qa { background: var(--quiet); }
   .quickbar .qa-div { display: none; }   /* owner, 2026-10-22: no divider in the icon group */
   .quickbar .qa:hover, .quickbar .qa[aria-expanded="true"] { background: var(--quiet-pressed); }
-  .quickbar .qa[data-account] { background: var(--surface); border: 1px solid var(--edge); color: var(--ink); border-radius: 22px !important; padding: 4px 10px 4px 4px !important; gap: 8px; }
+  .quickbar .qa[data-account] { display: flex; flex-direction: row; align-items: center; width: auto; height: auto; min-height: 36px; background: var(--surface); border: 1px solid var(--edge); color: var(--ink); border-radius: 22px; padding: 3px 10px 3px 3px; gap: 8px; }
   .quickbar .qa[data-account]:hover, .quickbar .qa[data-account][aria-expanded="true"] { background: var(--hover); border-color: var(--line-strong); }
-  .appbar-quick .qa[data-account] { background: none; border: none; border-radius: 8px !important; padding: 6px !important; }
+  .page-head .quickbar .qa[data-account] { width: auto; height: auto; }
+  .appbar-quick .qa[data-account] { display: grid; place-items: center; width: 40px; height: 40px; background: none; border: none; border-radius: 8px; padding: 0; gap: 0; }
   .appbar-quick .qa-user-text { display: none; }
-  .appbar-quick .qa-user-btn .i { display: none; }
+  .appbar-quick .qa-user-btn > .i { display: none; }
   .qa-badge.dot { background: var(--dot-notify); }
 
   .sec-head h2 { color: var(--subtle); font-weight: 600; }
