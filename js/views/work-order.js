@@ -16,7 +16,7 @@ SE.views['work-order'] = function (el, p) {
   }
   var unit = W.unit(w.equip) || {}, K = SE.desk;
   var ED = SE.state.woEdits || (SE.state.woEdits = {});
-  var WC = SE.state.woCart || (SE.state.woCart = {});
+  var WC = SE.state.woCart;
   // Group-by persists across renders within this view session
   var groupBy = 'none';
   // Accordion open state: map of submitted order index -> bool

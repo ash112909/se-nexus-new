@@ -31,7 +31,7 @@
       // (announcement dismissed, What's new seen, early access joined, supplier connections requested)
       calendar: {}, micAsked: false, micAllowed: false, mkt: { dismissed: {}, whatsNew: false, early: false, requested: {} },
       // supervisor desk (js/desk.js): cart review decisions, approver edits, archived work orders, header edits
-      cartAck: {}, apprEdits: {}, archived: {}, woEdits: {}, transfers: null, stockUsed: {}, submissions: {}, nextLine: 1, nextPick: 0, returnTo: null };
+      cartAck: {}, apprEdits: {}, archived: {}, woEdits: {}, woCart: {}, transfers: null, stockUsed: {}, submissions: {}, nextLine: 1, nextPick: 0, returnTo: null };
   }
   // demo state (cart, approvals, read notifications, placed orders) survives a reload within the tab
   // presenter: fresh demo data but still signed in (Back to root, walkthroughs)
@@ -93,7 +93,7 @@
   SE.addToCart = function (pn, qty, wo) {
     if (wo) {
       // WO-linked items live in the per-WO cart, not the global cart
-      var WC = SE.state.woCart || (SE.state.woCart = {});
+      var WC = SE.state.woCart;
       if (!WC[wo]) WC[wo] = [];
       var existing = WC[wo].find(function (x) { return x.id === pn; });
       if (existing) { existing.qty += qty; }

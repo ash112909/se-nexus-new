@@ -97,7 +97,7 @@
   // unit or work order changes (both change what the card may say)
   SE.partDetailBind = function (root, part, o) {
     o = o || {};
-    var qty = 1, wo = o.wo && SE.wo(o.wo) ? o.wo : null;
+    var qty = 1, wo = o.wo || null;
     function label() { return 'Add to cart · ' + SE.money(part.price * qty); }
     function onClick(e) {
       var a = e.target.closest('a[data-pick]');
