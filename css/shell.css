@@ -292,8 +292,11 @@
   .quickbar .qa { background: var(--quiet); }
   .quickbar .qa-div { display: none; }   /* owner, 2026-10-22: no divider in the icon group */
   .quickbar .qa:hover, .quickbar .qa[aria-expanded="true"] { background: var(--quiet-pressed); }
-  .quickbar .qa[data-account] { background: var(--brand); color: var(--brand-on); }
-  .quickbar .qa[data-account]:hover, .quickbar .qa[data-account][aria-expanded="true"] { background: var(--brand-pressed); }
+  .quickbar .qa[data-account] { background: var(--surface); border: 1px solid var(--edge); color: var(--ink); border-radius: 22px !important; padding: 4px 10px 4px 4px !important; gap: 8px; }
+  .quickbar .qa[data-account]:hover, .quickbar .qa[data-account][aria-expanded="true"] { background: var(--hover); border-color: var(--line-strong); }
+  .appbar-quick .qa[data-account] { background: none; border: none; border-radius: 8px !important; padding: 6px !important; }
+  .appbar-quick .qa-user-text { display: none; }
+  .appbar-quick .qa-user-btn .i { display: none; }
   .qa-badge.dot { background: var(--dot-notify); }
 
   .sec-head h2 { color: var(--subtle); font-weight: 600; }
@@ -373,6 +376,16 @@
   .net-row .mk-req { flex: none; height: 32px; padding: 0 12px; font-size: 13px; }
   .net-mark { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border: var(--edge-w) solid var(--edge); border-radius: 10px; background: var(--surface); font-size: 13px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--ink); }
   .net-none { padding: 16px 8px; font-size: 14px; color: var(--muted); }
+}
+/* User account chip in quickbar */
+@layer components {
+  .qa-user-av { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--brand); color: var(--brand-on); font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .qa-av-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .qa-av-init { font-size: 12px; font-weight: 700; }
+  .qa-user-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+  .qa-user-text b { font-size: 13px; font-weight: 600; line-height: 16px; white-space: nowrap; }
+  .qa-user-text small { font-size: 11px; color: var(--muted); line-height: 13px; white-space: nowrap; }
+  .qa-user-btn .i { width: 14px; height: 14px; color: var(--subtle); flex-shrink: 0; }
 }
 /* the panel takes the height of the news beside it: its list scrolls, its own content does not size the layer */
 /* (the section is a child of .dash, so this query is evaluated against .content, like the 8 + 4 split itself; a

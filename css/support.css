@@ -168,10 +168,10 @@
   .ops-row:last-child { border-bottom: none; }
   .ops-id { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; }
   .ops-id a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
-  .ops-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .ops-dot-high { background: #e94444; }
-  .ops-dot-med  { background: #f59d00; }
-  .ops-dot-low  { background: var(--subtle); }
+  .ops-pri { width: 14px; height: 14px; flex-shrink: 0; }
+  .ops-pri-high { color: #e94444; }
+  .ops-pri-med  { color: #f59d00; }
+  .ops-pri-low  { color: var(--subtle); }
   .ops-issue-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }
   .ops-issue { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ops-asset-sub { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -179,10 +179,12 @@
   .ops-due   { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; }
   .ops-status { overflow: hidden; }
   .ops-chip  { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .ops-s-open    { background: var(--tint-ok, rgba(0,180,90,.12)); color: var(--ok, #00a852); }
   .ops-s-active  { background: var(--tint-ok, rgba(0,180,90,.12)); color: var(--ok, #00a852); }
+  .ops-s-closed  { background: var(--tint-ok, rgba(0,180,90,.12)); color: var(--ok, #00a852); }
   .ops-s-pending { background: var(--tint-warning, rgba(255,170,0,.13)); color: var(--warning, #c97c00); }
-  .ops-s-appr    { background: var(--chip-high-bg); color: var(--chip-high-ink); }
-  .ops-s-neutral { background: var(--hover); color: var(--muted); }
+  .ops-s-appr    { background: rgba(234,88,12,.12); color: #c2410c; }
+  .ops-s-neutral { background: transparent; color: var(--muted); border: 1px solid var(--edge); }
   .ops-act   { display: flex; justify-content: flex-end; overflow: hidden; }
   .btn-sm    { height: 30px; padding: 0 11px; font-size: 12px; white-space: nowrap; }
 }

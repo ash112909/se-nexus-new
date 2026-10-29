@@ -127,11 +127,12 @@ SE.views.home = function (el, p) {
   function opsRow(w) {
     var appr = D.approvals.find(function (a) { return a.wo === w.id; });
     var waiting = appr && !SE.state.approved[appr.order] && !SE.state.returned[appr.order];
-    var dot = w.priority === 'High' ? 'ops-dot-high' : w.priority === 'Medium' ? 'ops-dot-med' : 'ops-dot-low';
-    var statusLabel = waiting ? 'Needs approval' : w.status;
-    var statusCls = waiting ? 'ops-s-appr' : w.status.toLowerCase() === 'active' ? 'ops-s-active' : w.status.toLowerCase() === 'pending' || w.status.toLowerCase() === 'awaiting approval' ? 'ops-s-pending' : 'ops-s-neutral';
+    var priCls = w.priority === 'High' ? 'ops-pri-high' : w.priority === 'Medium' ? 'ops-pri-med' : 'ops-pri-low';
+    var statusLabel = waiting ? 'Needs approval' : w.status === 'Active' ? 'Open' : w.status;
+    var statusCls = waiting ? 'ops-s-appr' : w.status.toLowerCase() === 'active' ? 'ops-s-open' : w.status.toLowerCase() === 'pending' || w.status.toLowerCase() === 'awaiting approval' ? 'ops-s-pending' : 'ops-s-neutral';
+    var priIcon = '<svg class="ops-pri ' + priCls + '" viewBox="0 0 14 14" aria-label="' + esc(w.priority || 'Low') + ' priority" role="img"><path d="M1.5 3.5l3.5 3.5-3.5 3.5M7 3.5l3.5 3.5-3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
     return '<li class="ops-row">' +
-      '<span class="ops-id"><span class="ops-dot ' + dot + '"></span><a class="wo-link" href="#/work-order?id=' + w.id + '">WO #' + esc(w.id) + '</a></span>' +
+      '<span class="ops-id">' + priIcon + '<a class="wo-link" href="#/work-order?id=' + w.id + '">WO #' + esc(w.id) + '</a></span>' +
       '<span class="ops-issue-cell"><span class="ops-issue">' + esc(w.issue) + '</span><span class="ops-asset-sub">' + esc(w.equip) + ' &middot; ' + esc(w.machine) + '</span></span>' +
       '<span class="ops-who">' + esc(w.assignee || '—') + '</span>' +
       '<span class="ops-due">' + esc(w.due || '—') + '</span>' +

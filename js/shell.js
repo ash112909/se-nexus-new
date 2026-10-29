@@ -61,9 +61,18 @@
     }
     function quick(withSettings) {
       var u = SE.unread();
+      var av = SE.store.getLocal('avatar');
+      var avHtml = av ? '<img src="' + esc(av) + '" alt="" class="qa-av-img">'
+                      : '<span class="qa-av-init">' + esc(D.user.initials) + '</span>';
+      var parts = D.user.name.split(' ');
+      var shortName = parts[0] + (parts.length > 1 ? ' ' + parts[parts.length - 1].charAt(0) + '.' : '');
       return '<a class="qa" href="#/notifications" aria-label="Notifications, ' + u + ' unread">' + icon('bell') + '<span class="qa-badge dot" data-qa="notes"' + (u ? '' : ' hidden') + '></span></a>' +
         '<span class="qa-div" aria-hidden="true"></span>' +
-        '<button class="qa" type="button" aria-label="Account and locations" aria-haspopup="dialog" aria-expanded="false" data-account>' + icon('user') + '</button>' +
+        '<button class="qa qa-user-btn" type="button" aria-label="Account and locations" aria-haspopup="dialog" aria-expanded="false" data-account>' +
+          '<span class="qa-user-av">' + avHtml + '</span>' +
+          '<span class="qa-user-text"><b>' + esc(shortName) + '</b><small>' + esc(SE.location().name) + '</small></span>' +
+          icon('angle-small-down') +
+        '</button>' +
         (withSettings ? '<a class="qa" href="#/profile" aria-label="Profile and notifications">' + icon('settings') + '</a>' : '');
     }
     SE.searchForm = function (value) {
