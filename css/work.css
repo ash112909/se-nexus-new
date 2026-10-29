@@ -165,6 +165,15 @@
   .ord-acc-body { }
   .ord-acc-foot { padding: 8px 14px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; font-size: 13px; color: var(--muted); background: var(--surface-raised, #fafaf8); }
 
+  /* ── Work order cart layout (oc-grid within wo-main) */
+  .ci-cart-card { padding: 0; overflow: hidden; }
+  .ci-cart-aside { min-width: 200px; }
+  /* collapse aside earlier than the default 879px since wo-main is already a sub-column */
+  @container (max-width: 719px) {
+    .ci-cart-grid.oc-grid { grid-template-columns: minmax(0, 1fr); }
+    .ci-cart-grid .ci-cart-aside { position: static; }
+  }
+
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
     .wo-log small { grid-column: 2; white-space: normal; }

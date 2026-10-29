@@ -91,6 +91,83 @@ SE.views['work-order'] = function (el, p) {
     return '<span class="ci-local">' + icon('map-marker') + ' ' + tot + ' avail</span>';
   }
 
+  // ── Review panel (before checkout) ───────────────────────────────────────
+  function reviewPanel(items) {
+    var issues = [];
+    items.forEach(function (c) {
+      if (c.replacedBy) return;
+      var st = itemStatus(c);
+      if (st === 'blocked') {
+        var refs = c.crossRefs || [], mandIdx = refs.findIndex(function (r) { return r.mandatory; });
+        var mand = mandIdx >= 0 ? refs[mandIdx] : null;
+        issues.push({ blocking: true, title: 'Mandatory cross-ref', text: 'Must use an approved alternative before ordering.', c: c,
+          act: mand ? '<button class="btn btn-primary btn-sm" data-ci-swap="' + esc(c.id) + '" data-ci-xref="' + mandIdx + '">' + icon('swap') + 'Swap to ' + esc(mand.partNum) + ' · ' + SE.money(mand.price) + '</button>' : '' });
+      } else if (st === 'unorderable') {
+        issues.push({ blocking: true, title: 'Cannot order', text: 'Out of stock with no available alternatives.', c: c, act: '' });
+      } else if (st === 'needs_attention' && !c.inStock && (c.crossRefs || []).length) {
+        issues.push({ blocking: false, title: 'Out of stock', text: 'Backordered from supplier. Use an alternative or wait.', c: c,
+          act: '<button class="btn btn-primary btn-sm" data-ci-swap="' + esc(c.id) + '" data-ci-xref="0">' + icon('swap') + 'Use ' + esc((c.crossRefs || [])[0].partNum) + ' · ' + SE.money((c.crossRefs || [])[0].price) + '</button>' });
+      } else if (st === 'needs_attention' && (c.localInventory || []).length) {
+        issues.push({ blocking: false, title: 'Branch stock available', text: 'Nearby branches have stock. Review before ordering.', c: c,
+          act: '<button class="btn btn-secondary btn-sm" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + 'Review branch stock</button>' });
+      }
+    });
+    if (!issues.length) return '';
+    var blocking = issues.filter(function (x) { return x.blocking; }).length;
+    return '<section class="card rv" aria-labelledby="ci-rv-h"><header class="rv-head">' +
+      '<span class="rv-ico">' + icon('shield-check') + '</span>' +
+      '<div><h2 id="ci-rv-h">Before checkout: ' + issues.length + ' line' + (issues.length === 1 ? '' : 's') + ' to sort out</h2>' +
+      '<p class="muted">' + (blocking ? blocking + ' must change' + (issues.length > blocking ? ', ' + (issues.length - blocking) + ' need' + (issues.length - blocking === 1 ? 's' : '') + ' a decision' : '') : 'Each needs a decision') + '.</p></div></header>' +
+      '<ul class="rv-list">' + issues.map(function (x) {
+        return '<li class="rv-row">' + SE.chip(x.blocking ? 'Must change' : 'Decide', x.blocking ? 'danger' : 'warning') +
+          '<div class="rv-txt"><b>' + esc(x.c.partNum) + '</b><span><b>' + esc(x.title) + '.</b> ' + esc(x.text) + '</span></div>' +
+          '<div class="rv-acts">' + x.act + '</div></li>';
+      }).join('') + '</ul></section>';
+  }
+
+  // ── Branch stock dialog (WO version using localInventory) ─────────────────
+  function stockDialogWO(id) {
+    var sitems = cartItems(), c = sitems.find(function (x) { return x.id === id; });
+    if (!c) return;
+    var inv = c.localInventory || [];
+    if (!inv.length) return;
+    var take = {};
+    inv.forEach(function (l) { take[l.locationId] = (c.selectedSources || []).reduce(function (t, s) { return s.locationId === l.locationId ? s.qty : t; }, 0); });
+    function sdTotal() { return Object.keys(take).reduce(function (t, k) { return t + take[k]; }, 0); }
+    function sdRows() {
+      return inv.map(function (loc) {
+        var dn = take[loc.locationId] <= 0, up = take[loc.locationId] >= loc.qty || sdTotal() >= (c.qty || 1);
+        return '<li class="bs-row"><span class="bs-name"><b>' + esc(loc.locationName) + '</b><small>' + loc.qty + ' on shelf · ' + esc(loc.distance) + '</small></span>' +
+          '<div class="stepper sm" role="group" aria-label="Units from ' + esc(loc.locationName) + '">' +
+          '<button type="button" data-bs="' + esc(loc.locationId) + '" data-d="-1"' + (dn ? ' disabled' : '') + '>' + icon('minus-small') + '</button>' +
+          '<output aria-live="polite">' + take[loc.locationId] + '</output>' +
+          '<button type="button" data-bs="' + esc(loc.locationId) + '" data-d="1"' + (up ? ' disabled' : '') + '>' + icon('plus-small') + '</button>' +
+          '</div></li>';
+      }).join('');
+    }
+    function sdSummary() {
+      var t = sdTotal(), buy = (c.qty || 1) - t;
+      return '<b>' + t + ' of ' + (c.qty || 1) + ' from branch shelves</b>, ' + (buy > 0 ? buy + ' to order from ' + esc(c.vendor || 'supplier') + (!c.inStock ? ' (backordered)' : '') : 'nothing to buy') + (t > 0 ? '. Saves ' + SE.money(t * c.price) + '.' : '.');
+    }
+    var d = open = SE.ui.dialog({
+      title: 'Branch stock: ' + esc(c.description),
+      body: '<p class="muted">' + esc(c.partNum) + ' · ' + (c.qty || 1) + ' needed. Units from another branch arrive via branch transfer.</p>' +
+        '<ul class="bs-list">' + sdRows() + '</ul><p class="bs-sum" aria-live="polite">' + sdSummary() + '</p>',
+      foot: '<button type="button" class="btn btn-link" data-bs-clear>Clear</button><button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="button" class="btn btn-primary" data-bs-save>Save sources</button>',
+    });
+    d.el.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-bs]');
+      if (b && !b.disabled) { take[b.dataset.bs] = Math.max(0, take[b.dataset.bs] + +b.dataset.d); d.el.querySelector('.bs-list').innerHTML = sdRows(); d.el.querySelector('.bs-sum').innerHTML = sdSummary(); return; }
+      if (e.target.closest('[data-bs-clear]')) { Object.keys(take).forEach(function (k) { take[k] = 0; }); d.el.querySelector('.bs-list').innerHTML = sdRows(); d.el.querySelector('.bs-sum').innerHTML = sdSummary(); return; }
+      if (e.target.closest('[data-bs-save]')) {
+        var sel = inv.filter(function (l) { return take[l.locationId] > 0; }).map(function (l) { return { locationId: l.locationId, locationName: l.locationName, qty: take[l.locationId] }; });
+        c.selectedSources = sel.length ? sel : undefined;
+        SE.save(); d.close(); var cs = el.querySelector('#wo-cart-sec'); if (cs) cs.innerHTML = cart();
+        SE.toast(sdTotal() > 0 ? sdTotal() + ' from branch shelves' : 'Ordering all from supplier', 'map-marker');
+      }
+    });
+  }
+
   function cartRow(c, withRemove) {
     var replaced = !!c.replacedBy;
     var lineThru = replaced ? ' style="text-decoration:line-through;color:var(--muted);"' : '';
@@ -194,8 +271,8 @@ SE.views['work-order'] = function (el, p) {
   function cart() {
     var items = cartItems();
     var st = W.status(w), canEdit = editable(st);
-    var submittable = items.filter(function (c) { return !['blocked', 'unorderable', 'replaced'].includes(itemStatus(c)); });
-    var blocked = items.filter(function (c) { return ['blocked', 'unorderable'].includes(itemStatus(c)); }).length;
+    var submittable = items.filter(function (c) { return ['blocked', 'unorderable', 'replaced'].indexOf(itemStatus(c)) < 0; });
+    var blocked = items.filter(function (c) { return ['blocked', 'unorderable'].indexOf(itemStatus(c)) >= 0; }).length;
     var total = submittable.reduce(function (s, c) { return s + c.price * (c.qty || 1); }, 0);
     var grpChips = ['none', 'sourcing', 'status', 'vendor'].map(function (g) {
       return '<button type="button" class="cart-grp-chip' + (groupBy === g ? ' cart-grp-chip-on' : '') + '" data-grp="' + g + '">' + (g === 'none' ? 'None' : g.charAt(0).toUpperCase() + g.slice(1)) + '</button>';
@@ -206,18 +283,32 @@ SE.views['work-order'] = function (el, p) {
       (canEdit ? '<a class="btn btn-secondary btn-sm" href="#/machine?m=' + esc(W.machineKey(w) || '') + '&wo=' + esc(w.id) + '" data-go="machine" data-m="' + esc(W.machineKey(w) || '') + '" data-wo="' + esc(w.id) + '">' + icon('plus') + 'Add parts</a>' : '') +
       '</div></div>';
     if (!items.length) {
-      return hdr + '<div class="cart-empty">' + icon('box') + '<span>No items in cart.</span></div>';
+      return '<div class="card ci-cart-card">' + hdr + '<div class="cart-empty">' + icon('box') + '<span>No items in cart.</span></div></div>';
     }
+    var rv = reviewPanel(items);
     var thead = cartTableHead(canEdit);
     var tbody = groupBy === 'none' ? cartTableBody(items, canEdit) : groupedCartBody(items, canEdit);
+    var byVendor = {}, vOrder = [];
+    items.filter(function (c) { return !c.replacedBy; }).forEach(function (c) {
+      var v = c.vendor || 'Unknown';
+      if (!byVendor[v]) { byVendor[v] = 0; vOrder.push(v); }
+      byVendor[v] += c.price * (c.qty || 1);
+    });
     var submitLabel = blocked > 0
       ? 'Submit orderable items<span class="ci-unord">' + icon('triangle-warning') + blocked + ' unorderable</span>'
       : icon('check') + 'Submit order';
-    var footer = canEdit
-      ? '<div class="cart-foot"><span class="cart-foot-ct">' + items.length + ' item' + (items.length !== 1 ? 's' : '') + '</span><span class="cart-foot-tot">' + SE.money(total) + '</span>' +
-        '<button type="button" class="btn btn-primary btn-sm" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button></div>'
-      : '';
-    return hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div>' + footer;
+    var aside = '<aside class="card oc-aside ci-cart-aside"><h2 class="oc-aside-h">Summary</h2>' +
+      SE.ui.kv(vOrder.map(function (v) { return [v, SE.money(byVendor[v])]; })) +
+      '<div class="oc-grand"><span>Estimated total</span><b>' + SE.money(total) + '</b></div>' +
+      '<p class="oc-note">Tax and freight are added by the supplier.</p>' +
+      (canEdit
+        ? '<button type="button" class="btn btn-primary oc-cta" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button>' +
+          '<button type="button" class="btn btn-secondary oc-cta" data-ci-tools>' + icon('share') + 'Cart actions' + icon('angle-small-down') + '</button>'
+        : '') +
+      '</aside>';
+    return rv + '<div class="oc-grid ci-cart-grid"><div class="oc-main"><div class="card ci-cart-card">' +
+      hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div></div>' +
+      aside + '</div>';
   }
 
   // ── Submitted orders accordion ────────────────────────────────────────────
@@ -335,7 +426,7 @@ SE.views['work-order'] = function (el, p) {
           '<h2 class="wo-h">' + esc(w.issue) + '</h2><p class="muted">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</p>' +
           (st === 'Cancelled' ? SE.ui.banner('<b>Cancelled.</b> ' + esc(SE.state.cancelled[w.id]), 'danger', 'cross-small') : '') +
           (w.desc ? '<p class="wo-desc">' + esc(w.desc) + '</p>' : '') + '</section>' +
-        '<section class="sec card ci-sec" id="wo-cart-sec">' + cart() + '</section>' +
+        '<section class="sec ci-sec" id="wo-cart-sec">' + cart() + '</section>' +
         SE.ui.sec('Orders submitted', '', submittedOrders(), 'h-ord') +
         SE.ui.sec('Notes &amp; activity', '', timeline(), 'h-log') +
       '</div>' +
@@ -420,6 +511,45 @@ SE.views['work-order'] = function (el, p) {
       if (idx >= 0) { items3.splice(idx, 1); SE.save(); var cs4 = el.querySelector('#wo-cart-sec'); if (cs4) cs4.innerHTML = cart(); } return;
     }
 
+    // Review panel: swap item with a cross-ref
+    var swapBtn2 = e.target.closest('[data-ci-swap]');
+    if (swapBtn2) {
+      var swapItems = cartItems(), swapId = swapBtn2.dataset.ciSwap;
+      var swapOrig = swapItems.find(function (x) { return x.id === swapId; });
+      if (swapOrig) {
+        var xrefIdx = parseInt(swapBtn2.dataset.ciXref, 10);
+        var xref = (swapOrig.crossRefs || [])[xrefIdx];
+        if (xref) {
+          swapOrig.replacedBy = xref.partNum;
+          var newSwapItem = { id: xref.partNum, partNum: xref.partNum, description: xref.description, vendor: xref.vendor, price: xref.price, qty: swapOrig.qty || 1, uom: xref.uom || swapOrig.uom, inStock: true, oemOnly: false, localInventory: [], crossRefs: [], replacesId: swapId };
+          var si = swapItems.indexOf(swapOrig);
+          swapItems.splice(si + 1, 0, newSwapItem);
+          SE.save(); var csSwap = el.querySelector('#wo-cart-sec'); if (csSwap) csSwap.innerHTML = cart();
+          SE.toast('Swapped to ' + xref.partNum, 'check');
+        }
+      }
+      return;
+    }
+    // Review panel: branch stock dialog
+    var ciStockBtn = e.target.closest('[data-ci-stock]');
+    if (ciStockBtn) { stockDialogWO(ciStockBtn.dataset.ciStock); return; }
+    // Cart actions menu
+    var ciToolsBtn = e.target.closest('[data-ci-tools]');
+    if (ciToolsBtn) {
+      SE.ui.menu(ciToolsBtn, [
+        { label: 'Save as shopping list', icon: 'list', run: function () { SE.toast('Saved as a shopping list', 'list'); } },
+        { label: 'Export as CSV', icon: 'download', run: function () {
+          var csvItems = cartItems(), csvData = ['Part #,Description,UOM,Vendor,Unit price,Qty,Total'].concat(
+            csvItems.filter(function (c) { return !c.replacedBy; }).map(function (c) {
+              return [c.partNum, '"' + (c.description || '').replace(/"/g, '""') + '"', c.uom || 'EA', c.vendor || '', c.price || 0, c.qty || 1, ((c.price || 0) * (c.qty || 1))].join(',');
+            })
+          ).join('\n');
+          if (SE.tx && SE.tx.download) SE.tx.download('wo-' + w.id + '-cart.csv', csvData, 'text/csv;charset=utf-8');
+          SE.toast('CSV downloaded', 'download');
+        } },
+      ]);
+      return;
+    }
     // Cart: submit
     if (e.target.closest('[data-cart-submit]')) { SE.toast('Order submitted — check your orders list', 'check'); return; }
 
