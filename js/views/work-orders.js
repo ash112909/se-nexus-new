@@ -105,14 +105,14 @@
   };
 })();
 
-SE.titles['work-orders'] = 'Work orders';
+SE.titles['work-orders'] = 'Orders';
 SE.views['work-orders'] = function (el, p) {
   var esc = SE.esc, icon = SE.icon, W = SE.work, K = SE.desk;
   var filter = W.FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
   var tab = p.tab === 'archive' && !SE.twin ? 'archive' : 'active', q = p.q || '';
   var PRI = { High: 0, Medium: 1, Normal: 2 };
   // [key, label, sort value]
-  var COLS = [['id', 'Work order', function (w) { return +w.id; }], ['machine', 'Machine', function (w) { return w.machine + w.equip; }], ['issue', 'Issue', function (w) { return w.issue.toLowerCase(); }],
+  var COLS = [['id', 'Order', function (w) { return +w.id; }], ['machine', 'Machine', function (w) { return w.machine + w.equip; }], ['issue', 'Issue', function (w) { return w.issue.toLowerCase(); }],
     ['status', 'Status', function (w) { return W.status(w); }], ['priority', 'Priority', function (w) { return PRI[w.priority]; }], ['assignee', 'Assignee', function (w) { return w.assignee; }],
     ['due', 'Due', function (w) { var d = K.parse(w.due); return d ? +d : Infinity; }]];
   var sort = COLS.some(function (c) { return c[0] === p.sort; }) ? p.sort : null, dir = p.dir === 'desc' ? 'desc' : 'asc';
@@ -120,7 +120,7 @@ SE.views['work-orders'] = function (el, p) {
   function hay(w) { var u = W.unit(w.equip) || {}; return [w.id, w.machine, w.equip, w.issue, w.assignee, u.location || '', W.status(w), w.priority].join(' '); }
   function base() { return W.list(tab === 'archive').filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
   function count(f) { return base().filter(function (w) { return f === 'All' || W.status(w) === f; }).length; }
-  function sub() { var n = W.list().length, a = W.list(true).length; return esc(SE.location().name) + ' · ' + n + ' work order' + (n === 1 ? '' : 's') + (a ? ' · ' + a + ' archived' : ''); }
+  function sub() { var n = W.list().length, a = W.list(true).length; return esc(SE.location().name) + ' · ' + n + ' order' + (n === 1 ? '' : 's') + (a ? ' · ' + a + ' archived' : ''); }
   function overdue(w) { var d = K.parse(w.due), st = W.status(w); return d && d < K.today() && st !== 'Done' && st !== 'Cancelled'; }
   function table() {
     var list = base().filter(function (w) { return tab === 'archive' || filter === 'All' || W.status(w) === filter; });
@@ -150,7 +150,7 @@ SE.views['work-orders'] = function (el, p) {
   }
   function render() {
     // web-twin (SE.twin): no archive, so no tabs
-    el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' : SE.ui.seg('Work orders or archive', [['active', 'Work orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
+    el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' : SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
     el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' : SE.ui.seg('Filter work orders', W.FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
     el.querySelector('#wo-table').innerHTML = table();
     el.querySelector('#subline').innerHTML = sub();
@@ -158,7 +158,7 @@ SE.views['work-orders'] = function (el, p) {
   }
 
   var s = SE.shell(el, {
-    nav: 'work-orders', title: 'Work orders', sub: sub(), crumbs: [['Home', 'home']],
+    nav: 'work-orders', title: 'Orders', sub: sub(), crumbs: [['Home', 'home']],
     actions: '<button type="button" class="btn btn-primary" data-new>' + icon('plus-small') + 'New work order</button>',
     search: '<form class="search mw-find wo-find" role="search" data-wo-form><label class="sr-only" for="wo-q">Search work orders</label>' + icon('search') +
       '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Number, machine, asset, issue, assignee" autocomplete="off"></form>',

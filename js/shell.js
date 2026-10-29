@@ -16,7 +16,7 @@
   var esc = SE.esc, icon = SE.icon;
   // [icon, label, route] ; '#' rows are group labels ; route null = deferred (shown, not clickable)
   SE.NAV = [
-    ['home', 'Home', 'home'], ['clipboard-list', 'Work Orders', 'work-orders'],
+    ['home', 'Home', 'home'], ['clipboard-list', 'Orders', 'work-orders'],
     ['shopping-cart-check', 'Approvals', 'approvals'], ['time-past', 'Order History', 'orders'], ['truck-side', 'Fleet', 'fleet'],
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 

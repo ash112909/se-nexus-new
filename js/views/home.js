@@ -110,7 +110,7 @@ SE.views.home = function (el, p) {
         '<ul class="qtiles" id="qtiles"></ul>' +
       '</section>' +
       '<section class="sec lay-8 ops-sec" aria-labelledby="h-ops">' +
-        '<div class="sec-head"><h2 id="h-ops">Work orders &amp; approvals</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
+        '<div class="sec-head"><h2 id="h-ops">Orders &amp; approvals</h2><a class="sec-action" href="#/work-orders">View all' + icon('arrow-small-right') + '</a></div>' +
         '<div id="ops-host"></div>' +
       '</section>' +
       '<section class="sec lay-4 net-sec" aria-labelledby="h-net">' + supplierNet() + '</section>' +
