@@ -341,13 +341,20 @@
   .qt.on span { color: var(--brand-on); }
   .qt.on:hover { border-color: var(--brand-pressed); background: var(--brand-pressed); }
 
-  /* news button: inline in qa-sec sec-head, opens dropdown overlay */
+  /* ops table card */
+  #ops-host { background: var(--surface); border: var(--edge-w) solid var(--edge); border-radius: 14px; padding: 0 16px; }
+  #ops-host .ops-head { padding-top: 12px; }
+  #ops-host .ops-row:last-child { border-bottom: none; padding-bottom: 12px; }
+
+  /* news button and KB hero link: shared pill-button style */
   .news-anchor { position: relative; }
-  .news-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 10px; background: var(--container); border: 1px solid var(--rule); border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; }
-  .news-btn:hover { background: var(--hover); border-color: var(--line-strong); }
+  .news-btn,
+  .lay-hero .sec-action { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 10px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink); cursor: pointer; white-space: nowrap; text-decoration: none; }
+  .news-btn:hover, .lay-hero .sec-action:hover { background: var(--hover); border-color: var(--line-strong); color: var(--ink); }
   .news-btn > .i { width: 15px; height: 15px; color: var(--subtle); }
   .news-btn > .i:last-child { transition: transform .2s; }
   .news-btn[aria-expanded="true"] > .i:last-child { transform: rotate(180deg); }
+  .lay-hero .sec-action > .i { width: 15px; height: 15px; color: var(--subtle); }
   .news-drop { position: absolute; top: calc(100% + 6px); right: 0; width: 560px; max-width: calc(100vw - 32px); background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.13); z-index: 60; overflow: hidden; }
   .news-drop-hd { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid var(--rule); }
   .news-drop-hd b { font-size: 14px; font-weight: 700; }
