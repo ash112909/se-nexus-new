@@ -128,7 +128,26 @@
     };
     function identity(l) { return [l.pn,l.wo || '',l.unit || '',l.serial || '',l.shipTo].join('|'); }
     X.addToCart = function (pn, qty, wo, options) {
-      options = options || {}; if (!X.part(pn)) throw new Error('Part not found: ' + pn);
+      options = options || {};
+      if (wo) {
+        if (!X.state.woCart) X.state.woCart = {};
+        var WC = X.state.woCart;
+        if (!WC[wo]) WC[wo] = [];
+        var existingWo = WC[wo].find(function (x) { return x.id === pn; });
+        if (existingWo) { existingWo.qty += (+qty || 1); }
+        else {
+          var pt = X.part(pn), sup = pt ? X.supplierOf(pn) : null;
+          WC[wo].push({ id: pn, partNum: pn, description: pt ? pt.name : pn,
+            vendor: sup ? sup.name : '', price: pt ? pt.price : 0,
+            oemOnly: !!(pt && pt.oem), inStock: !pt || pt.stock !== 'Backordered',
+            qty: +qty || 1, uom: 'EA', localInventory: [], crossRefs: [] });
+        }
+        X.save();
+        if (X.refreshShell) X.refreshShell();
+        if (X._woCartRefresh) X._woCartRefresh(wo);
+        return WC[wo].find(function (x) { return x.id === pn; });
+      }
+      if (!X.part(pn)) throw new Error('Part not found: ' + pn);
       if (!Number.isInteger(+qty) || +qty < 1) throw new Error('Choose a positive whole quantity.');
       tx.normalizeCart();
       var next = normalize({pn:pn,qty:+qty,wo:wo || null,from:copy(options.from || {})},options), found = X.state.cart.find(function (l) { return identity(l) === identity(next); });
