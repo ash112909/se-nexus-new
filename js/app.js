@@ -114,6 +114,7 @@
       }
       SE.save();
       if (SE.refreshShell) SE.refreshShell();
+      if (SE._woCartRefresh) SE._woCartRefresh(wo);
       return null;
     }
     var l = SE.state.cart.find(function (x) { return x.pn === pn; });

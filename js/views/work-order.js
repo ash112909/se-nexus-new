@@ -16,7 +16,6 @@ SE.views['work-order'] = function (el, p) {
   }
   var unit = W.unit(w.equip) || {}, K = SE.desk;
   var ED = SE.state.woEdits || (SE.state.woEdits = {});
-  var WC = SE.state.woCart;
   // Group-by persists across renders within this view session
   var groupBy = 'none';
   // Accordion open state: map of submitted order index -> bool
@@ -24,8 +23,9 @@ SE.views['work-order'] = function (el, p) {
 
   function edits() { return ED[w.id] || (ED[w.id] = { set: {}, log: [], notes: [] }); }
   function cartItems() {
-    if (!WC[w.id]) WC[w.id] = w.cart ? JSON.parse(JSON.stringify(w.cart)) : [];
-    return WC[w.id];
+    var wc = SE.state.woCart;
+    if (!wc[w.id]) wc[w.id] = w.cart ? JSON.parse(JSON.stringify(w.cart)) : [];
+    return wc[w.id];
   }
 
   function change(field, label, value, shown) {
@@ -599,5 +599,10 @@ SE.views['work-order'] = function (el, p) {
     if (k === 'due' && f.value) { var d = K.parse(f.value); if (!d) { SE.toast('Choose a valid date', 'exclamation'); return; } var lbl = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); change('due', 'Due', lbl, lbl); }
   });
   if (p.dialog === 'cancel' && !/Done|Cancelled/.test(W.status(w))) cancel();
-  return function () { if (open && document.contains(open.el)) open.close(); s.cleanup(); };
+  SE._woCartRefresh = function (woId) {
+    if (woId !== w.id) return;
+    var cs = el.querySelector('#wo-cart-sec');
+    if (cs) cs.innerHTML = cart();
+  };
+  return function () { SE._woCartRefresh = null; if (open && document.contains(open.el)) open.close(); s.cleanup(); };
 };
