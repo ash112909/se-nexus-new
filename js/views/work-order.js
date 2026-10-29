@@ -285,13 +285,6 @@ SE.views['work-order'] = function (el, p) {
     return list + '<div class="wo-note-row"><input type="text" id="wo-note-in" class="wo-note-input" placeholder="Add a note…" aria-label="Note text"><button type="button" class="btn btn-secondary" data-add-note>' + icon('comment-alt') + 'Add note</button></div>';
   }
 
-  // ── Troubleshoot KB link ──────────────────────────────────────────────────
-  function troubleshoot(st) {
-    var kb = st !== 'Done' && st !== 'Cancelled' && SE.ops.faultArticle(w);
-    if (!kb) return '';
-    return SE.ui.sec('Troubleshooting', '', '<ul class="card ar-links wo-kb"><li><a href="#/article?id=' + kb.id + '&wo=' + w.id + '" data-go="article" data-id="' + kb.id + '" data-wo="' + w.id + '"><span class="sym">' + icon('book-alt') + '</span><span><b>' + esc(kb.title) + '</b><small>Fault code ' + esc(kb.fault) + ' · ' + kb.minutes + ' min read · ' + kb.steps.length + ' steps</small></span>' + icon('angle-small-right') + '</a></li></ul>', 'h-kb');
-  }
-
   function actions(st) {
     if (SE.twin && (st === 'Done' || st === 'Cancelled')) return '';
     if (W.archived(w)) return '<button type="button" class="btn btn-secondary" data-unarchive>' + icon('undo') + 'Un-archive</button>';
@@ -342,7 +335,6 @@ SE.views['work-order'] = function (el, p) {
           '<h2 class="wo-h">' + esc(w.issue) + '</h2><p class="muted">' + esc(w.machine) + ' · Asset ' + esc(w.equip) + '</p>' +
           (st === 'Cancelled' ? SE.ui.banner('<b>Cancelled.</b> ' + esc(SE.state.cancelled[w.id]), 'danger', 'cross-small') : '') +
           (w.desc ? '<p class="wo-desc">' + esc(w.desc) + '</p>' : '') + '</section>' +
-        troubleshoot(st) +
         '<section class="sec card ci-sec" id="wo-cart-sec">' + cart() + '</section>' +
         SE.ui.sec('Orders submitted', '', submittedOrders(), 'h-ord') +
         SE.ui.sec('Notes &amp; activity', '', timeline(), 'h-log') +
