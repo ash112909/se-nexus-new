@@ -134,6 +134,7 @@ SE.views['work-orders'] = function (el, p) {
   var FILTERS = ['All', 'Active', 'Pending', 'Closed'];
   var filter = FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
   var tab = p.tab === 'archive' && !SE.twin ? 'archive' : 'active', q = p.q || '';
+  var dateMode = 'any', dateFrom = '', dateTo = '';
 
   function displayStatus(w) {
     var st = W.status(w);
@@ -147,7 +148,21 @@ SE.views['work-orders'] = function (el, p) {
   }
   var STATUS_CLS = { 'Parts ordered': 'ord-s-parts', 'Active': 'ord-s-active', 'Open': 'ord-s-open', 'Pending': 'ord-s-pending', 'Closed': 'ord-s-closed' };
 
+  function inDateRange(w) {
+    if (dateMode === 'any') return true;
+    var due = K.parse(w.due);
+    if (!due) return dateMode !== 'custom';
+    if (dateMode === 'week') { var s = K.today(); s.setDate(s.getDate() - s.getDay()); var e = new Date(s); e.setDate(e.getDate() + 6); return due >= s && due <= e; }
+    if (dateMode === 'month') { var n = K.today(); return due.getFullYear() === n.getFullYear() && due.getMonth() === n.getMonth(); }
+    if (dateMode === 'custom') {
+      if (dateFrom && due < new Date(dateFrom + 'T00:00:00')) return false;
+      if (dateTo   && due > new Date(dateTo   + 'T23:59:59')) return false;
+      return true;
+    }
+    return true;
+  }
   function matchFilter(w) {
+    if (!inDateRange(w)) return false;
     if (filter === 'All') return true;
     var ds = displayStatus(w);
     if (filter === 'Active') return ds === 'Active' || ds === 'Open';
@@ -159,8 +174,9 @@ SE.views['work-orders'] = function (el, p) {
   function base() { return W.list(tab === 'archive').filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
   function count(f) {
     var list = base();
-    if (f === 'All') return list.length;
+    if (f === 'All') return list.filter(inDateRange).length;
     return list.filter(function (w) {
+      if (!inDateRange(w)) return false;
       var ds = displayStatus(w);
       if (f === 'Active') return ds === 'Active' || ds === 'Open';
       if (f === 'Pending') return ds === 'Pending' || ds === 'Parts ordered';
@@ -176,39 +192,34 @@ SE.views['work-orders'] = function (el, p) {
     var priKey = (w.priority || 'Normal').toLowerCase();
     var priLabel = w.priority === 'Normal' || !w.priority ? 'Low' : w.priority === 'Medium' ? 'Med' : w.priority;
     var isLate = K.parse(w.due) && K.parse(w.due) < K.today() && ds !== 'Closed';
-    return '<li class="ord-row" data-go="work-order" data-id="' + w.id + '" tabindex="0" aria-label="Order ' + w.id + ', ' + esc(w.machine) + '">' +
-      '<span class="ord-thumb" aria-hidden="true">' + icon('tractor') + '</span>' +
-      '<div class="ord-body">' +
-        '<div class="ord-head">' +
-          '<b class="ord-machine">' + SE.hl(w.machine, q) + ' \xb7 ' + esc(w.equip) + '</b>' +
-          '<span class="chip ord-kind-chip">' + esc(w.kind === 'pm' ? 'PM' : 'Repair') + '</span>' +
-        '</div>' +
-        '<div class="ord-meta">' +
-          '<span class="ord-num">#' + SE.hl(w.id, q) + '</span>' +
-          '<span class="ord-sep" aria-hidden="true">\xb7</span>' +
-          '<span class="ord-issue">' + SE.hl(w.issue, q) + '</span>' +
-          (w.assignee ? '<span class="ord-sep" aria-hidden="true">\xb7</span><span class="ord-who">' + esc(shortName(w.assignee)) + '</span>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="ord-right">' +
-        '<span class="ord-date' + (isLate ? ' ord-date-late' : '') + '">' + esc(w.due || '—') + '</span>' +
-        '<span class="ord-chip ' + (STATUS_CLS[ds] || 'ord-s-open') + '">' + esc(ds) + '</span>' +
-        '<span class="ord-pri p-' + priKey + '">● ' + esc(priLabel) + '</span>' +
-      '</div>' +
-      icon('angle-small-right') +
-    '</li>';
+    return '<tr class=”ord-tr' + (ds === 'Closed' ? ' ord-tr-closed' : '') + '” data-go=”work-order” data-id=”' + w.id + '” tabindex=”0” aria-label=”Order ' + w.id + ', ' + esc(w.machine) + '”>' +
+      '<td class=”ord-col-id”>#' + SE.hl(w.id, q) + '</td>' +
+      '<td class=”ord-col-equip”><b>' + SE.hl(w.machine, q) + '</b><span class=”ord-equip-sub”>' + esc(w.equip) + '</span></td>' +
+      '<td class=”ord-col-issue”>' + SE.hl(w.issue, q) + '</td>' +
+      '<td class=”ord-col-who”>' + esc(shortName(w.assignee)) + '</td>' +
+      '<td class=”ord-col-due' + (isLate ? ' ord-date-late' : '') + '”>' + esc(w.due || '—') + '</td>' +
+      '<td class=”ord-col-status”><span class=”ord-chip ' + (STATUS_CLS[ds] || 'ord-s-open') + '”>' + esc(ds) + '</span></td>' +
+      '<td class=”ord-col-pri”><span class=”ord-pri p-' + priKey + '”>● ' + esc(priLabel) + '</span></td>' +
+    '</tr>';
   }
 
   function renderList() {
     var list = base().filter(matchFilter);
     var host = el.querySelector('#wo-list');
+    var hasFilter = q || filter !== 'All' || dateMode !== 'any';
     if (!list.length) {
       host.innerHTML = SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral',
         title: tab === 'archive' ? 'Nothing archived' : 'No orders match' + (q.trim() ? ' “' + q.trim() + '”' : ''),
         text: tab === 'archive' ? 'Archived orders from their detail page appear here.' : 'Nothing at ' + SE.location().name + ' matches.',
-        action: (q || filter !== 'All') ? '<button type="button" class="btn btn-secondary" data-clear>Clear search and filter</button>' : '' });
+        action: hasFilter ? '<button type=”button” class=”btn btn-secondary” data-clear>Clear search and filter</button>' : '' });
     } else {
-      host.innerHTML = '<ul class="ord-list">' + list.map(row).join('') + '</ul>';
+      host.innerHTML =
+        '<div class=”tbl-wrap ord-tbl-wrap”><table class=”tbl ord-tbl”>' +
+          '<thead><tr>' +
+            '<th>Order</th><th>Equipment</th><th>Issue</th><th>Assignee</th><th>Due</th><th>Status</th><th>Priority</th>' +
+          '</tr></thead>' +
+          '<tbody>' + list.map(row).join('') + '</tbody>' +
+        '</table></div>';
     }
   }
   function render() {
@@ -217,6 +228,8 @@ SE.views['work-orders'] = function (el, p) {
     el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' :
       SE.ui.seg('Filter', FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
     el.querySelector('#wo-count').textContent = count(filter) + ' order' + (count(filter) === 1 ? '' : 's');
+    var panel = el.querySelector('#wo-date-panel');
+    if (panel) panel.hidden = dateMode !== 'custom';
     renderList();
     el.querySelector('#subline').innerHTML = sub();
     var o = {};
@@ -227,24 +240,29 @@ SE.views['work-orders'] = function (el, p) {
   }
 
   var body =
-    '<section class="sec ord-sec">' +
-      '<div class="ord-bar">' +
-        '<div id="wo-tabs"></div>' +
-        '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
+    '<section class=”sec ord-sec”>' +
+      '<div class=”ord-bar”>' +
+        '<div id=”wo-tabs”></div>' +
+        '<button class=”btn btn-primary ord-new-btn” type=”button” data-new>' + icon('plus-small') + 'New Order</button>' +
       '</div>' +
-      '<div class="ord-filters">' +
-        '<div id="wo-seg" class="ord-pills"></div>' +
-        '<div class="ord-extras">' +
-          '<div class="control ord-sel-wrap"><select class="ord-sel" aria-label="Filter by supplier"><option>All suppliers</option>' +
-            SE.data.suppliers.map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>'; }).join('') +
+      '<div class=”ord-filters”>' +
+        '<div id=”wo-seg” class=”ord-pills”></div>' +
+        '<div class=”ord-extras”>' +
+          '<div class=”control ord-sel-wrap”><select class=”ord-ctl” id=”wo-date-sel” aria-label=”Filter by date”>' +
+            '<option value=”any”>Any date</option><option value=”week”>This week</option><option value=”month”>This month</option><option value=”custom”>Custom range…</option>' +
           '</select>' + icon('angle-small-down') + '</div>' +
-          '<div class="control ord-sel-wrap"><select class="ord-sel" aria-label="Filter by date"><option>Any date</option><option>This week</option><option>This month</option></select>' + icon('angle-small-down') + '</div>' +
-          '<form class="search ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
-            '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search…" autocomplete="off"></form>' +
+          '<form class=”ord-ctl ord-search” role=”search” data-wo-form><label class=”sr-only” for=”wo-q”>Search orders</label>' + icon('search') +
+            '<input id=”wo-q” type=”search” value=”' + esc(q) + '” placeholder=”Search orders…” autocomplete=”off”></form>' +
         '</div>' +
-        '<span class="ord-count-label" id="wo-count"></span>' +
+        '<span class=”ord-count-label” id=”wo-count”></span>' +
       '</div>' +
-      '<div id="wo-list"></div>' +
+      '<div class=”ord-date-panel” id=”wo-date-panel” hidden>' +
+        '<label class=”ord-date-lbl” for=”wo-df”>From</label>' +
+        '<input class=”ord-ctl ord-date-in” id=”wo-df” type=”date” aria-label=”Date range start”>' +
+        '<label class=”ord-date-lbl” for=”wo-dt”>To</label>' +
+        '<input class=”ord-ctl ord-date-in” id=”wo-dt” type=”date” aria-label=”Date range end”>' +
+      '</div>' +
+      '<div id=”wo-list”></div>' +
     '</section>';
 
   var s = SE.shell(el, {
@@ -258,6 +276,14 @@ SE.views['work-orders'] = function (el, p) {
   qIn.addEventListener('input', function () { q = qIn.value; render(); });
   el.querySelector('[data-wo-form]').addEventListener('submit', function (e) { e.preventDefault(); e.stopPropagation(); });
 
+  el.querySelector('#wo-date-sel').addEventListener('change', function (e) {
+    dateMode = e.target.value;
+    if (dateMode !== 'custom') { dateFrom = ''; dateTo = ''; el.querySelector('#wo-df').value = ''; el.querySelector('#wo-dt').value = ''; }
+    render();
+  });
+  el.querySelector('#wo-df').addEventListener('change', function (e) { dateFrom = e.target.value; render(); });
+  el.querySelector('#wo-dt').addEventListener('change', function (e) { dateTo = e.target.value; render(); });
+
   var open = null;
   function openNew(showErrors) {
     open = W.newDialog({ showErrors: showErrors,
@@ -268,11 +294,11 @@ SE.views['work-orders'] = function (el, p) {
     var t = e.target.closest('button');
     if (t && t.hasAttribute('data-new')) { openNew(false); return; }
     if (t && t.dataset.tab) { tab = t.dataset.tab; render(); return; }
-    if (t && t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; render(); return; }
+    if (t && t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; dateMode = 'any'; dateFrom = ''; dateTo = ''; el.querySelector('#wo-date-sel').value = 'any'; render(); return; }
     if (t && t.dataset.seg) { filter = t.dataset.seg; render(); return; }
   });
   el.addEventListener('keydown', function (e) {
-    var r = e.target.closest && e.target.closest('li[data-go]');
+    var r = e.target.closest && e.target.closest('tr[data-go]');
     if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); SE.goFrom(r); }
   });
   if (p.new) openNew(p.new === 'error');
