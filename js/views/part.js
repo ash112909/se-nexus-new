@@ -106,11 +106,15 @@
       if (!t || !root.contains(t)) return;
       if (t.dataset.step) { qty = Math.max(1, Math.min(99, qty + +t.dataset.step)); root.querySelector('.stepper output').textContent = qty; root.querySelector('[data-add]').textContent = label(); return; }
       if (t.hasAttribute('data-add')) {
-        var selectedUnit = SE.cat.unit(wo); var addedLine = SE.addToCart(part.pn, qty, wo, { unit: selectedUnit && selectedUnit.equip, serial: selectedUnit && selectedUnit.serial });
+        var selectedUnit = SE.cat.unit(wo); SE.addToCart(part.pn, qty, wo, { unit: selectedUnit && selectedUnit.equip, serial: selectedUnit && selectedUnit.serial });
         SE.toast('Added to cart', 'shopping-cart');
-        var line = addedLine || SE.state.cart.find(function (l) { return l.pn === part.pn && (l.wo || null) === (wo || null) && (!selectedUnit || l.unit === selectedUnit.equip); });
         var msg = root.querySelector('.pd-added');
-        msg.innerHTML = icon('check') + '<span>In cart · ' + line.qty + (line.wo ? ' · for work order #' + esc(line.wo) : '') + '</span><a class="btn btn-secondary" href="#/cart">View cart</a>';
+        var woCart = wo && SE.state.woCart && SE.state.woCart[wo];
+        var woLine = woCart && woCart.find(function (l) { return l.id === part.pn; });
+        var globLine = !wo && SE.state.cart.find(function (l) { return l.pn === part.pn; });
+        var qtyShown = (woLine || globLine || {}).qty || qty;
+        var viewLink = wo ? '<a class="btn btn-secondary" href="#/work-order?id=' + esc(wo) + '">View work order</a>' : '';
+        msg.innerHTML = icon('check') + '<span>Added · ' + qtyShown + ' · for WO #' + esc(wo || '') + '</span>' + viewLink;
         msg.hidden = false;
         return;
       }

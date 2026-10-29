@@ -91,8 +91,33 @@
   // what the cart buys: lines covered by branch shelves (js/desk.js) cost nothing to buy
   SE.cartTotal = function () { return SE.state.cart.reduce(function (n, l) { return n + SE.part(l.pn).price * (SE.desk ? SE.desk.alloc(l).buy : l.qty); }, 0); };
   SE.addToCart = function (pn, qty, wo) {
+    if (wo) {
+      // WO-linked items live in the per-WO cart, not the global cart
+      var WC = SE.state.woCart || (SE.state.woCart = {});
+      if (!WC[wo]) WC[wo] = [];
+      var existing = WC[wo].find(function (x) { return x.id === pn; });
+      if (existing) { existing.qty += qty; }
+      else {
+        var p = SE.part(pn), sup = p ? SE.supplierOf(pn) : null;
+        WC[wo].push({
+          id: pn, partNum: pn,
+          description: p ? p.name : pn,
+          vendor: sup ? sup.name : '',
+          price: p ? p.price : 0,
+          oemOnly: !!(p && p.oem),
+          inStock: !p || p.stock !== 'Backordered',
+          qty: qty,
+          uom: 'EA',
+          localInventory: [],
+          crossRefs: []
+        });
+      }
+      SE.save();
+      if (SE.refreshShell) SE.refreshShell();
+      return null;
+    }
     var l = SE.state.cart.find(function (x) { return x.pn === pn; });
-    if (l) l.qty += qty; else SE.state.cart.push({ pn: pn, qty: qty, wo: wo || null });
+    if (l) l.qty += qty; else SE.state.cart.push({ pn: pn, qty: qty, wo: null });
     SE.save();
     if (SE.refreshShell) SE.refreshShell();
   };
