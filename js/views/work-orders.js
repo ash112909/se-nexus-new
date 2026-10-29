@@ -44,7 +44,7 @@
     o = o || {};
     var D = SE.data, esc = SE.esc;
     var dlg = SE.ui.dialog({
-      title: 'New work order', wide: true,
+      title: 'New order', wide: true,
       body:
         '<form id="wo-form" class="wo-form" novalidate autocomplete="off">' +
           '<div class="form-row span-2" id="row-asset"><label for="f-asset">Asset</label>' +
@@ -108,89 +108,150 @@
 SE.titles['work-orders'] = 'Orders';
 SE.views['work-orders'] = function (el, p) {
   var esc = SE.esc, icon = SE.icon, W = SE.work, K = SE.desk;
-  var filter = W.FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
+  var FILTERS = ['All', 'Active', 'Pending', 'Closed'];
+  var filter = FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
   var tab = p.tab === 'archive' && !SE.twin ? 'archive' : 'active', q = p.q || '';
-  var PRI = { High: 0, Medium: 1, Normal: 2 };
-  // [key, label, sort value]
-  var COLS = [['id', 'Order', function (w) { return +w.id; }], ['machine', 'Machine', function (w) { return w.machine + w.equip; }], ['issue', 'Issue', function (w) { return w.issue.toLowerCase(); }],
-    ['status', 'Status', function (w) { return W.status(w); }], ['priority', 'Priority', function (w) { return PRI[w.priority]; }], ['assignee', 'Assignee', function (w) { return w.assignee; }],
-    ['due', 'Due', function (w) { var d = K.parse(w.due); return d ? +d : Infinity; }]];
-  var sort = COLS.some(function (c) { return c[0] === p.sort; }) ? p.sort : null, dir = p.dir === 'desc' ? 'desc' : 'asc';
 
-  function hay(w) { var u = W.unit(w.equip) || {}; return [w.id, w.machine, w.equip, w.issue, w.assignee, u.location || '', W.status(w), w.priority].join(' '); }
-  function base() { return W.list(tab === 'archive').filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
-  function count(f) { return base().filter(function (w) { return f === 'All' || W.status(w) === f; }).length; }
-  function sub() { var n = W.list().length, a = W.list(true).length; return esc(SE.location().name) + ' · ' + n + ' order' + (n === 1 ? '' : 's') + (a ? ' · ' + a + ' archived' : ''); }
-  function overdue(w) { var d = K.parse(w.due), st = W.status(w); return d && d < K.today() && st !== 'Done' && st !== 'Cancelled'; }
-  function table() {
-    var list = base().filter(function (w) { return tab === 'archive' || filter === 'All' || W.status(w) === filter; });
-    if (sort) { var c = COLS.find(function (x) { return x[0] === sort; }); list = list.slice().sort(function (a, b) { var x = c[2](a), y = c[2](b); return (x < y ? -1 : x > y ? 1 : 0) * (dir === 'asc' ? 1 : -1); }); }
-    if (!list.length) return tab === 'archive' && !q.trim()
-      ? SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral', title: 'Nothing archived', text: 'Done and cancelled work orders you archive from their page are kept here, read only.' })
-      : SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral', title: 'No work orders match' + (q.trim() ? ' "' + q.trim() + '"' : ''), text: 'Nothing matches at ' + SE.location().name + '.', action: '<button type="button" class="btn btn-secondary" data-clear>Clear search and filter</button>' });
-    var head = COLS.map(function (c) {
-      var on = sort === c[0];
-      return '<th scope="col"' + (on ? ' aria-sort="' + (dir === 'asc' ? 'ascending' : 'descending') + '"' : '') + (c[0] === 'due' ? ' class="nowrap"' : '') + '><button type="button" class="th-sort' + (on ? ' on' : '') + '" data-sort="' + c[0] + '">' + esc(c[1]) +
-        '<span class="th-ar" aria-hidden="true">' + (on ? (dir === 'asc' ? '↑' : '↓') : '↕') + '</span></button></th>';
-    }).join('');
-    return '<div class="tbl-wrap"><table class="tbl wo-tbl"><thead><tr>' + head + '</tr></thead><tbody>' + list.map(function (w) {
-      var st = W.status(w), u = W.unit(w.equip) || {};
-      return '<tr data-go="work-order" data-id="' + w.id + '" tabindex="0"' + (SE.state.cancelled[w.id] ? ' class="cancelled"' : '') + '>' +
-        '<td><b>#' + SE.hl(w.id, q) + '</b></td><td>' + SE.hl(w.machine, q) + '<span class="sub">' + SE.hl(w.equip, q) + ' · ' + SE.hl(u.location || '', q) + '</span></td><td><span class="wo-issue">' + SE.hl(w.issue, q) + '</span></td>' +
-        '<td>' + SE.chip(st) + '</td><td>' + W.priority(w.priority) + '</td><td>' + SE.hl(w.assignee, q) + '</td>' +
-        '<td class="nowrap' + (overdue(w) ? ' wo-late' : '') + '">' + esc(w.due || 'Not set') + (overdue(w) ? '<span class="sub">Overdue</span>' : '') + '</td></tr>';
-    }).join('') + '</tbody></table></div>';
+  function displayStatus(w) {
+    var st = W.status(w);
+    if (st === 'Done' || st === 'Cancelled') return 'Closed';
+    if (st === 'Awaiting approval') {
+      var a = W.approvalFor(w.id);
+      return (a && W.apprState(a) === 'pending') ? 'Parts ordered' : 'Pending';
+    }
+    if (st === 'In progress') return 'Active';
+    return st;
   }
-  function url() {
-    var o = {};
-    if (tab === 'archive') o.tab = 'archive'; else if (filter !== 'All') o.filter = filter;
-    if (q.trim()) o.q = q.trim();
-    if (sort) { o.sort = sort; o.dir = dir; }
-    return '#/work-orders' + (Object.keys(o).length ? '?' + new URLSearchParams(o) : '');
+  var STATUS_CLS = { 'Parts ordered': 'ord-s-parts', 'Active': 'ord-s-active', 'Open': 'ord-s-open', 'Pending': 'ord-s-pending', 'Closed': 'ord-s-closed' };
+
+  function matchFilter(w) {
+    if (filter === 'All') return true;
+    var ds = displayStatus(w);
+    if (filter === 'Active') return ds === 'Active' || ds === 'Open';
+    if (filter === 'Pending') return ds === 'Pending' || ds === 'Parts ordered';
+    if (filter === 'Closed') return ds === 'Closed';
+    return true;
+  }
+  function hay(w) { return [w.id, w.machine, w.equip, w.issue, w.assignee || ''].join(' '); }
+  function base() { return W.list(tab === 'archive').filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
+  function count(f) {
+    var list = base();
+    if (f === 'All') return list.length;
+    return list.filter(function (w) {
+      var ds = displayStatus(w);
+      if (f === 'Active') return ds === 'Active' || ds === 'Open';
+      if (f === 'Pending') return ds === 'Pending' || ds === 'Parts ordered';
+      if (f === 'Closed') return ds === 'Closed';
+      return false;
+    }).length;
+  }
+  function sub() { var n = W.list().length, a = W.list(true).length; return esc(SE.location().name) + ' \xb7 ' + n + ' order' + (n === 1 ? '' : 's') + (a ? ' \xb7 ' + a + ' archived' : ''); }
+  function shortName(s) { if (!s) return '—'; var p = s.split(' '); return p.length > 1 ? p[0] + ' ' + p[1].charAt(0) + '.' : s; }
+
+  function row(w) {
+    var ds = displayStatus(w);
+    var priKey = (w.priority || 'Normal').toLowerCase();
+    var priLabel = w.priority === 'Normal' || !w.priority ? 'Low' : w.priority === 'Medium' ? 'Med' : w.priority;
+    var isLate = K.parse(w.due) && K.parse(w.due) < K.today() && ds !== 'Closed';
+    return '<li class="ord-row" data-go="work-order" data-id="' + w.id + '" tabindex="0" aria-label="Order ' + w.id + ', ' + esc(w.machine) + '">' +
+      '<span class="ord-thumb" aria-hidden="true">' + icon('tractor') + '</span>' +
+      '<div class="ord-body">' +
+        '<div class="ord-head">' +
+          '<b class="ord-machine">' + SE.hl(w.machine, q) + ' \xb7 ' + esc(w.equip) + '</b>' +
+          '<span class="chip ord-kind-chip">' + esc(w.kind === 'pm' ? 'PM' : 'Repair') + '</span>' +
+        '</div>' +
+        '<div class="ord-meta">' +
+          '<span class="ord-num">#' + SE.hl(w.id, q) + '</span>' +
+          '<span class="ord-sep" aria-hidden="true">\xb7</span>' +
+          '<span class="ord-issue">' + SE.hl(w.issue, q) + '</span>' +
+          (w.assignee ? '<span class="ord-sep" aria-hidden="true">\xb7</span><span class="ord-who">' + esc(shortName(w.assignee)) + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="ord-right">' +
+        '<span class="ord-date' + (isLate ? ' ord-date-late' : '') + '">' + esc(w.due || '—') + '</span>' +
+        '<span class="ord-chip ' + (STATUS_CLS[ds] || 'ord-s-open') + '">' + esc(ds) + '</span>' +
+        '<span class="ord-pri p-' + priKey + '">● ' + esc(priLabel) + '</span>' +
+      '</div>' +
+      icon('angle-small-right') +
+    '</li>';
+  }
+
+  function renderList() {
+    var list = base().filter(matchFilter);
+    var host = el.querySelector('#wo-list');
+    if (!list.length) {
+      host.innerHTML = SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral',
+        title: tab === 'archive' ? 'Nothing archived' : 'No orders match' + (q.trim() ? ' “' + q.trim() + '”' : ''),
+        text: tab === 'archive' ? 'Archived orders from their detail page appear here.' : 'Nothing at ' + SE.location().name + ' matches.',
+        action: (q || filter !== 'All') ? '<button type="button" class="btn btn-secondary" data-clear>Clear search and filter</button>' : '' });
+    } else {
+      host.innerHTML = '<ul class="ord-list">' + list.map(row).join('') + '</ul>';
+    }
   }
   function render() {
-    // web-twin (SE.twin): no archive, so no tabs
-    el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' : SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
-    el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' : SE.ui.seg('Filter work orders', W.FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
-    el.querySelector('#wo-table').innerHTML = table();
+    el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' :
+      SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
+    el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' :
+      SE.ui.seg('Filter', FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
+    el.querySelector('#wo-count').textContent = count(filter) + ' order' + (count(filter) === 1 ? '' : 's');
+    renderList();
     el.querySelector('#subline').innerHTML = sub();
-    history.replaceState(null, '', url());
+    var o = {};
+    if (tab !== 'active') o.tab = tab;
+    if (filter !== 'All') o.filter = filter;
+    if (q.trim()) o.q = q.trim();
+    history.replaceState(null, '', '#/work-orders' + (Object.keys(o).length ? '?' + new URLSearchParams(o) : ''));
   }
+
+  var body =
+    '<section class="sec ord-sec">' +
+      '<div class="ord-bar">' +
+        '<div id="wo-tabs"></div>' +
+        '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
+      '</div>' +
+      '<div class="ord-filters">' +
+        '<div id="wo-seg" class="ord-pills"></div>' +
+        '<div class="ord-extras">' +
+          '<div class="control ord-sel-wrap"><select class="ord-sel" aria-label="Filter by supplier"><option>All suppliers</option>' +
+            SE.data.suppliers.map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>'; }).join('') +
+          '</select>' + icon('angle-small-down') + '</div>' +
+          '<div class="control ord-sel-wrap"><select class="ord-sel" aria-label="Filter by date"><option>Any date</option><option>This week</option><option>This month</option></select>' + icon('angle-small-down') + '</div>' +
+          '<form class="search ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
+            '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search…" autocomplete="off"></form>' +
+        '</div>' +
+        '<span class="ord-count-label" id="wo-count"></span>' +
+      '</div>' +
+      '<div id="wo-list"></div>' +
+    '</section>';
 
   var s = SE.shell(el, {
     nav: 'work-orders', title: 'Orders', sub: sub(), crumbs: [['Home', 'home']],
-    actions: '<button type="button" class="btn btn-primary" data-new>' + icon('plus-small') + 'New work order</button>',
-    search: '<form class="search mw-find wo-find" role="search" data-wo-form><label class="sr-only" for="wo-q">Search work orders</label>' + icon('search') +
-      '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Number, machine, asset, issue, assignee" autocomplete="off"></form>',
-    body: '<section class="sec wo-sec"><div class="wo-bar"><div id="wo-tabs"></div><div id="wo-seg"></div></div><div id="wo-table"></div></section>',
+    body: body,
     onLocation: function () { render(); },
   });
   render();
+
   var qIn = el.querySelector('#wo-q');
   qIn.addEventListener('input', function () { q = qIn.value; render(); });
   el.querySelector('[data-wo-form]').addEventListener('submit', function (e) { e.preventDefault(); e.stopPropagation(); });
 
   var open = null;
   function openNew(showErrors) {
-    open = W.newDialog({ showErrors: showErrors, onClose: function () { if (/new=/.test(location.hash)) history.replaceState(null, '', '#/work-orders'); }, onCreate: function (w) { SE.go('work-order', { params: { id: w.id } }); } });
+    open = W.newDialog({ showErrors: showErrors,
+      onClose: function () { if (/new=/.test(location.hash)) history.replaceState(null, '', '#/work-orders'); },
+      onCreate: function (w) { SE.go('work-order', { params: { id: w.id } }); } });
   }
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button');
-    if (!t) return;
-    if (t.hasAttribute('data-new')) { openNew(false); return; }
-    if (t.dataset.tab) { tab = t.dataset.tab; render(); return; }
-    if (t.dataset.sort) {
-      if (sort === t.dataset.sort) dir = dir === 'asc' ? 'desc' : 'asc'; else { sort = t.dataset.sort; dir = 'asc'; }
-      render(); var b = el.querySelector('[data-sort="' + sort + '"]'); if (b && !SE.capture) b.focus(); return;
-    }
-    if (t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; render(); return; }
-    if (t.dataset.seg) { filter = t.dataset.seg; render(); }
+    if (t && t.hasAttribute('data-new')) { openNew(false); return; }
+    if (t && t.dataset.tab) { tab = t.dataset.tab; render(); return; }
+    if (t && t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; render(); return; }
+    if (t && t.dataset.seg) { filter = t.dataset.seg; render(); return; }
   });
   el.addEventListener('keydown', function (e) {
-    var r = e.target.closest && e.target.closest('tr[data-go]');
+    var r = e.target.closest && e.target.closest('li[data-go]');
     if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); SE.goFrom(r); }
   });
   if (p.new) openNew(p.new === 'error');
-  // a dialog lives on <body>: close it when the route changes (browser Back while it is open)
   return function () { if (open && document.contains(open.el)) open.close(); s.cleanup(); };
 };

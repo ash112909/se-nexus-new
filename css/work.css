@@ -122,6 +122,60 @@
   .ret-chip:hover { background: var(--container-low); }
   .ret-chip[aria-checked="true"] { background: var(--brand); border-color: var(--brand); color: #000; font-weight: 600; }
 
+  /* ---------- orders list (card rows) */
+  .ord-sec { gap: 16px; }
+  .ord-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ord-new-btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .ord-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 0 4px; border-bottom: 1px solid var(--line); }
+  .ord-pills { flex: 1; min-width: 0; }
+  .ord-pills .seg { flex-wrap: wrap; }
+  .ord-extras { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ord-sel-wrap { display: flex; align-items: center; }
+  .ord-sel-wrap .i { top: 50%; transform: translateY(-50%); }
+  .ord-sel { height: 34px; padding: 0 28px 0 10px; font-size: 13px; border-radius: 8px; border: 1px solid var(--edge); background: var(--surface); color: var(--ink); }
+  .ord-search { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border: 1px solid var(--edge); border-radius: 8px; background: var(--surface); }
+  .ord-search .i { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+  .ord-search input { border: none; background: none; color: var(--ink); font-size: 13px; width: 140px; outline: none; }
+  .ord-count-label { font-size: 13px; color: var(--muted); white-space: nowrap; margin-left: auto; }
+  .ord-list { list-style: none; margin: 0; padding: 0; }
+  .ord-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: background .12s; }
+  .ord-row:first-child { border-radius: 12px 12px 0 0; }
+  .ord-row:last-child { border-bottom: none; border-radius: 0 0 12px 12px; }
+  .ord-row:only-child { border-radius: 12px; }
+  .ord-row:hover { background: var(--hover); }
+  .ord-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  .ord-list { border: 1px solid var(--edge); border-radius: 12px; overflow: hidden; margin-top: 12px; }
+  .ord-thumb { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--container-low); color: var(--muted); flex-shrink: 0; }
+  .ord-thumb .i { width: 20px; height: 20px; }
+  .ord-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .ord-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ord-machine { font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ord-kind-chip { font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; height: 20px; padding: 0 7px; border-radius: 6px; background: var(--container-low); color: var(--muted); flex-shrink: 0; }
+  .ord-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+  .ord-num { font-weight: 500; color: var(--ink); }
+  .ord-sep { opacity: .4; }
+  .ord-issue { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+  .ord-who { white-space: nowrap; }
+  .ord-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .ord-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .ord-date-late { color: var(--danger); font-weight: 600; }
+  .ord-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 11px; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; }
+  .ord-s-parts  { background: rgba(37,99,235,.1);  color: #1d4ed8; }
+  .ord-s-active { background: rgba(5,150,105,.1);  color: #047857; }
+  .ord-s-open   { background: rgba(107,114,128,.1); color: var(--muted); }
+  .ord-s-pending { background: rgba(234,88,12,.1); color: #c2410c; }
+  .ord-s-closed { background: var(--container-low); color: var(--muted); }
+  .ord-pri { font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--muted); }
+  .ord-pri.p-high { color: var(--danger); }
+  .ord-pri.p-medium { color: var(--chip-high-ink); }
+  .ord-row > .i { width: 16px; height: 16px; color: var(--subtle); flex-shrink: 0; }
+  @container (max-width: 599px) {
+    .ord-extras { display: none; }
+    .ord-issue { max-width: 180px; }
+    .ord-who { display: none; }
+    .ord-date { display: none; }
+  }
+
   /* last, so it wins over the 2 split widths above */
   @container (max-width: 1023px) { .wo-split { grid-template-columns: minmax(0, 1fr); } }
   /* approval (layout review VR03): side by side while the line-item table (641px with its thumbnail, 593 without)
