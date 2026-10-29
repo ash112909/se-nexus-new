@@ -24,6 +24,7 @@ SE.views['work-order'] = function (el, p) {
   function edits() { return ED[w.id] || (ED[w.id] = { set: {}, log: [], notes: [] }); }
   function cartItems() {
     var wc = SE.state.woCart;
+    console.log('[cartItems] wc[' + w.id + ']:', wc[w.id] ? wc[w.id].length + ' items' : 'empty/null');
     if (!wc[w.id]) wc[w.id] = w.cart ? JSON.parse(JSON.stringify(w.cart)) : [];
     return wc[w.id];
   }
