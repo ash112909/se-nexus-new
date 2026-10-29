@@ -17,7 +17,8 @@
   .control select + .i { position: absolute; right: 12px; pointer-events: none; color: var(--muted); }
   .form-row .lbl { font-size: 12px; font-weight: 500; line-height: 16px; color: var(--muted); }
   .lbl-hint { font-size: 12px; font-weight: 400; color: var(--muted); }
-  .wo-auto { background: var(--container-low); color: var(--muted); cursor: default; }
+  .req-star { color: var(--danger); }
+  .form-hint { font-size: 12px; color: var(--success); background: var(--tint-success); border-radius: 6px; padding: 5px 9px; margin-top: 4px; }
 
   /* ---------- work order list */
   .wo-sec { gap: 16px; }
