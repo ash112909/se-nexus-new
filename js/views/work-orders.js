@@ -247,14 +247,14 @@ SE.views['work-orders'] = function (el, p) {
     var priKey = (w.priority || 'Normal').toLowerCase();
     var priLabel = w.priority === 'Normal' || !w.priority ? 'Low' : w.priority === 'Medium' ? 'Med' : w.priority;
     var isLate = K.parse(w.due) && K.parse(w.due) < K.today() && ds !== 'Closed';
-    return '<tr class=”ord-tr' + (ds === 'Closed' ? ' ord-tr-closed' : '') + '” data-go=”work-order” data-id=”' + w.id + '” tabindex=”0” aria-label=”Order ' + w.id + ', ' + esc(w.machine) + '”>' +
-      '<td class=”ord-col-id”>#' + SE.hl(w.id, q) + '</td>' +
-      '<td class=”ord-col-equip”><b>' + SE.hl(w.machine, q) + '</b><span class=”ord-equip-sub”>' + esc(w.equip) + '</span></td>' +
-      '<td class=”ord-col-issue”>' + SE.hl(w.issue, q) + '</td>' +
-      '<td class=”ord-col-who”>' + esc(shortName(w.assignee)) + '</td>' +
-      '<td class=”ord-col-due' + (isLate ? ' ord-date-late' : '') + '”>' + esc(w.due || '—') + '</td>' +
-      '<td class=”ord-col-status”><span class=”ord-chip ' + (STATUS_CLS[ds] || 'ord-s-open') + '”>' + esc(ds) + '</span></td>' +
-      '<td class=”ord-col-pri”><span class=”ord-pri p-' + priKey + '”>● ' + esc(priLabel) + '</span></td>' +
+    return '<tr class="ord-tr' + (ds === 'Closed' ? ' ord-tr-closed' : '') + '" data-go="work-order" data-id="' + w.id + '" tabindex="0" aria-label="Order ' + w.id + ', ' + esc(w.machine) + '">' +
+      '<td class="ord-col-id">#' + SE.hl(w.id, q) + '</td>' +
+      '<td class="ord-col-equip"><b>' + SE.hl(w.machine, q) + '</b><span class="ord-equip-sub">' + esc(w.equip) + '</span></td>' +
+      '<td class="ord-col-issue">' + SE.hl(w.issue, q) + '</td>' +
+      '<td class="ord-col-who">' + esc(shortName(w.assignee)) + '</td>' +
+      '<td class="ord-col-due' + (isLate ? ' ord-date-late' : '') + '">' + esc(w.due || '—') + '</td>' +
+      '<td class="ord-col-status"><span class="ord-chip ' + (STATUS_CLS[ds] || 'ord-s-open') + '">' + esc(ds) + '</span></td>' +
+      '<td class="ord-col-pri"><span class="ord-pri p-' + priKey + '">● ' + esc(priLabel) + '</span></td>' +
     '</tr>';
   }
 
@@ -264,12 +264,12 @@ SE.views['work-orders'] = function (el, p) {
     var hasFilter = q || filter !== 'All' || dateMode !== 'any';
     if (!list.length) {
       host.innerHTML = SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral',
-        title: tab === 'archive' ? 'Nothing archived' : 'No orders match' + (q.trim() ? ' “' + q.trim() + '”' : ''),
+        title: tab === 'archive' ? 'Nothing archived' : 'No orders match' + (q.trim() ? ' "' + q.trim() + '"' : ''),
         text: tab === 'archive' ? 'Archived orders from their detail page appear here.' : 'Nothing at ' + SE.location().name + ' matches.',
-        action: hasFilter ? '<button type=”button” class=”btn btn-secondary” data-clear>Clear search and filter</button>' : '' });
+        action: hasFilter ? '<button type="button" class="btn btn-secondary" data-clear>Clear search and filter</button>' : '' });
     } else {
       host.innerHTML =
-        '<div class=”tbl-wrap ord-tbl-wrap”><table class=”tbl ord-tbl”>' +
+        '<div class="tbl-wrap ord-tbl-wrap"><table class="tbl ord-tbl">' +
           '<thead><tr>' +
             '<th>Order</th><th>Equipment</th><th>Issue</th><th>Assignee</th><th>Due</th><th>Status</th><th>Priority</th>' +
           '</tr></thead>' +
@@ -295,29 +295,29 @@ SE.views['work-orders'] = function (el, p) {
   }
 
   var body =
-    '<section class=”sec ord-sec”>' +
-      '<div class=”ord-bar”>' +
-        '<div id=”wo-tabs”></div>' +
-        '<button class=”btn btn-primary ord-new-btn” type=”button” data-new>' + icon('plus-small') + 'New Order</button>' +
+    '<section class="sec ord-sec">' +
+      '<div class="ord-bar">' +
+        '<div id="wo-tabs"></div>' +
+        '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
       '</div>' +
-      '<div class=”ord-filters”>' +
-        '<div id=”wo-seg” class=”ord-pills”></div>' +
-        '<div class=”ord-extras”>' +
-          '<div class=”control ord-sel-wrap”><select class=”ord-ctl” id=”wo-date-sel” aria-label=”Filter by date”>' +
-            '<option value=”any”>Any date</option><option value=”week”>This week</option><option value=”month”>This month</option><option value=”custom”>Custom range…</option>' +
+      '<div class="ord-filters">' +
+        '<div id="wo-seg" class="ord-pills"></div>' +
+        '<div class="ord-extras">' +
+          '<div class="control ord-sel-wrap"><select class="ord-ctl" id="wo-date-sel" aria-label="Filter by date">' +
+            '<option value="any">Any date</option><option value="week">This week</option><option value="month">This month</option><option value="custom">Custom range…</option>' +
           '</select>' + icon('angle-small-down') + '</div>' +
-          '<form class=”ord-ctl ord-search” role=”search” data-wo-form><label class=”sr-only” for=”wo-q”>Search orders</label>' + icon('search') +
-            '<input id=”wo-q” type=”search” value=”' + esc(q) + '” placeholder=”Search orders…” autocomplete=”off”></form>' +
+          '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
+            '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search orders…" autocomplete="off"></form>' +
         '</div>' +
-        '<span class=”ord-count-label” id=”wo-count”></span>' +
+        '<span class="ord-count-label" id="wo-count"></span>' +
       '</div>' +
-      '<div class=”ord-date-panel” id=”wo-date-panel” hidden>' +
-        '<label class=”ord-date-lbl” for=”wo-df”>From</label>' +
-        '<input class=”ord-ctl ord-date-in” id=”wo-df” type=”date” aria-label=”Date range start”>' +
-        '<label class=”ord-date-lbl” for=”wo-dt”>To</label>' +
-        '<input class=”ord-ctl ord-date-in” id=”wo-dt” type=”date” aria-label=”Date range end”>' +
+      '<div class="ord-date-panel" id="wo-date-panel" hidden>' +
+        '<label class="ord-date-lbl" for="wo-df">From</label>' +
+        '<input class="ord-ctl ord-date-in" id="wo-df" type="date" aria-label="Date range start">' +
+        '<label class="ord-date-lbl" for="wo-dt">To</label>' +
+        '<input class="ord-ctl ord-date-in" id="wo-dt" type="date" aria-label="Date range end">' +
       '</div>' +
-      '<div id=”wo-list”></div>' +
+      '<div id="wo-list"></div>' +
     '</section>';
 
   var s = SE.shell(el, {
