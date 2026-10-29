@@ -22,7 +22,7 @@
   W.machineKey = function (w) { return Object.keys(SE.data.machines).find(function (k) { return SE.data.machines[k].name === w.machine; }); };
   W.units = function () {
     var D = SE.data, u = [];
-    Object.keys(D.machines).forEach(function (k) { D.machines[k].units.forEach(function (x) { u.push({ equip: x.equip, serial: x.serial, location: x.location, machine: D.machines[k].name }); }); });
+    Object.keys(D.machines).forEach(function (k) { var m = D.machines[k]; m.units.forEach(function (x) { u.push({ equip: x.equip, serial: x.serial, location: x.location, machine: m.name, make: m.supplier, model: m.model }); }); });
     return u;
   };
   W.unit = function (equip) { return W.units().find(function (u) { return u.equip === equip; }); };
@@ -47,57 +47,80 @@
       title: 'New order', wide: true,
       body:
         '<form id="wo-form" class="wo-form" novalidate autocomplete="off">' +
-          '<div class="form-row span-2" id="row-asset"><label for="f-asset">Asset</label>' +
-            '<div class="control"><select id="f-asset" aria-describedby="err-asset"><option value="">Choose an asset</option>' + W.units().map(function (u) {
-              return '<option value="' + u.equip + '">' + esc(u.equip + ' · ' + u.machine + ' · ' + u.location) + '</option>';
+          '<div class="form-row span-2" id="row-type"><label for="f-type">Order Type <span aria-hidden="true">*</span></label>' +
+            '<div class="control"><select id="f-type"><option value="repair">Equipment Repair</option><option value="pm">Preventive Maintenance</option><option value="inspect">Inspection</option></select>' + SE.icon('angle-small-down') + '</div></div>' +
+          '<div class="form-row span-2" id="row-equip"><label for="f-equip">Equipment # <span aria-hidden="true">*</span> <span class="lbl-hint">(auto-populates make, model, serial)</span></label>' +
+            '<div class="control"><select id="f-equip" aria-describedby="err-equip"><option value="">Choose equipment</option>' + W.units().map(function (u) {
+              return '<option value="' + esc(u.equip) + '" data-make="' + esc(u.make || '') + '" data-model="' + esc(u.model || '') + '" data-serial="' + esc(u.serial || '') + '">' + esc(u.equip) + '</option>';
             }).join('') + '</select>' + SE.icon('angle-small-down') + '</div>' +
-            '<p class="form-err" id="err-asset" hidden>Choose the asset this work is for.</p></div>' +
-          '<div class="form-row span-2" id="row-issue"><label for="f-issue">Issue</label>' +
+            '<p class="form-err" id="err-equip" hidden>Choose the equipment.</p></div>' +
+          '<div class="form-row"><label for="f-make">Make</label>' +
+            '<div class="control"><input id="f-make" type="text" readonly placeholder="—" class="wo-auto"></div></div>' +
+          '<div class="form-row"><label for="f-model">Model</label>' +
+            '<div class="control"><input id="f-model" type="text" readonly placeholder="—" class="wo-auto"></div></div>' +
+          '<div class="form-row span-2"><label for="f-serial">Serial #</label>' +
+            '<div class="control"><input id="f-serial" type="text" readonly placeholder="—" class="wo-auto"></div></div>' +
+          '<div class="form-row span-2" id="row-issue"><label for="f-issue">Fault / Issue <span aria-hidden="true">*</span></label>' +
             '<div class="control"><input id="f-issue" type="text" placeholder="For example: platform drifts down under load" aria-describedby="err-issue"></div>' +
-            '<p class="form-err" id="err-issue" hidden>Describe the issue.</p></div>' +
-          '<div class="form-row"><span class="lbl" id="lbl-pri">Priority</span>' +
-            '<div class="seg wo-pri-seg" role="radiogroup" aria-labelledby="lbl-pri">' + ['Normal', 'Medium', 'High'].map(function (x, i) {
-              return '<button type="button" role="radio" aria-checked="' + !i + '" aria-selected="' + !i + '" data-pri="' + x + '">' + x + '</button>';
-            }).join('') + '</div></div>' +
+            '<p class="form-err" id="err-issue" hidden>Describe the fault or issue.</p></div>' +
+          '<div class="form-row"><label for="f-pri">Priority</label>' +
+            '<div class="control"><select id="f-pri"><option value="Normal">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option></select>' + SE.icon('angle-small-down') + '</div></div>' +
+          '<div class="form-row" id="row-due"><label for="f-due">Due Date <span aria-hidden="true">*</span></label>' +
+            '<div class="control"><input id="f-due" type="date" aria-describedby="err-due"></div>' +
+            '<p class="form-err" id="err-due" hidden>Set a due date.</p></div>' +
           '<div class="form-row"><label for="f-asg">Assignee</label>' +
-            '<div class="control"><select id="f-asg">' + D.techs.map(function (t) { return '<option>' + esc(t) + '</option>'; }).join('') + '</select>' + SE.icon('angle-small-down') + '</div></div>' +
-          '<div class="form-row span-2"><label for="f-notes">Notes (optional)</label>' +
-            '<div class="control area"><textarea id="f-notes" rows="3" placeholder="Fault codes, what the operator saw"></textarea></div></div>' +
+            '<div class="control"><select id="f-asg"><option value="">Unassigned</option>' + D.techs.map(function (t) { return '<option>' + esc(t) + '</option>'; }).join('') + '</select>' + SE.icon('angle-small-down') + '</div></div>' +
+          '<div class="form-row"><label for="f-oid">Order ID <span class="lbl-hint">(RentalMan / ERP — optional)</span></label>' +
+            '<div class="control"><input id="f-oid" type="text" placeholder="e.g. RM-10122"></div></div>' +
         '</form>',
-      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="submit" form="wo-form" class="btn btn-primary">Create work order</button>',
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="submit" form="wo-form" class="btn btn-primary">Create Order</button>',
       onClose: o.onClose,
     });
-    var d = dlg.el, pri = 'Normal';
+    var d = dlg.el;
+    function autofill() {
+      var sel = d.querySelector('#f-equip'), opt = sel.options[sel.selectedIndex];
+      d.querySelector('#f-make').value  = (opt && opt.dataset.make)   || '';
+      d.querySelector('#f-model').value = (opt && opt.dataset.model)  || '';
+      d.querySelector('#f-serial').value= (opt && opt.dataset.serial) || '';
+    }
     function validate() {
-      var okA = !!d.querySelector('#f-asset').value, okI = !!d.querySelector('#f-issue').value.trim();
-      d.querySelector('#row-asset').classList.toggle('invalid', !okA); d.querySelector('#err-asset').hidden = okA;
+      var okE = !!d.querySelector('#f-equip').value;
+      var okI = !!d.querySelector('#f-issue').value.trim();
+      var okD = !!d.querySelector('#f-due').value;
+      d.querySelector('#row-equip').classList.toggle('invalid', !okE); d.querySelector('#err-equip').hidden = okE;
       d.querySelector('#row-issue').classList.toggle('invalid', !okI); d.querySelector('#err-issue').hidden = okI;
       d.querySelector('#f-issue').setAttribute('aria-invalid', String(!okI));
-      return okA && okI;
+      d.querySelector('#row-due').classList.toggle('invalid', !okD);   d.querySelector('#err-due').hidden = okD;
+      return okE && okI && okD;
     }
-    d.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-pri]');
-      if (!t) return;
-      pri = t.dataset.pri;
-      d.querySelectorAll('[data-pri]').forEach(function (b) { b.setAttribute('aria-checked', String(b === t)); b.setAttribute('aria-selected', String(b === t)); });
+    d.addEventListener('change', function (e) {
+      if (e.target.id === 'f-equip') { autofill(); d.querySelector('#row-equip').classList.remove('invalid'); d.querySelector('#err-equip').hidden = true; }
+      if (e.target.id === 'f-due')   { d.querySelector('#row-due').classList.remove('invalid'); d.querySelector('#err-due').hidden = true; }
     });
-    d.addEventListener('input', function (e) { if (e.target.id === 'f-issue' && e.target.value.trim()) { d.querySelector('#row-issue').classList.remove('invalid'); d.querySelector('#err-issue').hidden = true; } });
-    d.addEventListener('change', function (e) { if (e.target.id === 'f-asset' && e.target.value) { d.querySelector('#row-asset').classList.remove('invalid'); d.querySelector('#err-asset').hidden = true; } });
+    d.addEventListener('input', function (e) {
+      if (e.target.id === 'f-issue' && e.target.value.trim()) { d.querySelector('#row-issue').classList.remove('invalid'); d.querySelector('#err-issue').hidden = true; }
+    });
     function addDays(n) { var x = SE.tx.today(); x.setDate(x.getDate() + n); return x.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
     d.querySelector('#wo-form').addEventListener('submit', function (e) {
       e.preventDefault();
       if (!validate()) { var f = d.querySelector('.invalid select, .invalid input'); if (f) f.focus(); return; }
-      var u = W.unit(d.querySelector('#f-asset').value), asg = d.querySelector('#f-asg').value;
+      var u = W.unit(d.querySelector('#f-equip').value);
+      var asg = d.querySelector('#f-asg').value;
+      var pri = d.querySelector('#f-pri').value;
+      var dueRaw = d.querySelector('#f-due').value;
+      var dueLabel = dueRaw ? new Date(dueRaw + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : addDays(pri === 'High' ? 2 : pri === 'Medium' ? 5 : 10);
+      var typeVal = d.querySelector('#f-type').value;
       var prior = D.workOrders.find(function (w) { return w.equip === u.equip; });
       var id = String(100120 + SE.state.newWOs.length);
       var w = { id: id, issue: d.querySelector('#f-issue').value.trim(), equip: u.equip, machine: u.machine, status: 'Open', tone: 'danger', updated: 'Just now',
-        assignee: asg, due: addDays(pri === 'High' ? 2 : pri === 'Medium' ? 5 : 10), priority: pri, warranty: prior ? prior.warranty : null,
-        opened: SE.tx.today().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), kind: 'equipment',
-        desc: d.querySelector('#f-notes').value.trim(), log: [['Today', 'Opened by ' + D.user.name + ', assigned to ' + asg]] };
+        assignee: asg || null, due: dueLabel, priority: pri, warranty: prior ? prior.warranty : null,
+        opened: SE.tx.today().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), kind: typeVal,
+        externalId: d.querySelector('#f-oid').value.trim() || null,
+        desc: '', log: [['Today', 'Opened by ' + D.user.name + (asg ? ', assigned to ' + asg : '')]] };
       SE.state.newWOs.unshift(w);
       SE.save();
       dlg.close();
-      SE.toast('Work order #' + id + ' created', 'check');
+      SE.toast('Order #' + id + ' created', 'check');
       if (o.onCreate) o.onCreate(w);
     });
     if (o.showErrors) validate();
