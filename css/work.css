@@ -73,6 +73,98 @@
   .wo-note-row { display: flex; gap: 8px; padding: 12px 20px 16px; border-top: 1px solid var(--line); }
   .wo-note-input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; }
   .wo-note-input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
+  .tl-note .dot { border-color: var(--brand-subtle, #6366f1); background: var(--brand-subtle, #6366f1); }
+
+  /* ── Active cart section ─────────────────────────────── */
+  .ci-sec { padding: 0; overflow: hidden; }
+  .cart-hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .cart-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .cart-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--text); color: var(--surface); font-size: 11px; font-weight: 700; }
+  .cart-hdr-r { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .cart-grp-label { font-size: 10px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .cart-grp-chip { height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: none; color: var(--muted); font: 11px/1 inherit; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .cart-grp-chip:hover { background: var(--surface-raised); }
+  .cart-grp-chip-on { background: var(--text); border-color: var(--text); color: var(--surface); }
+  .cart-grp-chip-on:hover { opacity: .88; }
+  .cart-empty { display: flex; align-items: center; gap: 12px; padding: 20px 16px; color: var(--muted); }
+  .cart-tbl-wrap { overflow-x: auto; }
+  .ci-table { width: 100%; border-collapse: collapse; }
+  .ci-thead th { font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 7px 10px; text-align: left; background: var(--surface-raised, var(--surface)); border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .ci-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 13px; }
+  .ci-row:last-child td, .ci-table tbody:last-child .ci-row:last-child td { border-bottom: none; }
+  .ci-row-dim { opacity: .45; }
+  /* Column widths */
+  .col-st  { width: 40px; padding-left: 14px !important; }
+  .col-pn  { width: 140px; }
+  .col-uom { width: 52px; }
+  .col-loc { width: 110px; }
+  .col-qty { width: 108px; }
+  .col-unit { width: 72px; text-align: right; color: var(--muted); }
+  .col-tot  { width: 80px; text-align: right; }
+  .col-rm   { width: 36px; padding-right: 10px !important; }
+  .ci-center { text-align: center !important; }
+  .ci-right  { text-align: right !important; }
+  /* Status icon */
+  .ci-st { display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .ci-ok   { color: #4a9b26; }
+  .ci-warn { color: #b87516; }
+  .ci-err  { color: #b93030; }
+  .ci-rep  { color: var(--muted); }
+  /* Part # cell */
+  .ci-pn { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ci-vendor { font-size: 11px; color: var(--muted); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
+  .ci-desc { font-size: 13px; line-height: 1.4; }
+  .ci-replaces { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+  .ci-xref-wrap { margin-top: 3px; }
+  .ci-xref { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; border: none; cursor: default; white-space: nowrap; }
+  .ci-xref-opt  { background: #eeedfe; color: #534ab7; }
+  .ci-xref-mand { background: #fef3c7; color: #92400e; }
+  /* UOM badge */
+  .uom-badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 5px; background: var(--surface-raised, #f5f2ee); color: var(--text); font-size: 11px; font-weight: 600; }
+  /* Stock / local cell */
+  .ci-local { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #4a9b26; }
+  .ci-local-sel { color: var(--brand); }
+  .ci-dash { color: var(--muted); }
+  /* Qty controls */
+  .ci-qty { display: flex; align-items: center; justify-content: center; gap: 0; border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; width: 88px; }
+  .qty-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text); }
+  .qty-btn:hover { background: var(--surface-raised); }
+  .qty-val { flex: 1; text-align: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  /* Remove btn */
+  .ci-rm { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 6px; background: none; cursor: pointer; color: var(--muted); }
+  .ci-rm:hover { background: #fef2f2; color: #b93030; }
+  /* OEM badge */
+  .oem-badge { display: inline-flex; align-items: center; padding: 1px 5px; border-radius: 4px; background: #f0ecfd; color: #534ab7; font-size: 10px; font-weight: 700; }
+  /* Group header row */
+  .ci-group-hdr { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); padding: 6px 10px; background: var(--surface-raised, #fafaf8); border-top: 1px solid var(--line); display: flex; align-items: center; gap: 7px; }
+  .ci-group-hdr:first-child { border-top: none; }
+  .ci-grp-cnt { background: var(--line); color: var(--muted); border-radius: 999px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+  .ci-grp-tot { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--muted); }
+  /* Cross-ref pair */
+  .ci-sep td { padding: 3px 0 0; border: none; }
+  .ci-pair { border-left: 3px solid #534ab7; }
+  .ci-pair .ci-row td:first-child { padding-left: 11px !important; }
+  .ci-xref-lbl td { padding: 0; border-bottom: none; }
+  .ci-xref-lbl-inner { font-size: 10px; font-weight: 700; color: #534ab7; background: #f3f1fe; padding: 3px 12px; display: flex; align-items: center; gap: 5px; letter-spacing: .3px; }
+  /* Cart footer */
+  .cart-foot { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: var(--surface-raised, #fafaf8); flex-wrap: wrap; }
+  .cart-foot-ct  { flex: 1; font-size: 13px; color: var(--muted); }
+  .cart-foot-tot { font-size: 14px; font-weight: 700; margin-right: 4px; }
+  .ci-unord { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 6px; background: rgba(0,0,0,.15); border-radius: 4px; padding: 1px 6px; }
+
+  /* ── Submitted orders accordion ──────────────────────── */
+  .ord-acc { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+  .ord-acc + .ord-acc { margin-top: 0; }
+  .ord-acc-hdr { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; background: none; border: none; width: 100%; text-align: left; font: inherit; color: var(--text); }
+  .ord-acc-hdr:hover { background: var(--surface-raised, #fafaf8); }
+  .ord-acc-hdr .i { font-size: 13px; color: var(--muted); flex-shrink: 0; transition: transform .15s; }
+  .ord-acc-hdr.open .i { transform: rotate(90deg); }
+  .ord-pn   { font-size: 13px; font-weight: 700; }
+  .ord-date { font-size: 12px; color: var(--muted); }
+  .ord-tot  { font-size: 13px; font-weight: 700; margin-left: auto; }
+  .ord-acc-body { }
+  .ord-acc-foot { padding: 8px 14px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; font-size: 13px; color: var(--muted); background: var(--surface-raised, #fafaf8); }
+
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
     .wo-log small { grid-column: 2; white-space: normal; }

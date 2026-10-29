@@ -1056,19 +1056,43 @@ window.SE_DATA = {
    "opened": "Jun 20, 2026",
    "kind": "equipment",
    "desc": "Platform will not elevate under load. Hydraulic pressure low at the relief valve.",
+   "notes": [
+    { "text": "Ran diagnostic — HYD-04 fault code confirmed. Suspect internal seal failure.", "author": "J. Carter", "time": "9:20 AM" },
+    { "text": "Parts ordered: SKJ-103100, SKJ-103278. Awaiting delivery.", "author": "J. Carter", "time": "9:45 AM" }
+   ],
    "log": [
-    [
-     "Jun 20, 2026",
-     "Opened by J. Carter"
-    ],
-    [
-     "Oct 6, 2026",
-     "Diagnosis: relief valve and lowering solenoid"
-    ],
-    [
-     "Just now",
-     "Parts sent for approval, 7 lines"
-    ]
+    [ "Jun 20, 2026", "Opened by J. Carter" ],
+    [ "Oct 6, 2026", "Diagnosis: relief valve and lowering solenoid" ],
+    [ "Just now", "Parts sent for approval, 7 lines" ]
+   ],
+   "cart": [
+    { "id": "SKJ-104880", "partNum": "SKJ-104880", "description": "Hydraulic filter — return line", "vendor": "Skyjack", "price": 34.00, "oemOnly": true, "inStock": true, "qty": 1, "uom": "EA",
+      "localInventory": [{ "locationId": "dallas", "locationName": "Dallas Shop", "qty": 3, "distance": "182 mi" }],
+      "crossRefs": [{ "partNum": "PAR-HF-3219", "description": "Return-line hydraulic filter — Parker equiv.", "vendor": "Parker", "uom": "EA", "price": 24.50, "mandatory": false }] },
+    { "id": "SKJ-103601", "partNum": "SKJ-103601", "description": "Hydraulic bleed screw kit", "vendor": "Skyjack", "price": 12.00, "oemOnly": true, "inStock": true, "qty": 1, "uom": "KIT",
+      "localInventory": [], "crossRefs": [] },
+    { "id": "SKJ-HF046-1G", "partNum": "SKJ-HF046-1G", "description": "Hydraulic fluid — ISO 46 · 1 gal", "vendor": "Skyjack", "price": 28.00, "oemOnly": true, "inStock": true, "qty": 2, "uom": "GAL",
+      "localInventory": [
+        { "locationId": "austin", "locationName": "Austin Shop", "qty": 6, "distance": "On-site" },
+        { "locationId": "san-antonio", "locationName": "San Antonio Yard", "qty": 4, "distance": "78 mi" }
+      ],
+      "crossRefs": [] },
+    { "id": "SKJ-HYD-201", "partNum": "SKJ-HYD-201", "description": "Hydraulic pump seal kit", "vendor": "Skyjack", "price": 58.00, "oemOnly": true, "inStock": false, "qty": 1, "uom": "KIT",
+      "localInventory": [],
+      "crossRefs": [{ "partNum": "TRE-HS-3219", "description": "Hydraulic pump seal kit — Trelleborg series", "vendor": "Trelleborg", "uom": "KIT", "price": 47.00, "mandatory": true }] }
+   ],
+   "submittedOrders": [
+    { "id": "wo-ord-100094-1", "poNum": "PO-7841", "date": "Jun 20, 2026",
+      "items": [
+        { "id": "SKJ-103100", "partNum": "SKJ-103100", "description": "Hydraulic lift cylinder seal kit", "vendor": "Skyjack", "price": 84.00, "qty": 1, "inStock": true, "uom": "EA", "localInventory": [], "crossRefs": [] },
+        { "id": "SKJ-103278", "partNum": "SKJ-103278", "description": "Pressure relief valve", "vendor": "Skyjack", "price": 126.00, "qty": 1, "inStock": true, "uom": "EA", "localInventory": [], "crossRefs": [] }
+      ],
+      "total": 210.00, "status": "in_transit" },
+    { "id": "wo-ord-100094-2", "poNum": "PO-7801", "date": "Jun 12, 2026",
+      "items": [
+        { "id": "SKJ-107732", "partNum": "SKJ-107732", "description": "Pump seal kit", "vendor": "Skyjack", "price": 49.00, "qty": 2, "inStock": false, "uom": "KIT", "localInventory": [], "crossRefs": [] }
+      ],
+      "total": 98.00, "status": "backordered" }
    ]
   },
   {

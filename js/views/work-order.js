@@ -1,12 +1,8 @@
-/* Work order detail (B4, legacy web 18, 28 to 30). Left: issue and description, the parts request and
-   its state (awaiting approval, approved with its PO, returned with the reason), orders placed against
-   the work order, notes timeline with add-note input, activity log. Right panel: status, unit (asset,
-   serial, branch), assignee and dates.
-   Actions: Find parts (catalog keeps the work order) and Cancel work order (dialog with a reason).
-   Done and cancelled work orders show no actions.
-   Supervisor desk (web-full W4): status, priority, assignee and due date are edited in the details panel and
-   save at once; each change goes into the activity log ("Priority Medium to High, by Sarah Martinez"). Done
-   and cancelled work orders can be archived (and un-archived); an archived one is read only.
+/* Work order detail. Left: issue summary, active cart (part # / description / UOM / source+stock /
+   qty controls / unit / total / remove, grouped by none|sourcing|status|vendor), submitted orders
+   accordion (line-item table per PO), combined notes+activity timeline with add-note input.
+   Right panel: details kv + editable fields for supervisor desk.
+   Actions: Find parts, Cancel, Archive. Machine orders button shows prior POs for the same unit.
    State: #/work-order?id=100118  #/work-order?id=100106&dialog=cancel */
 SE.titles['work-order'] = 'Work order';
 SE.views['work-order'] = function (el, p) {
@@ -20,7 +16,18 @@ SE.views['work-order'] = function (el, p) {
   }
   var unit = W.unit(w.equip) || {}, K = SE.desk;
   var ED = SE.state.woEdits || (SE.state.woEdits = {});
+  var WC = SE.state.woCart || (SE.state.woCart = {});
+  // Group-by persists across renders within this view session
+  var groupBy = 'none';
+  // Accordion open state: map of submitted order index -> bool
+  var ordOpen = {};
+
   function edits() { return ED[w.id] || (ED[w.id] = { set: {}, log: [], notes: [] }); }
+  function cartItems() {
+    if (!WC[w.id]) WC[w.id] = w.cart ? JSON.parse(JSON.stringify(w.cart)) : [];
+    return WC[w.id];
+  }
+
   function change(field, label, value, shown) {
     var was = w[field];
     if (String(was) === String(value)) return;
@@ -40,65 +47,256 @@ SE.views['work-order'] = function (el, p) {
     return 'Until ' + esc(w.warranty);
   }
 
-  function parts() {
-    var a = W.approvalFor(w.id), h = '';
-    if (a) {
-      var st = W.apprState(a), po = W.poFor(a), ret = SE.state.returned[a.order];
-      h += st === 'pending' ? SE.ui.banner('<b>Awaiting your approval.</b> ' + esc(a.by) + ' sent ' + a.lines + ' lines, ' + SE.money(a.amount) + '. <a href="#/approval?id=' + a.order + '">Review approval</a>', 'warning', 'shopping-cart-check')
-        : st === 'approved' ? SE.ui.banner('<b>Approved.</b> ' + (po ? po.po + ' sent to ' + esc(po.supplier) + '. <a href="#/order?po=' + po.po + '">View ' + po.po + '</a>' : 'Order placed.'), 'success', 'check')
-        : SE.ui.banner('<b>Returned to ' + esc(a.by) + ':</b> ' + esc(ret.reason) + (ret.comment ? '. ' + esc(ret.comment) : '') + ' <a href="#/approval?id=' + a.order + '">View request</a>', 'warning', 'undo');
-      h += SE.ui.table([['Part'], ['Qty', 'num'], ['Unit price', 'num'], ['Line total', 'num']], a.items.map(function (it) {
-        var pt = SE.part(it.pn);
-        return ['<span class="cell-part">' + SE.ui.thumb() + '<span><b>' + esc(pt.name) + '</b><span class="sub">' + esc(pt.pn) + '</span></span></span>', it.qty, SE.money(pt.price), '<b>' + SE.money(pt.price * it.qty) + '</b>'];
-      }), { cls: 'ap-lines', rowAttrs: function (i) { return 'data-go="part" data-pn="' + a.items[i].pn + '"'; } });
-    }
-    var pos = SE.orders().filter(function (o) { return o.wo === w.id && !(a && o.from === 'approval'); });
-    if (pos.length) h += SE.ui.table([['Order'], ['Supplier'], ['Status'], ['Total', 'num']], pos.map(function (o) {
-      return ['<b>' + o.po + '</b><span class="sub">' + esc(o.placed) + '</span>', esc(o.supplier), SE.chip(o.status), o.kind === 'transfer' ? 'No charge' : SE.money(o.total)];
-    }), { rowAttrs: function (i) { return 'data-go="order" data-po="' + pos[i].po + '"'; } });
-    // 1017 (V3): a recall work order carries the part it replaces
-    if (!a && (w.parts || []).length) h += SE.ui.table([['Part'], ['Qty', 'num'], ['Charge', 'num']], w.parts.map(function (it) {
-      var pt = SE.part(it.pn);
-      return ['<span class="cell-part">' + SE.ui.thumb() + '<span><b>' + esc(pt.name) + '</b><span class="sub">' + esc(pt.pn) + ' · recall replacement</span></span></span>', it.qty, 'No charge'];
-    }), { cls: 'ap-lines', rowAttrs: function (i) { return 'data-go="part" data-pn="' + w.parts[i].pn + '" data-wo="' + w.id + '"'; } });
-    return h || '<div class="card wo-none">' + icon('box') + '<span>No parts requested yet.</span></div>';
+  // ── Cart helpers ──────────────────────────────────────────────────────────
+  function itemStatus(c) {
+    if (c.replacedBy) return 'replaced';
+    if (c.replacesId) return (c.inStock !== false) ? 'orderable' : 'needs_attention';
+    var hasMand = (c.crossRefs || []).some(function (r) { return r.mandatory; });
+    if (!c.inStock && !(c.crossRefs || []).length) return 'unorderable';
+    if (hasMand) return 'blocked';
+    if (!c.inStock) return 'needs_attention';
+    if ((c.localInventory || []).length && !c.selectedSource && !(c.selectedSources && c.selectedSources.length)) return 'needs_attention';
+    return 'orderable';
   }
-  // 1017 (V1 fault to fix): the work order's fault code finds the article written for it; the article opens for this
-  // work order, so the part a step needs deep-links to the catalog filtered to the unit
+
+  function statusIcon(c) {
+    var st = itemStatus(c);
+    if (st === 'replaced')      return '<span class="ci-st ci-rep">'  + icon('replace') + '</span>';
+    if (st === 'blocked')       return '<span class="ci-st ci-err">'  + icon('lock') + '</span>';
+    if (st === 'unorderable')   return '<span class="ci-st ci-err">'  + icon('cross-circle') + '</span>';
+    if (st === 'needs_attention') return '<span class="ci-st ci-warn">' + icon('triangle-warning') + '</span>';
+    return '<span class="ci-st ci-ok">' + icon('circle-check') + '</span>';
+  }
+
+  function xrefBadge(c) {
+    if (c.replacedBy || c.replacesId) return '';
+    var refs = c.crossRefs || [];
+    if (!refs.length) return '';
+    if (refs.some(function (r) { return r.mandatory; }))
+      return '<span class="ci-xref ci-xref-mand">' + icon('switch') + ' Mandatory cross-ref</span>';
+    return '<span class="ci-xref ci-xref-opt">' + icon('switch') + ' ' + refs.length + ' optional cross-ref' + (refs.length !== 1 ? 's' : '') + '</span>';
+  }
+
+  function stockCell(c) {
+    if (c.replacedBy) return '<span class="ci-dash">—</span>';
+    var src = c.selectedSources || (c.selectedSource ? [c.selectedSource] : []);
+    if (src.length) {
+      var qty = src.reduce(function (s, x) { return s + (x.qty || 0); }, 0);
+      var lbl = src.length === 1 ? src[0].locationName : src.length + ' locations';
+      return '<span class="ci-local ci-local-sel">' + icon('map-marker') + ' ' + esc(lbl) + (qty ? ' (' + qty + ')' : '') + '</span>';
+    }
+    var inv = c.localInventory || [];
+    if (!inv.length) return '<span class="ci-dash">—</span>';
+    var tot = inv.reduce(function (s, l) { return s + l.qty; }, 0);
+    return '<span class="ci-local">' + icon('map-marker') + ' ' + tot + ' avail</span>';
+  }
+
+  function cartRow(c, withRemove) {
+    var replaced = !!c.replacedBy;
+    var lineThru = replaced ? ' style="text-decoration:line-through;color:var(--muted);"' : '';
+    var rowCls = replaced ? ' ci-row-dim' : '';
+    var replOrig = c.replacesId ? cartItems().find(function (x) { return x.id === c.replacesId; }) : null;
+    var qtyCtrl = replaced
+      ? '<span class="ci-dash">—</span>'
+      : '<div class="ci-qty"><button type="button" class="qty-btn" data-cart-dec="' + esc(c.id) + '">−</button><span class="qty-val">' + (c.qty || 1) + '</span><button type="button" class="qty-btn" data-cart-inc="' + esc(c.id) + '">+</button></div>';
+    var removeBtn = withRemove && !replaced
+      ? '<button type="button" class="ci-rm" data-cart-rm="' + esc(c.id) + '" title="Remove">' + icon('trash') + '</button>' : '';
+    return '<tr class="ci-row' + rowCls + '">' +
+      '<td class="col-st">' + statusIcon(c) + '</td>' +
+      '<td class="col-pn"><div class="ci-pn"' + lineThru + '>' + esc(c.partNum) + '</div><div class="ci-vendor">' + esc(c.vendor || '') + (c.oemOnly ? ' <span class="oem-badge">OEM</span>' : '') + '</div></td>' +
+      '<td class="col-desc"><div class="ci-desc"' + lineThru + '>' + esc(c.description) + '</div>' +
+        (replOrig ? '<div class="ci-replaces">' + icon('arrows-exchange') + ' Replaces ' + esc(replOrig.partNum) + '</div>' : '') +
+        (xrefBadge(c) ? '<div class="ci-xref-wrap">' + xrefBadge(c) + '</div>' : '') + '</td>' +
+      '<td class="col-uom"><span class="uom-badge">' + esc(c.uom || 'EA') + '</span></td>' +
+      '<td class="col-loc">' + stockCell(c) + '</td>' +
+      '<td class="col-qty">' + qtyCtrl + '</td>' +
+      '<td class="col-unit">' + (replaced ? '<span class="ci-dash">—</span>' : SE.money(c.price)) + '</td>' +
+      '<td class="col-tot">' + (replaced ? '<span class="ci-dash">—</span>' : '<b>' + SE.money(c.price * (c.qty || 1)) + '</b>') + '</td>' +
+      (withRemove ? '<td class="col-rm">' + removeBtn + '</td>' : '') +
+    '</tr>';
+  }
+
+  function cartTableHead(withRemove) {
+    return '<thead class="ci-thead"><tr>' +
+      '<th class="col-st"></th><th class="col-pn">Part #</th><th class="col-desc">Description</th>' +
+      '<th class="col-uom">UOM</th><th class="col-loc">Source / stock</th>' +
+      '<th class="col-qty ci-center">Qty</th><th class="col-unit ci-right">Unit</th><th class="col-tot ci-right">Total</th>' +
+      (withRemove ? '<th class="col-rm"></th>' : '') +
+    '</tr></thead>';
+  }
+
+  function cartTableBody(items, withRemove) {
+    // Group pairs: original + replacement side-by-side
+    var rendered = {}, units = [];
+    items.forEach(function (c) {
+      if (rendered[c.id]) return;
+      if (c.replacesId) return; // rendered with parent
+      rendered[c.id] = true;
+      if (c.replacedBy) {
+        var rep = items.find(function (x) { return x.id === c.replacedBy; });
+        if (rep) { rendered[rep.id] = true; units.push([c, rep]); return; }
+      }
+      units.push([c]);
+    });
+    items.forEach(function (c) { if (!rendered[c.id]) units.push([c]); });
+    return units.map(function (u, idx) {
+      var sep = idx > 0 ? '<tr class="ci-sep"><td colspan="' + (withRemove ? 9 : 8) + '"></td></tr>' : '';
+      if (u.length === 2) {
+        return sep + '<tbody class="ci-pair">' + cartRow(u[0], withRemove) +
+          '<tr class="ci-xref-lbl"><td colspan="' + (withRemove ? 9 : 8) + '"><div class="ci-xref-lbl-inner">' + icon('arrows-exchange') + ' Cross-ref applied — replaced by</div></td></tr>' +
+          cartRow(u[1], withRemove) + '</tbody>';
+      }
+      return sep + '<tbody>' + cartRow(u[0], withRemove) + '</tbody>';
+    }).join('');
+  }
+
+  function groupedCartBody(items, withRemove) {
+    var SOURCING = [
+      { key: 'local',    label: 'In-location stock' },
+      { key: 'nearby',   label: 'Nearby branches' },
+      { key: 'external', label: 'External order' }
+    ];
+    var STATUS_GROUPS = [
+      { key: 'available',     label: 'Available' },
+      { key: 'backordered',   label: 'Backordered' },
+      { key: 'not_orderable', label: 'Not orderable' },
+      { key: 'replaced',      label: 'Replaced' }
+    ];
+    function sourcingOf(c) {
+      var inv = c.localInventory || [];
+      if (!inv.length) return 'external';
+      return inv.some(function (l) { return l.locationName === (SE.location() || {}).name; }) ? 'local' : 'nearby';
+    }
+    function statusOf(c) {
+      var st = itemStatus(c);
+      if (st === 'blocked' || st === 'unorderable') return 'not_orderable';
+      if (st === 'replaced') return 'replaced';
+      if (!c.inStock) return 'backordered';
+      return 'available';
+    }
+    var groups;
+    if (groupBy === 'sourcing') groups = SOURCING;
+    else if (groupBy === 'status') groups = STATUS_GROUPS;
+    else { var vendors = []; items.forEach(function (c) { if (vendors.indexOf(c.vendor) < 0) vendors.push(c.vendor); }); vendors.sort(); groups = vendors.map(function (v) { return { key: v, label: v }; }); }
+    return groups.map(function (g) {
+      var subset = items.filter(function (c) {
+        return groupBy === 'sourcing' ? sourcingOf(c) === g.key : groupBy === 'status' ? statusOf(c) === g.key : c.vendor === g.key;
+      });
+      if (!subset.length) return '';
+      var grpTotal = subset.filter(function (c) { return !c.replacedBy; }).reduce(function (s, c) { return s + c.price * (c.qty || 1); }, 0);
+      return '<tbody><tr><td colspan="' + (withRemove ? 9 : 8) + '" class="ci-group-hdr">' +
+        esc(g.label) + '<span class="ci-grp-cnt">' + subset.length + '</span><span class="ci-grp-tot">' + SE.money(grpTotal) + '</span>' +
+      '</td></tr>' +
+      subset.map(function (c) { return cartRow(c, withRemove); }).join('') + '</tbody>';
+    }).join('');
+  }
+
+  function cart() {
+    var items = cartItems();
+    var st = W.status(w), canEdit = editable(st);
+    var submittable = items.filter(function (c) { return !['blocked', 'unorderable', 'replaced'].includes(itemStatus(c)); });
+    var blocked = items.filter(function (c) { return ['blocked', 'unorderable'].includes(itemStatus(c)); }).length;
+    var total = submittable.reduce(function (s, c) { return s + c.price * (c.qty || 1); }, 0);
+    var grpChips = ['none', 'sourcing', 'status', 'vendor'].map(function (g) {
+      return '<button type="button" class="cart-grp-chip' + (groupBy === g ? ' cart-grp-chip-on' : '') + '" data-grp="' + g + '">' + (g === 'none' ? 'None' : g.charAt(0).toUpperCase() + g.slice(1)) + '</button>';
+    }).join('');
+    var hdr = '<div class="cart-hdr">' +
+      '<div class="cart-title">' + icon('shopping-cart') + 'Active cart<span class="cart-badge">' + items.length + '</span></div>' +
+      '<div class="cart-hdr-r"><span class="cart-grp-label">Group by</span>' + grpChips +
+      (canEdit ? '<a class="btn btn-secondary btn-sm" href="#/machine?m=' + esc(W.machineKey(w) || '') + '&wo=' + esc(w.id) + '" data-go="machine" data-m="' + esc(W.machineKey(w) || '') + '" data-wo="' + esc(w.id) + '">' + icon('plus') + 'Add parts</a>' : '') +
+      '</div></div>';
+    if (!items.length) {
+      return hdr + '<div class="cart-empty">' + icon('box') + '<span>No items in cart.</span></div>';
+    }
+    var thead = cartTableHead(canEdit);
+    var tbody = groupBy === 'none' ? cartTableBody(items, canEdit) : groupedCartBody(items, canEdit);
+    var submitLabel = blocked > 0
+      ? 'Submit orderable items<span class="ci-unord">' + icon('triangle-warning') + blocked + ' unorderable</span>'
+      : icon('check') + 'Submit order';
+    var footer = canEdit
+      ? '<div class="cart-foot"><span class="cart-foot-ct">' + items.length + ' item' + (items.length !== 1 ? 's' : '') + '</span><span class="cart-foot-tot">' + SE.money(total) + '</span>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button></div>'
+      : '';
+    return hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div>' + footer;
+  }
+
+  // ── Submitted orders accordion ────────────────────────────────────────────
+  function submittedOrders() {
+    var ords = w.submittedOrders || [];
+    if (!ords.length) return '<div class="card wo-none">' + icon('receipt') + '<span>No orders submitted yet.</span></div>';
+    var STATUS_LABEL = { in_transit: 'In transit', backordered: 'Backordered', delivered: 'Delivered', submitted: 'Submitted' };
+    var STATUS_CLS   = { in_transit: 'chip chip-info', backordered: 'chip chip-warning', delivered: 'chip chip-success', submitted: 'chip chip-neutral' };
+    return ords.map(function (ord, i) {
+      var open = ordOpen[i] !== false; // default open
+      var thead = cartTableHead(false);
+      var tbody = cartTableBody(ord.items || [], false);
+      var ordTotal = (ord.items || []).filter(function (c) { return !c.replacedBy; }).reduce(function (s, c) { return s + c.price * (c.qty || 1); }, 0);
+      var pill = '<span class="' + (STATUS_CLS[ord.status] || 'chip chip-neutral') + '">' + esc(STATUS_LABEL[ord.status] || esc(ord.status)) + '</span>';
+      return '<div class="ord-acc" id="wo-ord-' + i + '">' +
+        '<button type="button" class="ord-acc-hdr' + (open ? ' open' : '') + '" data-ord-toggle="' + i + '">' +
+          icon('angle-small-right') +
+          '<span class="ord-pn">' + esc(ord.poNum) + '</span>' +
+          '<span class="ord-date">' + esc(ord.date) + '</span>' +
+          pill +
+          '<span class="ord-tot">' + SE.money(ord.total != null ? ord.total : ordTotal) + '</span>' +
+        '</button>' +
+        '<div class="ord-acc-body"' + (open ? '' : ' hidden') + '>' +
+          '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div>' +
+          '<div class="ord-acc-foot">' + (ord.items || []).filter(function (c) { return !c.replacedBy; }).length + ' items · <b>' + SE.money(ord.total != null ? ord.total : ordTotal) + '</b></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ── Machine orders button / dialog ────────────────────────────────────────
+  function machineOrdersBtn() {
+    var otherWOs = SE.allWorkOrders().filter(function (wo) { return wo.equip === w.equip && wo.id !== w.id && (wo.submittedOrders || []).length; });
+    if (!otherWOs.length) return '';
+    var total = otherWOs.reduce(function (s, wo) { return s + (wo.submittedOrders || []).length; }, 0);
+    return '<button type="button" class="btn btn-secondary btn-sm" data-machine-orders>' + icon('history') + 'Orders on this machine <span class="chip chip-neutral" style="margin-left:4px;">' + total + '</span></button>';
+  }
+
+  // ── Combined notes + activity timeline ───────────────────────────────────
+  function timeline() {
+    var e = ED[w.id];
+    var st = W.status(w);
+    // Collect user notes (from data or session)
+    var notes = (e && e.notes && e.notes.length) ? e.notes : (w.notes || []);
+    // Collect activity log entries
+    var logRows = w.log.concat(e ? e.log : []);
+    var a = W.approvalFor(w.id);
+    if (a) {
+      var apprSt = W.apprState(a);
+      if (apprSt === 'approved') { var po = W.poFor(a); logRows.push(['Today', 'Parts approved by ' + D.user.name + (po ? ', ' + po.po + ' sent to ' + po.supplier : '')]); }
+      if (apprSt === 'returned') logRows.push(['Today', 'Parts returned to ' + a.by + ': ' + SE.state.returned[a.order].reason]);
+    }
+    if (SE.state.cancelled[w.id]) logRows.push(['Today', 'Cancelled by ' + D.user.name + ': ' + SE.state.cancelled[w.id]]);
+    // Build unified list: notes first (newest top), then log (newest top)
+    var noteItems = notes.slice().reverse().map(function (n) {
+      return '<li class="tl-note now"><span class="dot" aria-hidden="true"></span><b>' + esc(n.text) + '</b><small>' + esc(n.author || D.user.name) + (n.time ? ' · ' + esc(n.time) : '') + '</small></li>';
+    });
+    var logItems = logRows.reverse().map(function (r, i) {
+      return '<li' + (i === 0 && !notes.length ? ' class="now"' : '') + '><span class="dot" aria-hidden="true"></span><b>' + esc(r[1]) + '</b><small>' + esc(r[0]) + '</small></li>';
+    });
+    var list = (noteItems.length || logItems.length)
+      ? '<ol class="wo-log card">' + noteItems.join('') + logItems.join('') + '</ol>'
+      : '<div class="card wo-none">' + icon('history') + '<span>No activity yet.</span></div>';
+    if (!editable(st)) return list;
+    return list + '<div class="wo-note-row"><input type="text" id="wo-note-in" class="wo-note-input" placeholder="Add a note…" aria-label="Note text"><button type="button" class="btn btn-secondary" data-add-note>' + icon('comment-alt') + 'Add note</button></div>';
+  }
+
+  // ── Troubleshoot KB link ──────────────────────────────────────────────────
   function troubleshoot(st) {
     var kb = st !== 'Done' && st !== 'Cancelled' && SE.ops.faultArticle(w);
     if (!kb) return '';
     return SE.ui.sec('Troubleshooting', '', '<ul class="card ar-links wo-kb"><li><a href="#/article?id=' + kb.id + '&wo=' + w.id + '" data-go="article" data-id="' + kb.id + '" data-wo="' + w.id + '"><span class="sym">' + icon('book-alt') + '</span><span><b>' + esc(kb.title) + '</b><small>Fault code ' + esc(kb.fault) + ' · ' + kb.minutes + ' min read · ' + kb.steps.length + ' steps</small></span>' + icon('angle-small-right') + '</a></li></ul>', 'h-kb');
   }
-  function log() {
-    var rows = w.log.concat(ED[w.id] ? ED[w.id].log : []), a = W.approvalFor(w.id);
-    if (a) {
-      var st = W.apprState(a);
-      if (st === 'approved') { var po = W.poFor(a); rows.push(['Today', 'Parts approved by ' + D.user.name + (po ? ', ' + po.po + ' sent to ' + po.supplier : '')]); }
-      if (st === 'returned') rows.push(['Today', 'Parts returned to ' + a.by + ': ' + SE.state.returned[a.order].reason]);
-    }
-    if (SE.state.cancelled[w.id]) rows.push(['Today', 'Cancelled by ' + D.user.name + ': ' + SE.state.cancelled[w.id]]);
-    return '<ol class="wo-log card">' + rows.reverse().map(function (r, i) {
-      return '<li' + (i ? '' : ' class="now"') + '><span class="dot" aria-hidden="true"></span><b>' + esc(r[1]) + '</b><small>' + esc(r[0]) + '</small></li>';
-    }).join('') + '</ol>';
-  }
-  function notes() {
-    var e = ED[w.id], ns = (e && e.notes && e.notes.length) ? e.notes : (w.notes || []);
-    var st = W.status(w);
-    var list = ns.length
-      ? '<ol class="wo-log card">' + ns.slice().reverse().map(function (n) {
-          return '<li class="now"><span class="dot" aria-hidden="true"></span><b>' + esc(n.text) + '</b><small>' + esc(n.author || D.user.name) + (n.time ? ' · ' + esc(n.time) : '') + '</small></li>';
-        }).join('') + '</ol>'
-      : '<div class="card wo-none">' + icon('comment-alt') + '<span>No notes yet.</span></div>';
-    if (!editable(st)) return list;
-    return list + '<div class="wo-note-row"><input type="text" id="wo-note-in" class="wo-note-input" placeholder="Add a note…" aria-label="Note text"><button type="button" class="btn btn-secondary" data-add-note>' + icon('comment-alt') + 'Add note</button></div>';
-  }
+
   function actions(st) {
-    // web-twin (SE.twin): the iPhone's work order has no archive and no header edits
     if (SE.twin && (st === 'Done' || st === 'Cancelled')) return '';
     if (W.archived(w)) return '<button type="button" class="btn btn-secondary" data-unarchive>' + icon('undo') + 'Un-archive</button>';
     if (st === 'Done' || st === 'Cancelled') return '<button type="button" class="btn btn-secondary" data-archive>' + icon('box') + 'Archive</button>';
-    return '<button type="button" class="btn btn-primary" data-go="machine" data-m="' + W.machineKey(w) + '" data-wo="' + w.id + '">' + icon('search') + 'Find parts</button>' +
+    return machineOrdersBtn() +
       '<button type="button" class="btn btn-danger" data-cancel>Cancel work order</button>';
   }
   function editable(st) { return !SE.twin && !W.archived(w) && st !== 'Cancelled'; }
@@ -113,36 +311,31 @@ SE.views['work-order'] = function (el, p) {
       '<div class="form-row wo-ed"><label for="ed-due">Due</label><div class="control"><input type="date" id="ed-due" data-edit="due" value="' + (due ? K.iso(due) : '') + '"></div></div>' +
       '<p class="wo-ed-note">' + icon('check') + 'Changes save as you make them and go into the activity log.</p></div>';
   }
+
   function body() {
     var st = W.status(w);
     var make = unit.make || w.make || '', model = unit.model || w.model || '';
     var kvEdit = [
       w.externalId ? ['ERP order', esc(w.externalId)] : null,
       ['Type', esc(w.kind || 'Equipment repair')],
-      ['Machine', esc(w.machine)],
-      ['Asset', esc(w.equip)],
-      make ? ['Make', esc(make)] : null,
-      model ? ['Model', esc(model)] : null,
+      ['Machine', esc(w.machine)], ['Asset', esc(w.equip)],
+      make  ? ['Make',   esc(make)]  : null,
+      model ? ['Model',  esc(model)] : null,
       ['Serial', esc(unit.serial || 'Unknown')],
       ['Branch', esc(unit.location || 'Unknown')],
-      ['Opened', esc(w.opened)],
-      ['Warranty', warranty()]
+      ['Opened', esc(w.opened)], ['Warranty', warranty()]
     ].filter(Boolean);
     var kvFull = [
       w.externalId ? ['ERP order', esc(w.externalId)] : null,
       ['Type', esc(w.kind || 'Equipment repair')],
-      ['Status', SE.chip(st)],
-      ['Priority', W.priority(w.priority)],
-      ['Machine', esc(w.machine)],
-      ['Asset', esc(w.equip)],
-      make ? ['Make', esc(make)] : null,
-      model ? ['Model', esc(model)] : null,
+      ['Status', SE.chip(st)], ['Priority', W.priority(w.priority)],
+      ['Machine', esc(w.machine)], ['Asset', esc(w.equip)],
+      make  ? ['Make',   esc(make)]  : null,
+      model ? ['Model',  esc(model)] : null,
       ['Serial', esc(unit.serial || 'Unknown')],
       ['Branch', esc(unit.location || 'Unknown')],
       ['Assignee', esc(w.assignee)],
-      ['Opened', esc(w.opened)],
-      ['Due', esc(w.due || 'Not set')],
-      ['Warranty', warranty()]
+      ['Opened', esc(w.opened)], ['Due', esc(w.due || 'Not set')], ['Warranty', warranty()]
     ].filter(Boolean);
     return SE.recallNote(w.equip) + '<div class="split wo-split"><div class="wo-main">' +
         '<section class="card wo-summary"><div class="chips">' + SE.chip(st) + W.priority(w.priority) + '</div>' +
@@ -150,9 +343,9 @@ SE.views['work-order'] = function (el, p) {
           (st === 'Cancelled' ? SE.ui.banner('<b>Cancelled.</b> ' + esc(SE.state.cancelled[w.id]), 'danger', 'cross-small') : '') +
           (w.desc ? '<p class="wo-desc">' + esc(w.desc) + '</p>' : '') + '</section>' +
         troubleshoot(st) +
-        SE.ui.sec('Parts', '', parts(), 'h-parts') +
-        SE.ui.sec('Notes', '', notes(), 'h-notes') +
-        SE.ui.sec('Activity', '', log(), 'h-log') +
+        '<section class="sec card ci-sec" id="wo-cart-sec">' + cart() + '</section>' +
+        SE.ui.sec('Orders submitted', '', submittedOrders(), 'h-ord') +
+        SE.ui.sec('Notes &amp; activity', '', timeline(), 'h-log') +
       '</div>' +
       '<aside class="panel wo-panel" aria-label="Work order details"><div class="panel-body">' +
         '<h2 class="wo-panel-h">Details</h2>' +
@@ -184,14 +377,72 @@ SE.views['work-order'] = function (el, p) {
       var r = dlg.el.querySelector('#c-reason').value;
       if (!r) { dlg.el.querySelector('#row-reason').classList.add('invalid'); dlg.el.querySelector('#err-reason').hidden = false; dlg.el.querySelector('#c-reason').focus(); return; }
       SE.state.cancelled[w.id] = r;
-      SE.save();
-      dlg.close();
-      render();
+      SE.save(); dlg.close(); render();
       SE.toast('Work order #' + w.id + ' cancelled', 'check');
     });
   }
+
+  function showMachineOrders() {
+    var otherWOs = SE.allWorkOrders().filter(function (wo) { return wo.equip === w.equip && wo.id !== w.id && (wo.submittedOrders || []).length; });
+    var rows = [];
+    otherWOs.forEach(function (wo) {
+      (wo.submittedOrders || []).forEach(function (ord) {
+        var STATUS_LABEL = { in_transit: 'In transit', backordered: 'Backordered', delivered: 'Delivered', submitted: 'Submitted' };
+        var STATUS_CLS   = { in_transit: 'chip chip-info', backordered: 'chip chip-warning', delivered: 'chip chip-success', submitted: 'chip chip-neutral' };
+        rows.push(['<b>' + esc(ord.poNum) + '</b><span class="sub">' + esc(ord.date) + '</span>',
+          'WO #' + wo.id + '<span class="sub">' + esc(wo.issue.slice(0, 40)) + '</span>',
+          '<span class="' + (STATUS_CLS[ord.status] || 'chip chip-neutral') + '">' + esc(STATUS_LABEL[ord.status] || ord.status) + '</span>',
+          SE.money(ord.total || 0)]);
+      });
+    });
+    var dlg2 = open = SE.ui.dialog({
+      title: 'Orders on ' + esc(w.machine) + ' · Asset ' + esc(w.equip),
+      body: SE.ui.table([['Order'], ['Work order'], ['Status'], ['Total', 'num']], rows),
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Close</button>',
+    });
+    dlg2.el; // already shown
+  }
+
   el.addEventListener('click', function (e) {
     if (e.target.closest('[data-cancel]')) { cancel(); return; }
+    if (e.target.closest('[data-machine-orders]')) { showMachineOrders(); return; }
+
+    // Cart: group-by chips
+    var grpBtn = e.target.closest('[data-grp]');
+    if (grpBtn) { groupBy = grpBtn.dataset.grp; var cs = el.querySelector('#wo-cart-sec'); if (cs) cs.innerHTML = cart(); return; }
+
+    // Cart: qty +/-
+    var incBtn = e.target.closest('[data-cart-inc]');
+    if (incBtn) {
+      var items = cartItems(), c = items.find(function (x) { return x.id === incBtn.dataset.cartInc; });
+      if (c) { c.qty = (c.qty || 1) + 1; SE.save(); var cs2 = el.querySelector('#wo-cart-sec'); if (cs2) cs2.innerHTML = cart(); } return;
+    }
+    var decBtn = e.target.closest('[data-cart-dec]');
+    if (decBtn) {
+      var items2 = cartItems(), c2 = items2.find(function (x) { return x.id === decBtn.dataset.cartDec; });
+      if (c2 && (c2.qty || 1) > 1) { c2.qty = (c2.qty || 1) - 1; SE.save(); var cs3 = el.querySelector('#wo-cart-sec'); if (cs3) cs3.innerHTML = cart(); } return;
+    }
+    var rmBtn = e.target.closest('[data-cart-rm]');
+    if (rmBtn) {
+      var items3 = cartItems(), idx = items3.findIndex(function (x) { return x.id === rmBtn.dataset.cartRm; });
+      if (idx >= 0) { items3.splice(idx, 1); SE.save(); var cs4 = el.querySelector('#wo-cart-sec'); if (cs4) cs4.innerHTML = cart(); } return;
+    }
+
+    // Cart: submit
+    if (e.target.closest('[data-cart-submit]')) { SE.toast('Order submitted — check your orders list', 'check'); return; }
+
+    // Submitted orders accordion
+    var togBtn = e.target.closest('[data-ord-toggle]');
+    if (togBtn) {
+      var i = parseInt(togBtn.dataset.ordToggle, 10);
+      ordOpen[i] = !togBtn.classList.contains('open');
+      togBtn.classList.toggle('open', ordOpen[i]);
+      var body2 = document.getElementById('wo-ord-' + i);
+      if (body2) { var bd = body2.querySelector('.ord-acc-body'); if (bd) bd.hidden = !ordOpen[i]; }
+      return;
+    }
+
+    // Note add
     if (e.target.closest('[data-add-note]')) {
       var inp = el.querySelector('#wo-note-in');
       var text = inp ? inp.value.trim() : '';
@@ -200,12 +451,11 @@ SE.views['work-order'] = function (el, p) {
       var ed = edits();
       if (!ed.notes) ed.notes = [];
       ed.notes.push({ text: text, author: D.user.name, time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) });
-      SE.save();
-      if (inp) inp.value = '';
-      render();
-      SE.toast('Note added', 'check');
-      return;
+      SE.save(); if (inp) inp.value = ''; render();
+      SE.toast('Note added', 'check'); return;
     }
+
+    // Archive / un-archive
     var ar = e.target.closest('[data-archive], [data-unarchive]');
     if (!ar) return;
     var on = ar.hasAttribute('data-archive');
@@ -215,10 +465,7 @@ SE.views['work-order'] = function (el, p) {
     SE.toast('Work order #' + w.id + (on ? ' archived' : ' back in the list'), 'box');
   });
   el.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && e.target.id === 'wo-note-in') {
-      var btn = el.querySelector('[data-add-note]');
-      if (btn) btn.click();
-    }
+    if (e.key === 'Enter' && e.target.id === 'wo-note-in') { var btn = el.querySelector('[data-add-note]'); if (btn) btn.click(); }
   });
   el.addEventListener('change', function (e) {
     var f = e.target.closest('[data-edit]');
