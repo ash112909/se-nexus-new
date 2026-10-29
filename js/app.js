@@ -91,7 +91,6 @@
   // what the cart buys: lines covered by branch shelves (js/desk.js) cost nothing to buy
   SE.cartTotal = function () { return SE.state.cart.reduce(function (n, l) { return n + SE.part(l.pn).price * (SE.desk ? SE.desk.alloc(l).buy : l.qty); }, 0); };
   SE.addToCart = function (pn, qty, wo) {
-    console.log('[SE.addToCart] pn=' + pn + ' qty=' + qty + ' wo=' + wo);
     if (wo) {
       // WO-linked items live in the per-WO cart, not the global cart
       var WC = SE.state.woCart;
@@ -113,7 +112,6 @@
           crossRefs: []
         });
       }
-      console.log('[SE.addToCart] woCart[' + wo + '] now has ' + WC[wo].length + ' items');
       SE.save();
       if (SE.refreshShell) SE.refreshShell();
       if (SE._woCartRefresh) SE._woCartRefresh(wo);

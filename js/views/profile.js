@@ -87,7 +87,7 @@ SE.views.profile = function (el, p) {
   });
 
   clearBtn.addEventListener('click', function () {
-    store.setLocal('avatar', null);
+    store.setLocal('avatar', '');
     refreshAvatar();
   });
 

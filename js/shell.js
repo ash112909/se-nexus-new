@@ -61,7 +61,7 @@
     }
     function quick(withSettings) {
       var u = SE.unread();
-      var av = SE.store.getLocal('avatar');
+      var av = SE.store.getLocal('avatar') || null; if (av === 'null') av = null;
       var avHtml = av ? '<img src="' + esc(av) + '" alt="" class="qa-av-img">'
                       : '<span class="qa-av-init">' + esc(D.user.initials) + '</span>';
       var parts = D.user.name.split(' ');
@@ -155,7 +155,7 @@
     function openAccount(btn) {
       accBtn = btn;
       var rows = [{ id: 'all', name: 'All locations', sub: 'Cross-location view' }].concat(D.locations.map(function (l) { return { id: l.id, name: l.name, sub: l.units + ' units · ' + l.address }; }));
-      var accAv = SE.store.getLocal('avatar');
+      var accAv = SE.store.getLocal('avatar') || null; if (accAv === 'null') accAv = null;
       var accAvHTML = accAv ? '<img src="' + esc(accAv) + '" alt="Profile photo">' : esc(D.user.initials);
       account.innerHTML =
         '<div class="acc-head"><span class="acc-avatar">' + accAvHTML + '</span><span><b>' + esc(D.user.name) + '</b><small>' + esc(D.user.role + ' · ' + D.fleet.name) + '</small></span></div>' +
