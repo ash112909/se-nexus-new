@@ -169,9 +169,11 @@
   .ci-cart-card { padding: 0; overflow: hidden; }
   .ci-cart-aside { min-width: 200px; }
   /* wo-main is already a sub-column of wo-split (360px right panel), so there is never enough room
-     for a second 360px aside alongside the table within the 1200px content cap; always stack. */
-  .ci-cart-grid.oc-grid { grid-template-columns: minmax(0, 1fr); }
-  .ci-cart-grid .ci-cart-aside { position: static; width: 100%; }
+     for a second 360px aside alongside the table within the 1200px content cap; flatten to block
+     so both the table card and the summary card get natural full-width block sizing. */
+  .ci-cart-grid.oc-grid { display: block; }
+  .ci-cart-grid .oc-main { margin-bottom: 24px; }
+  .ci-cart-grid .ci-cart-aside { position: static; }
 
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
