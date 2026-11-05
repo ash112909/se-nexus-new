@@ -171,8 +171,8 @@
   /* wo-main is already a sub-column of wo-split (360px right panel), so there is never enough room
      for a second 360px aside alongside the table within the 1200px content cap; stack both cards
      in a flex column so each flex item stretches to full width. */
-  .ci-cart-grid.oc-grid { display: flex; flex-direction: column; gap: 24px; }
-  .ci-cart-grid .ci-cart-aside { position: static; align-self: stretch; }
+  .ci-cart-grid.oc-grid { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
+  .ci-cart-grid .ci-cart-aside { position: static; }
 
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
