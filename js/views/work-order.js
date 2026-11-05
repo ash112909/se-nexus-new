@@ -297,7 +297,7 @@ SE.views['work-order'] = function (el, p) {
     var submitLabel = blocked > 0
       ? 'Submit orderable items<span class="ci-unord">' + icon('triangle-warning') + blocked + ' unorderable</span>'
       : icon('check') + 'Submit order';
-    var aside = '<aside class="card oc-aside ci-cart-aside"><h2 class="oc-aside-h">Summary</h2>' +
+    var aside = '<aside class="card ci-cart-aside"><h2 class="oc-aside-h">Summary</h2>' +
       SE.ui.kv(vOrder.map(function (v) { return [v, SE.money(byVendor[v])]; })) +
       '<div class="oc-grand"><span>Estimated total</span><b>' + SE.money(total) + '</b></div>' +
       '<p class="oc-note">Tax and freight are added by the supplier.</p>' +
@@ -306,9 +306,9 @@ SE.views['work-order'] = function (el, p) {
           '<button type="button" class="btn btn-secondary oc-cta" data-ci-tools>' + icon('share') + 'Cart actions' + icon('angle-small-down') + '</button>'
         : '') +
       '</aside>';
-    return rv + '<div class="oc-grid ci-cart-grid"><div class="oc-main"><div class="card ci-cart-card">' +
-      hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div></div>' +
-      aside + '</div>';
+    return rv + '<div class="card ci-cart-card">' +
+      hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div>' +
+      aside;
   }
 
   // ── Submitted orders accordion ────────────────────────────────────────────

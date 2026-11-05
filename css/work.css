@@ -165,14 +165,9 @@
   .ord-acc-body { }
   .ord-acc-foot { padding: 8px 14px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; font-size: 13px; color: var(--muted); background: var(--surface-raised, #fafaf8); }
 
-  /* ── Work order cart layout (oc-grid within wo-main) */
+  /* ── Work order cart layout */
   .ci-cart-card { padding: 0; overflow: hidden; }
-  .ci-cart-aside { min-width: 200px; }
-  /* wo-main is already a sub-column of wo-split (360px right panel), so there is never enough room
-     for a second 360px aside alongside the table within the 1200px content cap; stack both cards
-     in a flex column so each flex item stretches to full width. */
-  .ci-cart-grid.oc-grid { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
-  .ci-cart-grid .ci-cart-aside { position: static; }
+  /* ci-cart-aside sits directly in ci-sec (flex column) so it stretches to full width like every sibling */
 
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }
