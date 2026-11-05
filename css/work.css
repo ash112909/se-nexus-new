@@ -168,6 +168,7 @@
   /* ── Work order cart layout */
   .ci-cart-card { padding: 0; overflow: hidden; }
   /* ci-cart-aside sits directly in ci-sec (flex column) so it stretches to full width like every sibling */
+  .ci-cart-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
   @container (max-width: 519px) {
     .wo-log li { grid-template-columns: 20px 1fr; }

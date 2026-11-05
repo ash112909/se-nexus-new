@@ -37,7 +37,7 @@ SE.views.machine = function (el, p) {
   var sh = SE.shell(el, {
     nav: 'catalog', title: m.name, wide: true, crumbs: [['Parts catalog', 'catalog' + (p.wo ? '?wo=' + p.wo : '')], [s.name, 'supplier?sup=' + s.id + C.woQ(p.wo)]],
     sub: esc(m.type) + ' · ' + m.units.length + ' units in your fleet',
-    body: C.woBanner(p.wo) + C.layout({ sup: s.id, m: key }, p.wo, hero +
+    body: C.layout({ sup: s.id, m: key }, p.wo, hero +
       UI.sec('Your units · ' + m.units.length, '<a class="sec-link" href="#/fleet?q=' + encodeURIComponent(m.model) + '">All ' + m.units.length + ' units in Fleet' + icon('arrow-small-right') + '</a>', sum + (units ? '<p class="us-cap">' + (w ? 'The work order\'s unit and the units that need attention' : 'Units that need attention') + '</p>' + units : ''), 'h-units') +
       UI.sec('Parts catalog · ' + m.categories.length + ' assembly groups', '', cats, 'h-cats') +
       UI.sec('Documents', '', docsCard, 'h-docs')),

@@ -364,3 +364,35 @@
   }
 }
 
+/* WO context ribbon */
+@layer components {
+  .cat-wo-ribbon { display: flex; align-items: center; gap: 10px; padding: 9px 20px; background: var(--on-surface, #18181b); color: #fff; font-size: 13px; flex-wrap: wrap; }
+  .cat-wo-ribbon .wr-icon { flex: none; opacity: .7; }
+  .wr-item { white-space: nowrap; }
+  .wr-sep { opacity: .35; }
+  .wr-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .wr-back { display: flex; align-items: center; gap: 4px; color: #fff; text-decoration: none; font-weight: 600; font-size: 12px; opacity: .85; white-space: nowrap; }
+  .wr-back:hover { opacity: 1; text-decoration: underline; }
+  .wr-clear { background: none; border: none; color: #fff; opacity: .6; font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  .wr-clear:hover { opacity: 1; }
+}
+
+/* Catalog tree search panel */
+@layer components {
+  .ctree-search { padding: 12px 12px 8px; border-bottom: 1px solid var(--line); }
+  .smode-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+  .smode-btn { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .smode-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .smode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .ctree-s-wrap { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--container-low); }
+  .ctree-s-wrap:focus-within { border-color: var(--accent); }
+  .ctree-s-wrap .i { flex: none; color: var(--muted); }
+  .ctree-sinput { flex: 1; min-width: 0; border: none; background: transparent; padding: 7px 0; font: inherit; font-size: 13px; color: var(--text); outline: none; }
+  .ctree-sinput::placeholder { color: var(--muted); }
+  .ctree-s-row { display: flex; gap: 6px; }
+  .ctree-s-sel { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; font-size: 13px; background: var(--container-low); color: var(--text); outline: none; }
+  .ctree-s-sel:focus { border-color: var(--accent); }
+  .ctree-s-go { flex: none; padding: 6px 14px; border-radius: 8px; border: none; background: var(--accent); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .ctree-s-go:hover { opacity: .9; }
+}
+

@@ -110,7 +110,7 @@ SE.views.category = function (el, p) {
   var sh = SE.shell(el, {
     nav: 'catalog', title: sub || cat.name, wide: true, crumbs: crumbs,
     sub: esc(m.name) + ' · ' + (sub ? 'sub-assembly of the ' + esc(cat.name.toLowerCase()) + ' · ' : '') + parts.length + ' parts',
-    body: C.woBanner(wo) + C.layout({ sup: s.id, m: key, cat: cat.id, sub: sub }, wo,
+    body: C.layout({ sup: s.id, m: key, cat: cat.id, sub: sub }, wo,
       '<div class="split cat-split"><div class="cat-list" id="cat-body">' + body() + '</div><aside class="panel" id="cat-panel" aria-label="Part detail"></aside></div>'),
   });
   var panelEl = el.querySelector('#cat-panel'), bodyEl = el.querySelector('#cat-body');

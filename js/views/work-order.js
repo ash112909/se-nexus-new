@@ -302,8 +302,10 @@ SE.views['work-order'] = function (el, p) {
       '<div class="oc-grand"><span>Estimated total</span><b>' + SE.money(total) + '</b></div>' +
       '<p class="oc-note">Tax and freight are added by the supplier.</p>' +
       (canEdit
-        ? '<button type="button" class="btn btn-primary oc-cta" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button>' +
-          '<button type="button" class="btn btn-secondary oc-cta" data-ci-tools>' + icon('share') + 'Cart actions' + icon('angle-small-down') + '</button>'
+        ? '<div class="ci-cart-btns">' +
+          '<button type="button" class="btn btn-primary" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button>' +
+          '<button type="button" class="btn btn-secondary" data-ci-tools>' + icon('share') + 'Cart actions' + icon('angle-small-down') + '</button>' +
+          '</div>'
         : '') +
       '</aside>';
     return rv + '<div class="card ci-cart-card">' +

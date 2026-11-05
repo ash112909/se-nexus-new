@@ -23,7 +23,7 @@ SE.views.supplier = function (el, p) {
       nav: 'catalog', title: line[1], wide: true,
       crumbs: [['Parts catalog', catQ], [s.name, 'supplier?sup=' + s.id + C.woQ(p.wo)]],
       sub: esc(s.name) + '\'s own line: ' + esc(line[2].toLowerCase()) + '. Not tied to a model, so these items are not in any machine catalog.',
-      body: C.woBanner(p.wo) + C.layout({ sup: s.id, line: line[0] }, p.wo,
+      body: C.layout({ sup: s.id, line: line[0] }, p.wo,
         UI.sec(s.name + ' ' + line[1].toLowerCase() + ' · ' + list.length + ' items', '', '<div class="tbl-wrap"><table class="tbl line-tbl"><thead><tr><th scope="col">Part</th><th scope="col" class="num">Price, USD</th><th scope="col" aria-label="Add to cart"></th></tr></thead><tbody>' + rows + '</tbody></table></div>', 'h-line')),
     });
     function open(r) { SE.go('part', { params: p.wo ? { pn: r.dataset.pn, wo: p.wo } : { pn: r.dataset.pn } }); }
@@ -64,7 +64,7 @@ SE.views.supplier = function (el, p) {
   var s2 = SE.shell(el, {
     nav: 'catalog', title: s.name, wide: true, crumbs: [['Parts catalog', catQ]],
     sub: esc(s.tagline) + ' · ' + C.units(s) + ' units in your fleet',
-    body: C.woBanner(p.wo) + C.layout({ sup: s.id }, p.wo, hero + halves +
+    body: C.layout({ sup: s.id }, p.wo, hero + halves +
       (latest ? UI.sec('Latest from ' + s.name, '', '<a class="sr-browse card" href="#/manual?id=' + latest.id + '">' + icon(latest.type === 'Bulletin' ? 'megaphone' : 'book-alt') + '<span><b>' + esc(latest.title) + '</b><small>' + esc(latest.edition) + '</small></span>' + icon('angle-small-right') + '</a>', 'h-latest') : '')),
   });
   return s2.cleanup;
