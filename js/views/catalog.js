@@ -221,11 +221,11 @@ SE.views.catalog = function (el, p) {
       '<b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + ' · ' + s.machines.length + ' model, ' + C.lines(s.id).length + ' own lines</span><span class="sc-go">Browse catalog' + icon('arrow-small-right') + '</span></a></li>';
   }).join('');
   var s = SE.shell(el, {
-    nav: 'catalog', title: 'Parts catalog', crumbs: [['Home', 'home']],
+    nav: 'catalog', title: 'Parts catalog', wide: true, crumbs: [['Home', 'home']],
     sub: 'Your fleet first, then browse by supplier, model, assembly group and sub-assembly. 2 connected catalogs.',
-    body: C.woRibbon(p.wo) +
+    body: C.layout({}, p.wo,
       UI.sec('Your fleet · ' + total + ' units', '', '<ul class="mach-grid fleet-grid">' + fleet + '</ul>', 'h-fleet') +
-      UI.sec('Suppliers in your network · ' + D.suppliers.length, '<span class="sec-note">JLG and Skyjack are connected to Mid-County Rental</span>', '<ul class="sup-grid">' + cards + '</ul>', 'h-sups'),
+      UI.sec('Suppliers in your network · ' + D.suppliers.length, '<span class="sec-note">JLG and Skyjack are connected to Mid-County Rental</span>', '<ul class="sup-grid">' + cards + '</ul>', 'h-sups')),
   });
   return s.cleanup;
 };
