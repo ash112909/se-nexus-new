@@ -208,3 +208,91 @@
   .le-vis-seg button { display: inline-flex; align-items: center; gap: 6px; }
   .le-vis-seg .i { width: 14px; height: 14px; }
 }
+
+/* two-panel wishlist layout */
+@layer components {
+  /* ── two-panel shell ──────────────────────────────────────────────────────── */
+  .wl-two-panel { display: flex; height: calc(100dvh - 148px); min-height: 320px; overflow: hidden; margin: -20px -24px -24px; border-top: 1px solid var(--line); }
+
+  /* ── sidebar nav ─────────────────────────────────────────────────────────── */
+  .wl-sidebar-nav { width: 228px; flex-shrink: 0; border-right: 1px solid var(--line); overflow-y: auto; padding: 8px 0; display: flex; flex-direction: column; background: var(--surface); }
+  .wl-nav-label { display: flex; align-items: center; gap: 5px; padding: 8px 16px 4px; font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: var(--muted); }
+  .wl-nav-label .i { width: 12px; height: 12px; }
+  .wl-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 16px; cursor: pointer; font-size: 13px; color: var(--muted); user-select: none; }
+  .wl-nav-item:hover { background: var(--container-low, var(--container)); }
+  .wl-nav-item.active { background: var(--tint-info); color: var(--ink); font-weight: 600; }
+  .wl-nav-item > .i { flex: none; width: 14px; height: 14px; opacity: .6; }
+  .wl-nav-item.active > .i { opacity: 1; color: var(--info); }
+  .wl-nav-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wl-nav-count { flex: none; font-size: 10px; font-weight: 700; background: var(--container); color: var(--muted); border-radius: 999px; padding: 1px 7px; }
+  .wl-nav-item.active .wl-nav-count { background: var(--tint-warning); color: var(--chip-warning); }
+  .wl-nav-pub { flex: none; font-size: 9px; font-weight: 700; background: var(--tint-success); color: var(--success); border-radius: 3px; padding: 1px 4px; letter-spacing: .3px; }
+  .wl-nav-pin { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--muted); padding: 0; }
+  .wl-nav-pin:hover { background: var(--container); color: var(--ink); }
+  .wl-nav-pin .i { width: 14px; height: 14px; }
+  .wl-nav-empty { padding: 6px 16px; font-size: 12px; color: var(--muted); }
+  .wl-nav-new { display: flex; align-items: center; gap: 6px; margin: 8px 12px 0; padding: 7px 12px; border: 1px dashed var(--line-strong); border-radius: 8px; background: none; font: inherit; font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; }
+  .wl-nav-new:hover { background: var(--container); }
+  .wl-nav-new .i { width: 14px; height: 14px; }
+
+  /* ── content panel ───────────────────────────────────────────────────────── */
+  .wl-items-panel { flex: 1; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; }
+
+  /* panel header */
+  .wl-panel-hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); flex-shrink: 0; flex-wrap: wrap; background: var(--surface); position: sticky; top: 0; z-index: 1; }
+  .wl-ph-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .wl-ph-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .wl-ph-title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 24px; margin: 0; }
+  .wl-ph-cnt { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .wl-vis { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; border-radius: 4px; padding: 2px 8px; flex: none; }
+  .wl-vis .i { width: 11px; height: 11px; }
+  .wl-vis.pub { background: var(--tint-success); color: var(--success); }
+  .wl-vis.priv { background: var(--container); color: var(--muted); }
+
+  /* panel action buttons */
+  .wl-act-btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 7px; background: none; font: inherit; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; text-decoration: none; }
+  .wl-act-btn:hover { background: var(--container); color: var(--ink); border-color: var(--line-strong); }
+  .wl-act-btn .i { width: 13px; height: 13px; }
+  .wl-act-primary { background: var(--cta-default); color: var(--cta-ink) !important; border-color: var(--cta-default) !important; }
+  .wl-act-primary:hover { filter: brightness(.9); background: var(--cta-default) !important; }
+  .wl-act-danger { color: var(--danger) !important; border-color: var(--tint-danger) !important; }
+  .wl-act-danger:hover { background: var(--tint-danger) !important; }
+  .wl-ren-inp { height: 32px; border: 1.5px solid var(--focus, var(--cta-default)); border-radius: 7px; padding: 0 10px; font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--surface); outline: none; min-width: 160px; flex: 1 1 auto; max-width: 400px; }
+
+  /* items list */
+  .wl-items-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .wl-item-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; transition: border-color .15s; }
+  .wl-item-card:hover { border-color: var(--line-strong); }
+  .wl-item-main { display: flex; align-items: flex-start; gap: 16px; padding: 12px 14px; flex-wrap: wrap; }
+  .wl-item-info { flex: 1; min-width: 200px; }
+  .wl-item-top { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .wl-pn { font-family: 'SF Mono', 'Consolas', monospace; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .wl-oem { font-size: 9px; font-weight: 700; background: var(--container); color: var(--muted); border-radius: 3px; padding: 1px 4px; letter-spacing: .3px; }
+  .wl-qty { font-size: 10px; font-weight: 700; background: var(--tint-info); color: var(--info); border-radius: 4px; padding: 1px 5px; }
+  .wl-item-desc { font-size: 13px; font-weight: 500; color: var(--ink); margin-top: 4px; line-height: 1.35; }
+  .wl-item-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .wl-item-sup { font-size: 11px; color: var(--muted); }
+  .wl-uom { font-size: 10px; font-weight: 700; background: var(--container); color: var(--muted); border-radius: 4px; padding: 2px 6px; letter-spacing: .3px; }
+  .wl-item-acts { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; align-self: flex-start; padding-top: 2px; }
+  .wl-cart-btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px; border: none; border-radius: 7px; background: var(--cta-default); color: var(--cta-ink); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .wl-cart-btn:hover { filter: brightness(.9); }
+  .wl-cart-btn .i { width: 13px; height: 13px; }
+  .wl-find-btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--container); color: var(--muted); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+  .wl-find-btn:hover { background: var(--surface); color: var(--ink); }
+  .wl-find-btn .i { width: 13px; height: 13px; }
+  .wl-move-sel { height: 32px; border: 1px solid var(--line); border-radius: 7px; padding: 0 8px; font: inherit; font-size: 11px; color: var(--muted); background: var(--surface); cursor: pointer; outline: none; max-width: 140px; }
+  .wl-move-sel:focus { border-color: var(--focus); }
+  .wl-del-btn { display: grid; place-items: center; width: 32px; height: 32px; border: none; background: none; border-radius: 7px; cursor: pointer; color: var(--muted); padding: 0; }
+  .wl-del-btn:hover { background: var(--tint-danger); color: var(--danger); }
+  .wl-del-btn .i { width: 16px; height: 16px; }
+
+  /* panel empty state */
+  .wl-panel-empty { padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; line-height: 20px; }
+  .wl-panel-empty .btn { margin-top: 8px; }
+
+  /* narrow sidebar on small screens */
+  @container (max-width: 720px) {
+    .wl-sidebar-nav { width: 180px; }
+    .wl-nav-new { font-size: 11px; }
+  }
+}
