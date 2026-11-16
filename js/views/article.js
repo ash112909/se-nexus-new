@@ -50,7 +50,7 @@ SE.views.article = function (el, p) {
     return '<li><a href="#/asset?id=' + encodeURIComponent(a.equip) + '">' + UI.thumb() + '<span><b>' + esc(a.equip) + ' · ' + esc(a.machine) + '</b><small>' + esc(a.serial) + ' · ' + esc(a.location) + '</small></span>' + SE.chip(a.status) + '</a></li>';
   }).join('') + '</ul></section>';
   if (parts.length) side += '<section class="card"><h2 class="od-h">' + (art ? 'Parts this uses' : 'Part') + '</h2><ul class="ar-links">' + parts.map(function (pt) {
-    return '<li><a href="#/part?pn=' + encodeURIComponent(pt.pn) + '">' + UI.thumb() + '<span><b>' + esc(pt.name) + '</b><small>' + esc(pt.pn) + ' · ' + esc(SE.supplierOf(pt.pn).name) + '</small></span><b class="ar-price">' + SE.money(pt.price) + '</b></a></li>';
+    return '<li><a href="#/part?pn=' + encodeURIComponent(pt.pn) + '">' + UI.thumb() + '<span><b>' + esc(pt.name) + '</b><small>' + esc(pt.pn) + ' · ' + esc(SE.supplierOf(pt.pn).name) + '</small></span></a></li>';
   }).join('') + '</ul></section>';
   var man = news && news.manual ? [news.manual, 1] : art && art.manual;
   if (man) {

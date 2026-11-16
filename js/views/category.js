@@ -27,17 +27,16 @@ SE.views.category = function (el, p) {
   function table(list, quick) {
     var num = quick && view === 'image', cols = 2 + (num ? 1 : 0) + (quick ? 1 : 0);
     var groups = subs.filter(function (sb) { return list.some(function (x) { return x.sub === sb; }); });
-    return '<div class="tbl-wrap"><table class="tbl cat-tbl"><thead><tr>' + (num ? '<th scope="col" class="num">No.</th>' : '') + '<th scope="col">Part</th><th scope="col" class="num">Price and stock</th>' + (quick ? '<th scope="col" aria-label="Add to cart"></th>' : '') + '</tr></thead><tbody>' +
+    return '<div class="tbl-wrap"><table class="tbl cat-tbl"><thead><tr>' + (num ? '<th scope="col" class="num">No.</th>' : '') + '<th scope="col">Part</th>' + (quick ? '<th scope="col" aria-label="Add to cart"></th>' : '') + '</tr></thead><tbody>' +
       (view === 'image' ? rows(list, quick) : groups.map(function (sb) {
         return '<tr class="grp"><th colspan="' + cols + '" scope="colgroup">' + esc(sb) + '</th></tr>' + rows(list.filter(function (x) { return x.sub === sb; }), quick);
       }).join('')) + '</tbody></table></div>';
   }
   function rows(list, quick) {
     return list.map(function (x) {
-      var n = x._n, ok = C.priceOk(x, unit);
+      var n = x._n;
       return '<tr data-row data-pn="' + x.pn + '" tabindex="0" aria-selected="' + (x.pn === sel) + '">' + (n != null ? '<td class="num co-td"><span class="co-num">' + n + '</span></td>' : '') +
         '<td class="cell-pn"><span class="pn-link">' + esc(x.pn) + '</span><span class="pn-name">' + esc(x.name) + '</span></td>' +
-        '<td class="num cell-price">' + (ok ? '<b>' + SE.money(x.price) + '</b>' + SE.ui.stock(x) : '<span class="need-serial">Serial needed</span><span class="pn-name">Pick a unit</span>') + '</td>' +
         (quick ? '<td class="q-cell">' + C.quickBtn(x, unit) + '</td>' : '') + '</tr>';
     }).join('');
   }

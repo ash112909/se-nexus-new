@@ -797,7 +797,6 @@
         // 1026 (CR-05): the supplier is the scope (search bar), not a facet
         '<p class="sr-more sr-scope-note">Searching the ' + esc(X.supplier(X.supplierFor()).name) + ' catalog. ' + (D.suppliers.length - live.length) + ' more suppliers, not connected.</p>' +
         (types.length ? '<fieldset class="sr-fs"><legend class="sr-flabel">Part type</legend>' + types.map(function (t) { return box('data-ptype', t, t, flat.filter(function (x) { return X.matchPartType(x, t); }).length, ptypes.indexOf(t) >= 0); }).join('') + '</fieldset>' : '') +
-        '<fieldset class="sr-fs"><legend class="sr-flabel">Availability</legend>' + box('data-stock', '1', 'In stock only', flat.filter(function (x) { return x.stock === 'In stock'; }).length, stockOnly) + '</fieldset>' +
       '</aside>';
     }
     function hideNotice(r) {
