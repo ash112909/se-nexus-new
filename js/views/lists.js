@@ -28,7 +28,8 @@
   // and a picked part is appended at the end.
   LX.editor = function (src, onDone) {
     var D = SE.data, UI = SE.ui;
-    var draft = src ? JSON.parse(JSON.stringify(src)) : { id: null, name: '', description: '', tag: LX.tag && LX.tag !== 'all' ? LX.tag : D.listTags[0], machine: null, items: [] };
+    var myId = D.user.username;
+    var draft = src ? JSON.parse(JSON.stringify(src)) : { id: null, name: '', description: '', tag: LX.tag && LX.tag !== 'all' ? LX.tag : D.listTags[0], machine: null, items: [], ownerId: myId, pinned: false, public: false };
     function tags() {
       return D.listTags.map(function (t) { return '<button type="button" role="radio" aria-checked="' + (t === draft.tag) + '" aria-selected="' + (t === draft.tag) + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>'; }).join('');
     }
@@ -80,6 +81,10 @@
         '</div>' +
         '<div class="form-row"><label for="le-desc">Description (optional)</label><div class="control area"><textarea id="le-desc" rows="2" placeholder="What the list is for">' + esc(draft.description || '') + '</textarea></div></div>' +
         '<div class="form-row"><span class="le-lbl" id="le-tag-l">Tag</span><div class="seg le-tags" role="radiogroup" aria-labelledby="le-tag-l">' + tags() + '</div></div>' +
+        '<div class="form-row"><span class="le-lbl" id="le-vis-l">Visibility</span><div class="seg le-vis-seg" role="radiogroup" aria-labelledby="le-vis-l">' +
+          '<button type="button" role="radio" aria-checked="' + !draft.public + '" aria-selected="' + !draft.public + '" data-vis="private">' + icon('lock') + 'Private</button>' +
+          '<button type="button" role="radio" aria-checked="' + !!draft.public + '" aria-selected="' + !!draft.public + '" data-vis="public">' + icon('share') + 'Public</button>' +
+        '</div></div>' +
         '<div class="form-row"><span class="le-lbl">Parts · <span id="le-n">' + draft.items.length + '</span></span><div id="le-members">' + members() + '</div></div>' +
         '<div class="form-row le-add"><label for="le-q">Search parts to add</label><div class="control">' + icon('search') + '<input id="le-q" type="search" placeholder="Part number, name or machine" enterkeyhint="search"></div>' +
           '<div id="le-res">' + results('') + '</div></div>' +
@@ -101,6 +106,7 @@
       if (!t || t.disabled) return;
       var x = t.dataset;
       if (x.tag) { draft.tag = x.tag; d.querySelector('.le-tags').innerHTML = tags(); d.querySelector('[data-tag="' + x.tag + '"]').focus(); return; }
+      if (x.vis) { draft.public = x.vis === 'public'; var seg = d.querySelector('.le-vis-seg'); seg.querySelectorAll('button').forEach(function(b) { var on = b.dataset.vis === x.vis; b.setAttribute('aria-checked', on); b.setAttribute('aria-selected', on); }); return; }
       if (x.step) { var i = +t.closest('[data-i]').dataset.i; draft.items[i].qty = Math.max(1, draft.items[i].qty + (+x.step)); renderMembers('[data-i="' + i + '"] [data-step="' + x.step + '"]'); return; }
       if (x.up != null || x.down != null) {
         var a = +(x.up != null ? x.up : x.down), b = a + (x.up != null ? -1 : 1);
@@ -157,24 +163,46 @@
 SE.titles.lists = 'Shopping Lists';
 SE.views.lists = function (el, p) {
   var D = SE.data, UI = SE.ui, esc = SE.esc, icon = SE.icon, LX = SE.lx;
+  var myId = D.user.username;
   var tag = D.listTags.indexOf(p.tag) >= 0 ? p.tag : (LX.tag || 'all');
 
   function card(l) {
     var n = LX.issues(l), un = LX.unpriced(l), mach = LX.machineName(l.machine);
-    return '<li><a class="lw-card" href="#/list?id=' + encodeURIComponent(l.id) + '">' +
-      '<span class="lw-top"><b>' + esc(l.name) + '</b><span class="lw-total">' + SE.money(LX.total(l)) + (un ? '<small>+ ' + un + ' priced by unit</small>' : '') + '</span></span>' +
-      (l.description ? '<span class="lw-desc">' + esc(l.description) + '</span>' : '') +
-      '<span class="lw-chips">' + SE.chip(l.tag, 'neutral') + '<span>' + LX.parts(l.items.length) + '</span>' + (mach ? '<span>' + icon('truck-side') + esc(mach) + '</span>' : '') + '</span>' +
-      '<span class="lw-foot"><span>Updated by ' + esc(l.updatedBy) + ', ' + esc(l.updatedAt) + '</span>' +
-        (n ? '<span class="lw-flag">' + icon('exclamation') + n + ' to review</span>' : '') + '</span>' +
-    '</a></li>';
+    var canEdit = !l.ownerId || l.ownerId === myId;
+    var pubBadge = l.public ? SE.chip('Public', 'info') : '';
+    var pinBtn = canEdit ? '<button type="button" class="lw-pin-btn" data-pin="' + esc(l.id) + '" title="' + (l.pinned ? 'Unpin' : 'Pin to top') + '" aria-label="' + (l.pinned ? 'Unpin ' : 'Pin ') + esc(l.name) + '">' + icon('star') + '</button>' : '';
+    var ownerNote = !canEdit ? '<span class="lw-owner">' + icon('user') + esc(l.updatedBy) + '</span>' : '';
+    return '<li class="lw-item">' +
+      '<a class="lw-card" href="#/list?id=' + encodeURIComponent(l.id) + '">' +
+        '<span class="lw-top"><b>' + esc(l.name) + '</b><span class="lw-top-right">' + pubBadge + '<span class="lw-total">' + SE.money(LX.total(l)) + (un ? '<small>+ ' + un + ' priced by unit</small>' : '') + '</span></span></span>' +
+        (l.description ? '<span class="lw-desc">' + esc(l.description) + '</span>' : '') +
+        '<span class="lw-chips">' + SE.chip(l.tag, 'neutral') + '<span>' + LX.parts(l.items.length) + '</span>' + (mach ? '<span>' + icon('truck-side') + esc(mach) + '</span>' : '') + '</span>' +
+        '<span class="lw-foot"><span>' + ownerNote + 'Updated by ' + esc(l.updatedBy) + ', ' + esc(l.updatedAt) + '</span>' +
+          (n ? '<span class="lw-flag">' + icon('exclamation') + n + ' to review</span>' : '') + '</span>' +
+      '</a>' +
+      (canEdit ? '<div class="lw-card-actions">' + pinBtn + '</div>' : '') +
+    '</li>';
+  }
+  function section(label, labelIcon, list) {
+    if (!list.length) return '';
+    return '<div class="lw-section"><div class="lw-section-label">' + icon(labelIcon) + label + '</div><ul class="lw-grid">' + list.map(card).join('') + '</ul></div>';
   }
   function body() {
-    var all = SE.lists(), list = all.filter(function (l) { return tag === 'all' || l.tag === tag; });
+    var all = SE.lists(), filtered = all.filter(function (l) { return tag === 'all' || l.tag === tag; });
     var items = [['all', 'All', all.length]].concat(D.listTags.map(function (t) { return [t, t, all.filter(function (l) { return l.tag === t; }).length]; }));
+    if (!filtered.length) {
+      return '<div class="lw-bar">' + UI.seg('Filter lists by tag', items, tag) + '</div>' +
+        UI.empty({ icon: 'list', tone: 'neutral', title: 'No ' + tag + ' lists yet', text: 'Make one for the parts your team orders together.', action: '<button type="button" class="btn btn-primary" data-new>' + icon('plus-small') + 'New list</button>' });
+    }
+    var pinned  = filtered.filter(function (l) { return l.pinned; });
+    var mine    = filtered.filter(function (l) { return !l.pinned && (!l.ownerId || l.ownerId === myId); });
+    var shared  = filtered.filter(function (l) { return !l.pinned && l.ownerId && l.ownerId !== myId && l.public; });
     return '<div class="lw-bar">' + UI.seg('Filter lists by tag', items, tag) + '</div>' +
-      (list.length ? '<ul class="lw-grid">' + list.map(card).join('') + '</ul>'
-        : UI.empty({ icon: 'list', tone: 'neutral', title: 'No ' + tag + ' lists yet', text: 'Make one for the parts your team orders together.', action: '<button type="button" class="btn btn-primary" data-new>' + icon('plus-small') + 'New list</button>' }));
+      '<div class="lw-sections">' +
+        section('Pinned', 'star', pinned) +
+        section('My Lists', 'user', mine) +
+        section('Shared with me', 'share', shared) +
+      '</div>';
   }
   var s = SE.shell(el, {
     nav: 'lists', title: 'Shopping Lists', crumbs: [['Home', 'home']],
@@ -186,6 +214,13 @@ SE.views.lists = function (el, p) {
   function render() { host.innerHTML = body(); }
   function openNew() { LX.editor(null, function (l) { SE.go('list', { params: { id: l.id } }); }); }
   el.addEventListener('click', function (e) {
+    var pin = e.target.closest('[data-pin]');
+    if (pin) {
+      e.preventDefault();
+      var list = SE.list(pin.dataset.pin);
+      if (list) { list.pinned = !list.pinned; SE.saveLists(); render(); }
+      return;
+    }
     var t = e.target.closest('button');
     if (!t) return;
     if (t.dataset.seg) { tag = LX.tag = t.dataset.seg; render(); var b = host.querySelector('[data-seg="' + tag + '"]'); if (b && !SE.capture) b.focus(); return; }
@@ -194,4 +229,70 @@ SE.views.lists = function (el, p) {
   render();
   if (p.dialog === 'new') openNew();
   return s.cleanup;
+};
+
+// Global: save a part to a shopping list from anywhere (part card, catalog, etc.)
+SE.addToShoppingList = function (part) {
+  if (!part) return;
+  var D = SE.data, esc = SE.esc, icon = SE.icon, UI = SE.ui;
+  var myId = D.user.username;
+  var myLists = SE.lists().filter(function (l) { return !l.ownerId || l.ownerId === myId; });
+
+  function doAdd(listId) {
+    var list = SE.list(listId);
+    if (!list) return;
+    var exists = list.items.some(function (i) { return i.pn === part.pn; });
+    if (!exists) { list.items.push({ pn: part.pn, qty: 1 }); SE.saveLists(); }
+    SE.toast((exists ? 'Already on "' : 'Saved to "') + list.name + '"', 'star');
+  }
+
+  function buildRows() {
+    var cur = SE.lists().filter(function (l) { return !l.ownerId || l.ownerId === myId; });
+    return cur.map(function (l) {
+      var on = l.items.some(function (i) { return i.pn === part.pn; });
+      return '<div class="slp-row" data-slpick="' + esc(l.id) + '">' +
+        '<span class="slp-name">' + esc(l.name) + '</span>' +
+        '<span class="slp-cnt">' + l.items.length + ' part' + (l.items.length !== 1 ? 's' : '') + '</span>' +
+        (on ? '<span class="slp-on">' + icon('check') + 'On list</span>' : '<button type="button" class="btn btn-secondary slp-add" data-slpick="' + esc(l.id) + '">Add</button>') +
+      '</div>';
+    }).join('') || '<p class="slp-empty">No lists yet.</p>';
+  }
+
+  var createHtml = '<div id="slp-create" style="display:none;border-top:1px solid var(--line);padding:12px 0 4px;">' +
+    '<input id="slp-new-name" placeholder="New list name…" class="slp-new-input" />' +
+    '<div style="display:flex;gap:8px;margin-top:8px;">' +
+      '<button type="button" class="btn btn-primary" id="slp-new-save">Create &amp; add</button>' +
+      '<button type="button" class="btn btn-secondary" id="slp-new-cancel">Cancel</button>' +
+    '</div></div>';
+
+  var dlg = UI.dialog({
+    title: 'Save to shopping list',
+    body: '<div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Saving <b>' + esc(part.name) + '</b> · ' + esc(part.pn) + '</div>' +
+      '<div id="slp-rows">' + buildRows() + '</div>' +
+      '<button type="button" class="btn btn-secondary slp-new-toggle" style="margin-top:8px;width:100%;">' + icon('plus-small') + 'Create new list</button>' +
+      createHtml,
+    foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Close</button>',
+  });
+
+  dlg.el.addEventListener('click', function (e) {
+    var pick = e.target.closest('[data-slpick]');
+    if (pick) { dlg.close(); doAdd(pick.dataset.slpick); return; }
+    if (e.target.closest('.slp-new-toggle')) {
+      var c = dlg.el.querySelector('#slp-create'); c.style.display = 'block';
+      var inp = dlg.el.querySelector('#slp-new-name'); if (inp) inp.focus();
+      return;
+    }
+    if (e.target.closest('#slp-new-save')) {
+      var name = (dlg.el.querySelector('#slp-new-name') || {}).value || '';
+      if (!name.trim()) return;
+      var list = SE.lx.editor ? null : null;
+      var newList = { id: 'sl-' + Date.now().toString(36), name: name.trim(), description: '', tag: D.listTags[0], machine: null, items: [], ownerId: myId, pinned: false, public: false, updatedBy: D.user.name, updatedAt: SE.lx.today() };
+      SE.lists().unshift(newList); SE.saveLists();
+      dlg.close(); doAdd(newList.id);
+      return;
+    }
+    if (e.target.closest('#slp-new-cancel')) {
+      var c2 = dlg.el.querySelector('#slp-create'); if (c2) c2.style.display = 'none';
+    }
+  });
 };

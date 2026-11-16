@@ -13,6 +13,7 @@
 SE.titles.list = 'Shopping List';
 SE.views.list = function (el, p) {
   var UI = SE.ui, esc = SE.esc, icon = SE.icon, money = SE.money, LX = SE.lx;
+  var D = SE.data, myId = D.user.username;
   var l = SE.list(p.id);
   if (!l) {
     var s0 = SE.shell(el, { nav: 'lists', title: 'List not found', crumbs: [['Home', 'home'], ['Shopping Lists', 'lists']],
@@ -21,6 +22,8 @@ SE.views.list = function (el, p) {
   }
   var lines = l.items.map(function (i) { var bad = LX.issue(SE.part(i.pn)); return { pn: i.pn, use: i.pn, qty: i.qty, on: bad !== 'superseded' && bad !== 'serial' }; });
   var added = 0;
+  var _renaming = false;
+  var canEdit = !l.ownerId || l.ownerId === myId;
   // V2: the unit this order is prepared for (the search context's unit when it fits the list's model)
   if (p.unit && SE.asset(p.unit)) SE.setContext({ equip: p.unit, wo: null });
   function kitUnit() { var c = SE.ctx(), a = c.equip && SE.asset(c.equip); return a && (!l.machine || a.model === l.machine) ? a : null; }
@@ -42,6 +45,7 @@ SE.views.list = function (el, p) {
       '<p class="muted lv-for-sum">' + (kit.adds.length ? kit.adds.length + ' part' + (kit.adds.length === 1 ? '' : 's') + ' added from its history, below.' : 'Its history adds nothing to this list.') + '</p></section>';
   }
 
+  function openWos() { return SE.workOrders().filter(function (w) { return w.status !== 'Done' && !SE.state.cancelled[w.id]; }); }
   function kind(x) { var part = SE.part(x.use), unit = x.unit && SE.asset(x.unit); if (part.serialPricing && unit && unit.model === part.machine) return part.stock === 'Backordered' ? 'backordered' : (x.use !== x.pn ? 'swapped' : null); return x.use !== x.pn ? 'swapped' : LX.issue(SE.part(x.pn)); }
   function blocked(x) { var k = kind(x); return k === 'superseded' || k === 'serial'; }
   function included() { return lines.filter(function (x) { return x.on && !blocked(x); }); }
@@ -82,6 +86,8 @@ SE.views.list = function (el, p) {
     var part = SE.part(x.use), b = blocked(x), on = x.on && !b;
     var step = UI.stepper(x.qty, 'Quantity of ' + part.name, ' data-i="' + i + '"').replace('class="stepper"', 'class="stepper sm"');
     if (x.qty <= 1) step = step.replace('data-step="-1"', 'data-step="-1" disabled');
+    var otherLists = SE.lists().filter(function (lo) { return lo.id !== l.id && (!lo.ownerId || lo.ownerId === myId); });
+    var moveSel = (canEdit && otherLists.length) ? '<select class="lv-move-sel" data-moveto="' + i + '" aria-label="Move to another list"><option value="">Move to…</option>' + otherLists.map(function (lo) { return '<option value="' + esc(lo.id) + '">' + esc(lo.name) + '</option>'; }).join('') + '</select>' : '';
     return '<li class="lv-line' + (on ? '' : ' skipped') + '" data-line="' + i + '">' +
       '<div class="lv-row">' +
         '<label class="lv-check"><input type="checkbox" data-toggle="' + i + '"' + (on ? ' checked' : '') + (b ? ' disabled' : '') + ' aria-label="Include ' + esc(part.name) + '"><span class="ck">' + icon('check') + '</span></label>' +
@@ -90,7 +96,14 @@ SE.views.list = function (el, p) {
         '<div class="oc-unit"><span class="oc-lbl">Unit</span>' + (SE.priceVisible(part) ? money(part.price) : '<span class="muted">No price</span>') + '</div>' +
         '<div class="oc-qty">' + step + '</div>' +
         '<div class="oc-total"><span class="oc-lbl">Total</span><b>' + (on ? money(part.price * x.qty) : b ? 'Not added' : 'Skipped') + '</b></div>' +
-      '</div>' + issue(x, i) + '</li>';
+      '</div>' +
+      '<div class="lv-line-actions">' +
+        '<a class="btn btn-secondary lv-find-btn" href="#/part?pn=' + encodeURIComponent(x.use) + '">' + icon('search') + 'View part</a>' +
+        (canEdit ? '<button type="button" class="btn btn-secondary lv-addone-btn" data-addone="' + i + '"' + (b ? ' disabled' : '') + '>' + icon('shopping-cart') + 'Add to cart</button>' : '') +
+        moveSel +
+        (canEdit ? '<button type="button" class="icon-btn danger lv-remove-btn" data-removeline="' + i + '" aria-label="Remove ' + esc(part.name) + ' from list">' + icon('trash') + '</button>' : '') +
+      '</div>' +
+      issue(x, i) + '</li>';
   }
   function main() {
     if (!l.items.length) return UI.empty({ icon: 'list', tone: 'neutral', title: 'No parts on this list', text: 'Add parts from the same search you use to order.', action: '<button type="button" class="btn btn-primary" data-edit>Edit list</button>' });
@@ -102,35 +115,96 @@ SE.views.list = function (el, p) {
   }
   function aside() {
     var n = count(), mach = LX.machineName(l.machine), c = SE.ctx();
+    var pubLabel = l.public ? SE.chip('Public', 'info') : SE.chip('Private', 'neutral');
     return '<h2 class="oc-aside-h">Add to cart</h2>' +
-      UI.kv([['Tag', SE.chip(l.tag, 'neutral')], ['Machine', mach ? esc(mach) : 'Any'], ['Updated', esc(l.updatedBy) + '<br><span class="muted">' + esc(l.updatedAt) + '</span>']].concat(kit ? [['Prepared for', esc(kit.unit.equip)]] : c.serial ? [['Priced for', esc(c.equip || c.serial)]] : [])) +
+      UI.kv([['Tag', SE.chip(l.tag, 'neutral')], ['Machine', mach ? esc(mach) : 'Any'], ['Visibility', pubLabel], ['Updated', esc(l.updatedBy) + '<br><span class="muted">' + esc(l.updatedAt) + '</span>']].concat(kit ? [['Prepared for', esc(kit.unit.equip)]] : c.serial ? [['Priced for', esc(c.equip || c.serial)]] : [])) +
       '<div class="oc-grand"><span>' + (n ? 'Estimated total' : 'Nothing included') + '</span><b>' + money(total()) + '</b></div>' +
       (added && n ? '<p class="lv-added" role="status">' + icon('check') + added + ' item' + (added === 1 ? '' : 's') + ' added to the cart</p><a class="btn btn-primary oc-cta" href="#/cart">View cart' + icon('arrow-small-right') + '</a>'
         : '<button type="button" class="btn btn-primary oc-cta" data-addall' + (n ? '' : ' disabled') + '>' + icon('shopping-cart') + 'Add ' + n + ' item' + (n === 1 ? '' : 's') + ' to cart</button>') +
       '<p class="oc-note">Skipped and unresolved parts stay off the order. Edit the list to change what your fleet recommends.</p>';
   }
+  function actions() {
+    if (!canEdit) return '';
+    var pinLabel = l.pinned ? 'Unpin' : 'Pin to top';
+    var pubLabel = l.public ? 'Make private' : 'Make public';
+    var pubIcon = l.public ? 'lock' : 'share';
+    return (_renaming
+      ? '<input id="lv-rename-inp" class="lv-rename-inp" value="' + esc(l.name) + '" aria-label="New list name" />' +
+        '<button type="button" class="btn btn-primary" data-rename-save>' + icon('check') + 'Save</button>' +
+        '<button type="button" class="btn btn-secondary" data-rename-cancel>Cancel</button>'
+      : '<button type="button" class="btn btn-secondary" data-rename-start>' + icon('pencil') + 'Rename list</button>') +
+      '<button type="button" class="btn btn-secondary" data-togglepublic>' + icon(pubIcon) + pubLabel + '</button>' +
+      '<button type="button" class="btn btn-secondary" data-togglepin>' + icon('star') + pinLabel + '</button>' +
+      '<button type="button" class="btn btn-secondary" data-edit>' + icon('pencil') + 'Edit list</button>' +
+      '<button type="button" class="btn btn-danger" data-delete>' + icon('trash') + 'Delete</button>';
+  }
   var s = SE.shell(el, {
     nav: 'lists', title: l.name, crumbs: [['Home', 'home'], ['Shopping Lists', 'lists']], sub: esc(l.description || ''),
-    actions: '<button type="button" class="btn btn-secondary" data-edit>' + icon('pencil') + 'Edit list</button><button type="button" class="btn btn-danger" data-delete>' + icon('trash') + 'Delete</button>',
+    actions: actions(),
     body: '<div class="oc-grid lv-grid"><div class="oc-main" id="lv-main"></div><aside class="card oc-aside" id="lv-aside" aria-label="Add to cart"></aside></div>',
   });
   var mainEl = el.querySelector('#lv-main'), asideEl = el.querySelector('#lv-aside');
   if (!l.items.length) asideEl.hidden = true;
+  function renderActions() {
+    var zone = el.querySelector('.page-actions');
+    if (zone) zone.innerHTML = actions();
+    if (_renaming) { var inp = el.querySelector('#lv-rename-inp'); if (inp) { inp.focus(); inp.select(); } }
+  }
   function render(focusSel) {
     mainEl.innerHTML = main(); asideEl.innerHTML = aside();
+    renderActions();
     if (focusSel && !SE.capture) { var f = el.querySelector(focusSel); if (f && !f.disabled) f.focus(); }
   }
   function edit() { LX.editor(l, function () { SE.go('list', { params: { id: l.id }, fade: false }); }); }
   function del() { LX.confirmDelete(l, function () { SE.go('lists'); }); }
+  function doAddItems(wo) {
+    var n = count();
+    included().forEach(function (x) { var u = (x.unit && SE.asset(x.unit)) || SE.cat.unit(null); SE.addToCart(x.use, x.qty, wo || null, { unit: u && u.equip, serial: u && u.serial, backorderAccepted: !!x.backorderAccepted }); });
+    added = n;
+    s.refresh();
+    SE.toast('Added ' + n + ' item' + (n === 1 ? '' : 's') + ' to the cart' + (wo ? ' · WO #' + wo : ''), 'shopping-cart');
+    el.querySelectorAll('[data-qa="cart"]').forEach(function (b) { SE.animate(b, [{ transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 400 }); });
+    render('.lv-aside .btn, #lv-aside .btn');
+  }
   function addAll() {
     var n = count();
     if (!n) return;
-    included().forEach(function (x) { var u = (x.unit && SE.asset(x.unit)) || SE.cat.unit(null); SE.addToCart(x.use, x.qty, null, { unit: u && u.equip, serial: u && u.serial, backorderAccepted: !!x.backorderAccepted }); });
-    added = n;
-    s.refresh();
-    SE.toast('Added ' + n + ' item' + (n === 1 ? '' : 's') + ' to the cart', 'shopping-cart');
-    el.querySelectorAll('[data-qa="cart"]').forEach(function (b) { SE.animate(b, [{ transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 400 }); });
-    render('.lv-aside .btn, #lv-aside .btn');
+    var wos = openWos();
+    if (!wos.length) { doAddItems(null); return; }
+    var dlg = UI.dialog({
+      title: 'Add all to cart',
+      body: '<p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Adding <b>' + n + ' item' + (n === 1 ? '' : 's') + '</b> from <b>' + esc(l.name) + '</b></p>' +
+        '<div class="form-row"><label for="lv-all-wo">Work order (optional)</label><div class="control"><select id="lv-all-wo"><option value="">General cart (no WO)</option>' +
+        wos.map(function (w) { return '<option value="' + w.id + '">#' + w.id + ' · ' + esc(w.equip) + ' · ' + esc(w.issue) + '</option>'; }).join('') + '</select>' + SE.icon('angle-small-down') + '</div></div>',
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="button" class="btn btn-primary" id="lv-all-confirm">' + SE.icon('shopping-cart') + 'Add to cart</button>',
+    });
+    dlg.el.querySelector('#lv-all-confirm').addEventListener('click', function () {
+      var v = (dlg.el.querySelector('#lv-all-wo') || {}).value || null;
+      dlg.close(); doAddItems(v);
+    });
+  }
+  function addOne(i) {
+    var x = lines[i];
+    if (!x || blocked(x)) return;
+    var part = SE.part(x.use);
+    var wos = openWos();
+    function doOne(wo) {
+      var u = (x.unit && SE.asset(x.unit)) || SE.cat.unit(null);
+      SE.addToCart(x.use, x.qty, wo || null, { unit: u && u.equip, serial: u && u.serial, backorderAccepted: !!x.backorderAccepted });
+      SE.toast(esc(part.name) + ' added to cart' + (wo ? ' · WO #' + wo : ''), 'shopping-cart');
+    }
+    if (!wos.length) { doOne(null); return; }
+    var dlg = UI.dialog({
+      title: 'Add to cart',
+      body: '<p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Adding <b>' + esc(part.name) + '</b> · ' + esc(part.pn) + '</p>' +
+        '<div class="form-row"><label for="lv-one-wo">Work order (optional)</label><div class="control"><select id="lv-one-wo"><option value="">General cart (no WO)</option>' +
+        wos.map(function (w) { return '<option value="' + w.id + '">#' + w.id + ' · ' + esc(w.equip) + ' · ' + esc(w.issue) + '</option>'; }).join('') + '</select>' + SE.icon('angle-small-down') + '</div></div>',
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="button" class="btn btn-primary" id="lv-one-confirm">' + SE.icon('shopping-cart') + 'Add to cart</button>',
+    });
+    dlg.el.querySelector('#lv-one-confirm').addEventListener('click', function () {
+      var v = (dlg.el.querySelector('#lv-one-wo') || {}).value || null;
+      dlg.close(); doOne(v);
+    });
   }
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button');
@@ -139,6 +213,20 @@ SE.views.list = function (el, p) {
     if (t.hasAttribute('data-edit')) { edit(); return; }
     if (t.hasAttribute('data-delete')) { del(); return; }
     if (t.hasAttribute('data-addall')) { addAll(); return; }
+    if (t.hasAttribute('data-rename-start')) { _renaming = true; renderActions(); return; }
+    if (t.hasAttribute('data-rename-cancel')) { _renaming = false; renderActions(); return; }
+    if (t.hasAttribute('data-rename-save')) {
+      var inp = el.querySelector('#lv-rename-inp');
+      var nm = inp ? inp.value.trim() : '';
+      if (nm) { l.name = nm; l.updatedBy = D.user.name; l.updatedAt = LX.today(); SE.saveLists(); }
+      _renaming = false; render(); return;
+    }
+    if (t.hasAttribute('data-togglepublic')) { l.public = !l.public; SE.saveLists(); render(); return; }
+    if (t.hasAttribute('data-togglepin')) { l.pinned = !l.pinned; SE.saveLists(); renderActions(); return; }
+    if (d.addone != null) { addOne(+d.addone); return; }
+    if (d.removeline != null) {
+      l.items.splice(+d.removeline, 1); lines.splice(+d.removeline, 1); SE.saveLists(); added = 0; render(); return;
+    }
     if (d.step) { lines[i].qty = Math.max(1, lines[i].qty + (+d.step)); added = 0; render('[data-i="' + i + '"] [data-step="' + d.step + '"]'); return; }
     if (d.use != null) { var x = lines[+d.use]; x.use = SE.part(x.pn).supersededBy; x.on = true; added = 0; render('[data-unuse="' + d.use + '"]'); SE.toast('Using ' + x.use + ' for this order', 'swap'); return; }
     if (d.unuse != null) { var y = lines[+d.unuse]; y.use = y.pn; y.on = false; added = 0; render('[data-use="' + d.unuse + '"]'); return; }
@@ -147,6 +235,18 @@ SE.views.list = function (el, p) {
   });
   el.addEventListener('change', function (e) {
     var t = e.target;
+    if (t.dataset.moveto != null && t.value) {
+      var idx = +t.dataset.moveto;
+      var item = l.items[idx];
+      if (!item) return;
+      var dest = SE.list(t.value);
+      if (!dest) return;
+      if (!dest.items.some(function (i) { return i.pn === item.pn; })) dest.items.push({ pn: item.pn, qty: item.qty });
+      l.items.splice(idx, 1); lines.splice(idx, 1);
+      SE.saveLists(); added = 0; render();
+      SE.toast('Moved to "' + dest.name + '"', 'check');
+      return;
+    }
     if (t.hasAttribute('data-prep') && t.value) {
       SE.setContext({ equip: t.value, wo: null }); kit = adjust(); added = 0;
       lines.forEach(function (x) { var pt = SE.part(x.use); if (LX.issue(pt) === 'serial' && pt.machine === kit.unit.model) { x.unit = kit.unit.equip; x.on = true; } });
@@ -162,6 +262,11 @@ SE.views.list = function (el, p) {
       added = 0; render('[data-line="' + t.dataset.unit + '"] input');
       SE.toast('Priced for ' + t.value, 'check');
     }
+  });
+  el.addEventListener('keydown', function (e) {
+    if (!_renaming) return;
+    if (e.key === 'Enter') { var sb = el.querySelector('[data-rename-save]'); if (sb) sb.click(); }
+    if (e.key === 'Escape') { _renaming = false; renderActions(); }
   });
   render();
   if (p.dialog === 'edit') edit();

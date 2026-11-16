@@ -91,7 +91,7 @@
         woCtl +
         (repl ? '<button class="btn btn-brand pd-wide" type="button" data-pick="' + repl.pn + '">View replacement' + icon('arrow-small-right') + '</button>'
           : !ok ? '<button class="btn btn-brand pd-wide" type="button" disabled>' + icon('lock') + 'Choose your unit to order</button>'
-          : '<div class="pd-buy"><div class="form-row"><label>Quantity</label>' + SE.ui.stepper(1) + '</div><button class="btn btn-brand pd-add" type="button" data-add>Add to cart · ' + SE.money(part.price) + '</button></div>' +
+          : '<div class="pd-buy"><div class="form-row"><label>Quantity</label>' + SE.ui.stepper(1) + '</div><button class="btn btn-brand pd-add" type="button" data-add>Add to cart · ' + SE.money(part.price) + '</button><button class="btn btn-secondary pd-save-list" type="button" data-savelist>' + SE.icon('star') + 'Save to list</button></div>' +
             '<p class="pd-added" role="status" hidden></p>') +
         comments +
       '</div></div>';
@@ -108,6 +108,7 @@
       var t = e.target.closest('button');
       if (!t || !root.contains(t)) return;
       if (t.dataset.step) { qty = Math.max(1, Math.min(99, qty + +t.dataset.step)); root.querySelector('.stepper output').textContent = qty; root.querySelector('[data-add]').textContent = label(); return; }
+      if (t.hasAttribute('data-savelist')) { if (SE.addToShoppingList) SE.addToShoppingList(part); return; }
       if (t.hasAttribute('data-add')) {
         var selectedUnit = SE.cat.unit(wo); SE.addToCart(part.pn, qty, wo, { unit: selectedUnit && selectedUnit.equip, serial: selectedUnit && selectedUnit.serial });
         SE.toast('Added to cart', 'shopping-cart');

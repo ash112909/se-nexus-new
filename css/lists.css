@@ -151,3 +151,60 @@
   .lv-row { grid-template-columns: 44px 64px minmax(0, 1fr) auto; }
   .lv-row > .img-slot.thumb { grid-area: t; align-self: start; }
 }
+
+/* wishlist-parity: pin, public, shared, inline rename, per-line actions, global save-to-list picker */
+@layer components {
+  /* lists index: sections */
+  .lw-sections { display: flex; flex-direction: column; gap: 24px; }
+  .lw-section-label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .9px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .lw-section-label .i { width: 14px; height: 14px; }
+
+  /* lists index: card wrapper to hold the card link + action overlay */
+  .lw-item { position: relative; list-style: none; }
+  .lw-card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; }
+  .lw-pin-btn { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+  .lw-pin-btn:hover { background: var(--tint-info); color: var(--info); border-color: var(--info); }
+  .lw-pin-btn .i { width: 16px; height: 16px; }
+  .lw-top-right { display: flex; align-items: center; gap: 8px; }
+  .lw-owner { display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; color: var(--muted); }
+  .lw-owner .i { width: 12px; height: 12px; }
+
+  /* list detail: inline rename input */
+  .lv-rename-inp { height: 36px; border: 1.5px solid var(--accent, var(--cta-default)); border-radius: 8px; padding: 0 10px; font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); background: var(--surface); outline: none; min-width: 160px; flex: 1 1 auto; }
+  .lv-rename-inp:focus { border-color: var(--focus); }
+
+  /* list detail: per-line actions row */
+  .lv-line-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 20px 12px 60px; }
+  .lv-find-btn { height: 32px; padding: 0 12px 0 10px; font-size: 12px; }
+  .lv-find-btn .i { width: 14px; height: 14px; }
+  .lv-addone-btn { height: 32px; padding: 0 12px 0 10px; font-size: 12px; }
+  .lv-addone-btn .i { width: 14px; height: 14px; }
+  .lv-remove-btn { width: 32px; height: 32px; }
+  .lv-remove-btn .i { width: 16px; height: 16px; }
+  .lv-move-sel { height: 32px; border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; font: inherit; font-size: 12px; color: var(--muted); background: var(--surface); cursor: pointer; outline: none; max-width: 180px; }
+  .lv-move-sel:focus { border-color: var(--focus); }
+  @container (max-width: 640px) {
+    .lv-line-actions { padding-left: 44px; }
+  }
+
+  /* global save-to-list picker dialog rows */
+  .slp-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .slp-row:last-child { border-bottom: none; }
+  .slp-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .slp-cnt { flex: none; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .slp-on { display: inline-flex; align-items: center; gap: 4px; flex: none; font-size: 12px; font-weight: 600; color: var(--success); }
+  .slp-on .i { width: 14px; height: 14px; }
+  .slp-add { flex: none; height: 32px; padding: 0 12px; font-size: 12px; }
+  .slp-empty { font-size: 13px; color: var(--muted); padding: 8px 0; }
+  .slp-new-input { width: 100%; height: 36px; border: 1px solid var(--line-field); border-radius: 8px; padding: 0 10px; font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); outline: none; box-sizing: border-box; }
+  .slp-new-input:focus { border-color: var(--focus); }
+
+  /* part card: save-to-list button layout */
+  .pd-buy { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+  .pd-save-list { flex: none; height: 44px; }
+  .pd-save-list .i { width: 16px; height: 16px; }
+
+  /* le-vis-seg in editor dialog */
+  .le-vis-seg button { display: inline-flex; align-items: center; gap: 6px; }
+  .le-vis-seg .i { width: 14px; height: 14px; }
+}

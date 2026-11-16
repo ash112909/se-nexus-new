@@ -2100,7 +2100,10 @@ window.SE_DATA = {
     }
    ],
    "updatedBy": "Sarah Martinez",
-   "updatedAt": "Sep 18, 2026"
+   "updatedAt": "Sep 18, 2026",
+   "ownerId": "sarah.m",
+   "pinned": true,
+   "public": false
   },
   {
    "id": "sl-reseal-3219",
@@ -2123,7 +2126,10 @@ window.SE_DATA = {
     }
    ],
    "updatedBy": "Sarah Martinez",
-   "updatedAt": "Sep 30, 2026"
+   "updatedAt": "Sep 30, 2026",
+   "ownerId": "sarah.m",
+   "pinned": false,
+   "public": false
   },
   {
    "id": "sl-rebuild-1930",
@@ -2146,7 +2152,10 @@ window.SE_DATA = {
     }
    ],
    "updatedBy": "R. Kim",
-   "updatedAt": "Aug 22, 2026"
+   "updatedAt": "Aug 22, 2026",
+   "ownerId": "r.kim",
+   "pinned": false,
+   "public": true
   },
   {
    "id": "sl-consumables",
@@ -2169,7 +2178,10 @@ window.SE_DATA = {
     }
    ],
    "updatedBy": "Sarah Martinez",
-   "updatedAt": "Oct 1, 2026"
+   "updatedAt": "Oct 1, 2026",
+   "ownerId": "sarah.m",
+   "pinned": false,
+   "public": true
   }
  ],
  "listTags": [
