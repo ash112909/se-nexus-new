@@ -46,7 +46,10 @@
 
     var fx = SE.branchCurrency();
     var props = '<dl class="pd-props"><div><dt>Unit of measure</dt><dd>' + esc(cap(part.uom)) + '</dd></div><div><dt>Currency</dt><dd>' + (fx ? esc(fx.code) + ' (' + esc(fx.branch) + ')' : esc(part.currency)) + '</dd></div>' +
-      '<div><dt>Status</dt><dd>' + (part.reman || part.oem === false ? 'Non-OEM, remanufactured' : 'OEM') + '</dd></div><div><dt>Cross-references</dt><dd>' + xrefs.length + '</dd></div></dl>';
+      '<div><dt>Status</dt><dd>' + (part.reman || part.oem === false ? 'Non-OEM, remanufactured' : 'OEM') + '</dd></div><div><dt>Cross-references</dt><dd>' + xrefs.length + '</dd></div>' +
+      (part.weight ? '<div><dt>Weight</dt><dd>' + esc(part.weight) + '</dd></div>' : '') +
+      (part.dims   ? '<div><dt>Dimensions</dt><dd>' + esc(part.dims) + '</dd></div>' : '') +
+      '</dl>';
 
     var wos = open(m);
     var woCtl = repl ? '' : '<div class="form-row"><label for="pd-wo-' + part.pn + '">Work order</label><div class="control pd-select"><select id="pd-wo-' + part.pn + '" data-pd-wo><option value="">No work order</option>' +

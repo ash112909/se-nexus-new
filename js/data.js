@@ -558,6 +558,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Seal",
+   "weight": "0.8 kg",
+   "dims": "Ø58 seal kit",
    "supplier": "JLG",
    "comments": [
     {
@@ -591,6 +593,8 @@ window.SE_DATA = {
     "JLG-4120-204R"
    ],
    "type": "Assembly",
+   "weight": "7.2 kg",
+   "dims": "Ø68 × 320 mm",
    "serialPricing": true,
    "supplier": "JLG"
   },
@@ -608,6 +612,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "6.4 kg",
+   "dims": "Ø142 × 198 mm",
    "serialPricing": true,
    "supplier": "JLG"
   },
@@ -628,6 +634,8 @@ window.SE_DATA = {
     "JLG-4120-329"
    ],
    "type": "Component",
+   "weight": "0.2 kg",
+   "dims": "42 × 24 × 14 mm (set of 4)",
    "supplier": "JLG"
   },
   {
@@ -649,6 +657,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "0.4 kg",
+   "dims": "Ø32 × 78 mm",
    "supplier": "JLG"
   },
   {
@@ -667,6 +677,8 @@ window.SE_DATA = {
     "SKJ-105610"
    ],
    "type": "Filter",
+   "weight": "0.3 kg",
+   "dims": "Ø62 × 112 mm",
    "supplier": "JLG"
   },
   {
@@ -683,6 +695,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "0.6 kg",
+   "dims": "1/4 in JIC · 480 mm",
    "supplier": "JLG"
   },
   {
@@ -705,6 +719,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Seal",
+   "weight": "0.9 kg",
+   "dims": "Ø62 seal kit",
    "supplier": "SKJ",
    "comments": [
     {
@@ -729,6 +745,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "0.7 kg",
+   "dims": "65 × 44 × 38 mm",
    "supplier": "SKJ"
   },
   {
@@ -745,6 +763,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Assembly",
+   "weight": "4.8 kg",
+   "dims": "Ø62 × 280 mm",
    "serialPricing": true,
    "supplier": "SKJ"
   },
@@ -763,6 +783,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "0.2 kg",
+   "dims": "42 × 24 × 14 mm (set of 4)",
    "supplier": "JLG"
   },
   {
@@ -782,6 +804,8 @@ window.SE_DATA = {
     "JLG-4120-204"
    ],
    "type": "Assembly",
+   "weight": "7.2 kg",
+   "dims": "Ø68 × 320 mm",
    "supplier": "JLG"
   },
   {
@@ -798,6 +822,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Component",
+   "weight": "0.4 kg",
+   "dims": "Ø28 × 72 mm",
    "supplier": "SKJ"
   },
   {
@@ -816,6 +842,8 @@ window.SE_DATA = {
     "JLG-4120-415"
    ],
    "type": "Filter",
+   "weight": "0.3 kg",
+   "dims": "Ø58 × 108 mm",
    "supplier": "SKJ"
   },
   {
@@ -832,6 +860,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Assembly",
+   "weight": "0.5 kg",
+   "dims": "1/4 in JIC · 440 mm",
    "supplier": "SKJ"
   },
   {
@@ -848,6 +878,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Seal",
+   "weight": "0.1 kg",
+   "dims": "Ø62 O-ring kit",
    "supplier": "SKJ"
   },
   {
@@ -864,6 +896,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Fluid",
+   "weight": "3.2 kg",
+   "dims": "1 US gal",
    "identity": "AW32-1GAL",
    "supplier": "SKJ"
   },
@@ -883,6 +917,8 @@ window.SE_DATA = {
    "currency": "USD",
    "xrefs": [],
    "type": "Consumable",
+   "weight": "3.2 kg",
+   "dims": "1 US gal",
    "identity": "AW32-1GAL"
   },
   {
@@ -900,7 +936,9 @@ window.SE_DATA = {
    "uom": "kit",
    "currency": "USD",
    "xrefs": [],
-   "type": "Consumable"
+   "type": "Consumable",
+   "weight": "0.8 kg",
+   "dims": "340 × 120 × 48 mm"
   },
   {
    "pn": "JLG-7100-210",
@@ -917,7 +955,9 @@ window.SE_DATA = {
    "uom": "each",
    "currency": "USD",
    "xrefs": [],
-   "type": "Accessory"
+   "type": "Accessory",
+   "weight": "0.4 kg",
+   "dims": "Ø112 × 68 mm"
   },
   {
    "pn": "JLG-7100-305",
@@ -934,7 +974,9 @@ window.SE_DATA = {
    "uom": "each",
    "currency": "USD",
    "xrefs": [],
-   "type": "Accessory"
+   "type": "Accessory",
+   "weight": "2.2 kg",
+   "dims": "480 × 240 × 88 mm"
   },
   {
    "pn": "SKJ-900112",
@@ -951,7 +993,9 @@ window.SE_DATA = {
    "uom": "each",
    "currency": "USD",
    "xrefs": [],
-   "type": "Consumable"
+   "type": "Consumable",
+   "weight": "15.8 kg",
+   "dims": "5 US gal pail"
   },
   {
    "pn": "SKJ-900455",
@@ -968,7 +1012,9 @@ window.SE_DATA = {
    "uom": "each",
    "currency": "USD",
    "xrefs": [],
-   "type": "Accessory"
+   "type": "Accessory",
+   "weight": "12.4 kg",
+   "dims": "Ø406 × 152 mm"
   },
   {
    "pn": "SKJ-900460",
@@ -985,7 +1031,9 @@ window.SE_DATA = {
    "uom": "kit",
    "currency": "USD",
    "xrefs": [],
-   "type": "Accessory"
+   "type": "Accessory",
+   "weight": "0.6 kg",
+   "dims": "Ø52 bearing kit"
   }
  ],
  "workOrders": [
