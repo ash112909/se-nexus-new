@@ -20,7 +20,7 @@
     ['shopping-cart-check', 'Approvals', 'approvals'], ['truck-side', 'Fleet', 'fleet'],
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 
-    ['#', 'Parts'], ['search', 'Search Parts', 'search'], ['grid-alt', 'Parts Catalog', 'catalog'], ['star', 'Recommended Parts', 'recommended'], ['list', 'Shopping Lists', 'lists'],
+    ['#', 'Parts'], ['grid-alt', 'Parts Catalog', 'catalog'], ['star', 'Recommended Parts', 'recommended'], ['list', 'Shopping Lists', 'lists'],
     ['#', 'Knowledge'], ['book-alt', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['bell', 'Notifications', 'notifications'], ['pulse', 'Diagnostics', null],
   ];
   function count(route) {
