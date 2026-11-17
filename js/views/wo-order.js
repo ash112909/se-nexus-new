@@ -216,11 +216,12 @@ SE.views['wo-order'] = function (el, p) {
         '</div>' +
       '</section>' +
       '<div class="or-group-foot">' +
+        '<button type="button" class="btn btn-primary" data-or-submit-group="' + gi + '">' + icon('check') + (local ? 'Submit transfer' : 'Place order') + '</button>' +
         (gi < groups.length - 1
-          ? '<button type="button" class="btn btn-primary" data-or-next="' + gi + '">Next: ' + esc(groups[gi + 1].label) + ' ' + icon('arrow-small-right') + '</button>'
-          : '<button type="button" class="btn btn-primary" data-or-submit-group="' + gi + '">' + icon('check') + (local ? 'Submit transfer' : 'Place order') + (groups.filter(function (_, i) { return !groupStates[i].submitted; }).length > 1 ? ' for ' + esc(g.label) : '') + '</button>') +
+          ? '<button type="button" class="btn btn-secondary" data-or-next="' + gi + '">Skip to ' + esc(groups[gi + 1].label) + ' ' + icon('arrow-small-right') + '</button>'
+          : '') +
         (gi > 0
-          ? '<button type="button" class="btn btn-secondary" data-or-prev="' + gi + '">Back</button>'
+          ? '<button type="button" class="btn btn-secondary" data-or-prev="' + gi + '">' + icon('arrow-small-left') + 'Back</button>'
           : '<a class="btn btn-secondary" href="#/work-order?id=' + esc(w.id) + '">Cancel</a>') +
         '<span class="or-total-lbl">' + (local ? 'No charge' : money(total)) + '</span>' +
       '</div>' +

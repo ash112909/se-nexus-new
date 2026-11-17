@@ -141,9 +141,9 @@
 
 /* ---------- work order order review (wo-order.js) */
 @layer components {
-  .or-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; grid-template-areas: "tabs aside" "main aside"; gap: 24px; align-items: start; }
+  .or-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: "tabs aside" "main aside"; gap: 24px; align-items: start; }
   .or-tabs { grid-area: tabs; display: flex; flex-wrap: wrap; gap: 8px; }
-  .or-main { grid-area: main; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .or-main { grid-area: main; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
   .or-aside { grid-area: aside; position: sticky; top: 24px; }
 
   .or-tab { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 18px; border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; transition: border-color .12s, background .12s; }
@@ -169,15 +169,17 @@
   .or-tfooter td { padding: 10px 16px; font-size: 14px; color: var(--muted); background: var(--container-low); font-variant-numeric: tabular-nums; }
   .or-tfooter td:last-child { font-weight: 700; color: var(--ink); text-align: right; }
 
-  .or-rec-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .or-rec-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 10px; background: var(--container-low); }
   .or-rec-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .or-rec-txt { flex: 1; font-size: 13px; color: var(--muted); min-width: 0; }
   .or-use-rec { flex: none; }
 
-  .or-fields { display: flex; flex-direction: column; gap: 12px; }
-  .or-row label { font-size: 14px; font-weight: 500; min-width: 140px; }
+  .or-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .or-fields .form-row { gap: 6px; }
+  .or-fields .form-row:has(textarea) { grid-column: 1 / -1; }
+  .or-fields .form-row:first-child:last-child { grid-column: 1 / -1; }
 
-  .or-group-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 8px; }
+  .or-group-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
   .or-total-lbl { margin-left: auto; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
   .or-submitted-banner { display: flex; align-items: center; gap: 16px; padding: 20px; border-radius: 16px; background: var(--success-bg, #ECFDF5); border: 1px solid var(--success, #10B981); }
@@ -199,5 +201,6 @@
   @container (max-width: 879px) {
     .or-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "tabs" "main" "aside"; }
     .or-aside { position: static; }
+    .or-fields { grid-template-columns: minmax(0, 1fr); }
   }
 }
