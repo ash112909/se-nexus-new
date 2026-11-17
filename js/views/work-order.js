@@ -506,6 +506,162 @@ SE.views['work-order'] = function (el, p) {
     dlg2.el; // already shown
   }
 
+  // ── Cart review modal ────────────────────────────────────────────────────
+  function reviewFlaggedItems(items) {
+    var flags = [];
+    items.forEach(function (c) {
+      var st = itemStatus(c);
+      if (st === 'replaced' || st === 'orderable') return;
+      var optXrefs = (c.crossRefs || []).filter(function (r) { return !r.mandatory; });
+      var inv = c.localInventory || [];
+      var hasSelectedLocal = !!(c.selectedSources && c.selectedSources.length) || !!c.selectedSource;
+      if (st === 'unorderable') {
+        flags.push({ item: c, flag: 'unorderable',
+          iconName: 'cross', iconColor: '#A32D2D', iconBg: '#FEE2E2',
+          flagMsg: 'Not orderable — no supplier stock and no alternatives available.',
+          recText: 'Remove this item from the order. It cannot be fulfilled at this time.',
+          primaryLabel: 'Remove from cart', primaryStyle: 'danger' });
+      } else if (st === 'blocked') {
+        flags.push({ item: c, flag: 'blocked',
+          iconName: 'lock', iconColor: '#111318', iconBg: '#FEF3C7',
+          flagMsg: 'Mandatory cross-reference unresolved — fleet policy requires a substitute.',
+          recText: 'Open the cross-reference panel and select the required substitute part.',
+          primaryLabel: 'Resolve cross-ref', primaryStyle: 'warn' });
+      } else if (!c.inStock && optXrefs.length) {
+        var best = optXrefs[0];
+        flags.push({ item: c, flag: 'backordered_alt', bestAlt: best,
+          iconName: 'clock', iconColor: '#92400E', iconBg: '#FEF3C7',
+          flagMsg: 'Backordered — not in supplier stock. ' + optXrefs.length + ' alternative' + (optXrefs.length > 1 ? 's' : '') + ' available.',
+          recText: 'Swap to ' + best.partNum + ' (' + best.vendor + ', ' + SE.money(best.price) + ') to avoid backorder delay.',
+          primaryLabel: 'Swap to ' + best.partNum, primaryStyle: 'primary',
+          altLabel: 'Accept backorder' });
+      } else if (inv.length && !hasSelectedLocal) {
+        var sortedInv = inv.slice().sort(function (a, b) { return b.qty - a.qty; });
+        var bestLoc = sortedInv[0];
+        var needed = c.qty || 1;
+        var canFulfil = bestLoc && bestLoc.qty >= needed;
+        flags.push({ item: c, flag: 'local_available', bestLoc: bestLoc,
+          iconName: 'map-marker', iconColor: '#1A6B2F', iconBg: '#F0FDF4',
+          flagMsg: 'Local stock available at ' + inv.length + ' location' + (inv.length > 1 ? 's' : '') + ' — no source selected.',
+          recText: canFulfil
+            ? 'Pull all ' + needed + ' unit' + (needed > 1 ? 's' : '') + ' from ' + bestLoc.locationName + ' (' + bestLoc.qty + ' available' + (bestLoc.distance ? ', ' + bestLoc.distance : '') + ').'
+            : 'Split across available locations — ' + bestLoc.locationName + ' has the most (' + bestLoc.qty + ' units).',
+          primaryLabel: 'Apply: ' + bestLoc.locationName, primaryStyle: 'primary',
+          altLabel: 'Order externally' });
+      }
+    });
+    return flags;
+  }
+
+  function showCartReviewModal(flags, onProceed) {
+    var resolved = {};
+    var STYLES = {
+      primary: 'background:#111318;color:#fff;border:none;',
+      danger:  'background:#fcebeb;color:#a32d2d;border:0.5px solid #f5c5c5;',
+      warn:    'background:#fef3c7;color:#111318;border:0.5px solid #111318;',
+      neutral: 'background:#f5f2ee;color:#3a3d4a;border:0.5px solid #e2ddd8;',
+    };
+    function cardHtml(f) {
+      var btnBase = 'border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;';
+      var primBtn = '<button type="button" style="' + btnBase + STYLES[f.primaryStyle] + '" data-rv-apply="' + esc(f.item.id) + '">' + esc(f.primaryLabel) + '</button>';
+      var altBtn = f.altLabel
+        ? '<button type="button" style="' + btnBase + 'background:none;border:0.5px solid #e2ddd8;color:#7a7f8e;" data-rv-skip="' + esc(f.item.id) + '">' + esc(f.altLabel) + '</button>'
+        : '<button type="button" style="border:none;background:none;color:#9ca3af;font-size:11px;cursor:pointer;font-family:inherit;padding:4px 8px;" data-rv-skip="' + esc(f.item.id) + '">Skip</button>';
+      return '<div class="rv-card" id="rv-card-' + esc(f.item.id) + '">' +
+        '<div class="rv-card-top">' +
+          '<div class="rv-icon" style="background:' + f.iconBg + ';color:' + f.iconColor + ';">' + icon(f.iconName) + '</div>' +
+          '<div class="rv-card-info">' +
+            '<div class="rv-card-head">' +
+              '<b class="rv-pn">' + esc(f.item.partNum) + '</b>' +
+              '<span class="rv-desc muted">' + esc(f.item.description) + '</span>' +
+              '<span class="rv-done" id="rv-done-' + esc(f.item.id) + '" hidden>' + icon('check') + ' Done</span>' +
+            '</div>' +
+            '<div class="rv-flag-msg">' + esc(f.flagMsg) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rv-card-foot" id="rv-foot-' + esc(f.item.id) + '">' +
+          '<div class="rv-rec">' +
+            '<div class="rv-rec-lbl">System recommendation</div>' +
+            '<div class="rv-rec-txt">' + esc(f.recText) + '</div>' +
+          '</div>' +
+          '<div class="rv-card-btns">' + primBtn + altBtn + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+    var blockedCount = flags.filter(function (f) { return f.flag === 'unorderable' || f.flag === 'blocked'; }).length;
+    var bodyHtml =
+      '<div class="rv-intro">' + icon('info') +
+        '<div>System reviewed your cart and found <strong>' + flags.length + ' item' + (flags.length > 1 ? 's' : '') + '</strong> that may benefit from action before ordering.' +
+        (blockedCount ? ' <strong class="rv-excluded">' + blockedCount + ' will be excluded</strong> from this order.' : '') +
+        ' You can act on each item or proceed anyway.</div>' +
+      '</div>' +
+      '<div class="rv-list">' + flags.map(cardHtml).join('') + '</div>' +
+      '<div class="rv-footer-msg" id="rv-footer-msg"></div>';
+    var d = SE.ui.dialog({
+      title: 'Cart review — ' + flags.length + ' item' + (flags.length > 1 ? 's' : '') + ' to review',
+      body: bodyHtml,
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Go back</button>' +
+            '<button type="button" class="btn btn-primary" data-rv-proceed>Continue with ready items</button>',
+      wide: true,
+    });
+    function markDone(itemId) {
+      resolved[itemId] = true;
+      var card = d.el.querySelector('#rv-card-' + itemId);
+      var foot = d.el.querySelector('#rv-foot-' + itemId);
+      var done = d.el.querySelector('#rv-done-' + itemId);
+      if (card) card.style.opacity = '0.6';
+      if (foot) foot.innerHTML = '<span class="rv-addressed">' + icon('check') + ' Addressed — will be applied when you proceed</span>';
+      if (done) done.hidden = false;
+      var remaining = flags.filter(function (f) { return !resolved[f.item.id]; }).length;
+      var msg = d.el.querySelector('#rv-footer-msg');
+      if (msg) msg.textContent = remaining === 0 ? 'All items reviewed — ready to proceed.' : remaining + ' item' + (remaining > 1 ? 's' : '') + ' remaining.';
+    }
+    d.el.addEventListener('click', function (ev) {
+      if (ev.target.closest('[data-rv-proceed]')) { d.close(); onProceed(); return; }
+      var applyBtn = ev.target.closest('[data-rv-apply]');
+      if (applyBtn) {
+        var itemId = applyBtn.dataset.rvApply;
+        var f = flags.find(function (x) { return x.item.id === itemId; });
+        if (!f) return;
+        var allItems = cartItems();
+        var c = allItems.find(function (x) { return x.id === itemId; });
+        if (!c) return;
+        if (f.flag === 'unorderable') {
+          var idx = allItems.indexOf(c);
+          if (idx >= 0) allItems.splice(idx, 1);
+          SE.save();
+          var cs0 = el.querySelector('#wo-cart-sec'); if (cs0) cs0.innerHTML = cart();
+          markDone(itemId);
+        } else if (f.flag === 'blocked') {
+          d.close();
+          openCrossRefDialog(itemId);
+        } else if (f.flag === 'backordered_alt') {
+          var ref = f.bestAlt;
+          var newItem = { id: ref.partNum, partNum: ref.partNum, description: ref.description, vendor: ref.vendor, price: ref.price, qty: c.qty || 1, uom: ref.uom || c.uom, inStock: true, oemOnly: false, localInventory: [], crossRefs: [], replacesId: c.id };
+          c.replacedBy = ref.partNum;
+          var si = allItems.indexOf(c);
+          allItems.splice(si + 1, 0, newItem);
+          SE.save();
+          var cs1 = el.querySelector('#wo-cart-sec'); if (cs1) cs1.innerHTML = cart();
+          markDone(itemId);
+          SE.toast('Swapped to ' + ref.partNum, 'check');
+        } else if (f.flag === 'local_available') {
+          var best = f.bestLoc;
+          if (best) {
+            var pullQty = Math.min(c.qty || 1, best.qty);
+            c.selectedSources = [{ locationId: best.locationId, locationName: best.locationName, qty: pullQty }];
+            SE.save();
+            var cs2 = el.querySelector('#wo-cart-sec'); if (cs2) cs2.innerHTML = cart();
+          }
+          markDone(itemId);
+        }
+        return;
+      }
+      var skipBtn = ev.target.closest('[data-rv-skip]');
+      if (skipBtn) { markDone(skipBtn.dataset.rvSkip); return; }
+    });
+  }
+
   el.addEventListener('click', function (e) {
     if (e.target.closest('[data-cancel]')) { cancel(); return; }
     if (e.target.closest('[data-machine-orders]')) { showMachineOrders(); return; }
@@ -576,42 +732,17 @@ SE.views['work-order'] = function (el, p) {
       ]);
       return;
     }
-    // Cart: submit → pre-checkout check then navigate to order review
+    // Cart: submit → pre-checkout review then navigate to order
     if (e.target.closest('[data-cart-submit]')) {
       var sitems = cartItems();
-      var sblocked = sitems.filter(function (c) { return ['blocked', 'unorderable'].indexOf(itemStatus(c)) >= 0; });
-      var sattn = sitems.filter(function (c) { return !c.replacedBy && itemStatus(c) === 'needs_attention'; });
-      var sorderable = sitems.filter(function (c) { return !c.replacedBy && itemStatus(c) === 'orderable'; });
-
-      function goOrder() { SE.go('wo-order', { params: { id: w.id } }); }
-
-      if (sorderable.length === 0 && sattn.length === 0) {
+      var ssubmittable = sitems.filter(function (c) { return ['blocked', 'unorderable', 'replaced'].indexOf(itemStatus(c)) < 0; });
+      if (ssubmittable.length === 0) {
         SE.toast('No orderable items in cart', 'exclamation');
         return;
       }
-
-      if (sattn.length > 0) {
-        var dlgBody = '<p>' + sattn.length + ' item' + (sattn.length > 1 ? 's have' : ' has') +
-          ' pending decisions that haven\'t been applied yet. You can continue and order what\'s ready, or go back and address them first.</p>' +
-          '<ul class="or-attn-list">' + sattn.map(function (c) {
-            return '<li><b>' + esc(c.partNum) + '</b> — ' + esc(c.description) + '</li>';
-          }).join('') + '</ul>' +
-          (sblocked.length > 0
-            ? '<p class="muted">' + sblocked.length + ' item' + (sblocked.length > 1 ? 's' : '') + ' can\'t be ordered and will be excluded automatically.</p>'
-            : '');
-        var d = SE.ui.dialog({
-          title: 'Unapplied decisions',
-          body: dlgBody,
-          foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Go back and review</button>' +
-                '<button type="button" class="btn btn-primary" data-or-proceed>Continue with ready items</button>',
-        });
-        d.el.addEventListener('click', function (ev) {
-          if (!ev.target.closest('[data-or-proceed]')) return;
-          d.close(); goOrder();
-        });
-      } else {
-        goOrder();
-      }
+      function goOrder() { SE.go('wo-order', { params: { id: w.id } }); }
+      var sflags = reviewFlaggedItems(sitems);
+      if (sflags.length === 0) { goOrder(); } else { showCartReviewModal(sflags, goOrder); }
       return;
     }
 
