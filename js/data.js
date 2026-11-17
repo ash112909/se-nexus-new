@@ -1083,10 +1083,30 @@ window.SE_DATA = {
    "kind": "equipment",
    "desc": "Operator reports the platform lowers slowly. The controller shows fault code 42.",
    "log": [
-    [
-     "Today",
-     "Opened by J. Carter"
-    ]
+    [ "Today", "Opened by J. Carter" ],
+    [ "20 min ago", "Parts added to cart, 4 lines" ]
+   ],
+   "cart": [
+    {
+     "id": "JLG-FV-1131", "partNum": "JLG-FV-1131", "description": "Flow divider valve", "vendor": "JLG", "price": 196.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": true,
+     "localInventory": [],
+     "crossRefs": [{ "partNum": "JLG-FV-1131-V2", "description": "Flow divider valve — V2 (supersedes FV-1131, mandatory)", "vendor": "JLG", "uom": "EA", "price": 204.00, "mandatory": true }]
+    },
+    {
+     "id": "JLG-LS-2210", "partNum": "JLG-LS-2210", "description": "Lowering solenoid", "vendor": "JLG", "price": 78.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [
+      { "locationId": "san-antonio", "locationName": "San Antonio Yard", "qty": 3, "distance": "78 mi" }
+     ],
+     "crossRefs": []
+    },
+    {
+     "id": "JLG-EC-7721", "partNum": "JLG-EC-7721", "description": "Emergency lowering coil", "vendor": "JLG", "price": 45.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [], "crossRefs": []
+    },
+    {
+     "id": "JLG-RS-1183", "partNum": "JLG-RS-1183", "description": "Relief valve spool", "vendor": "JLG", "price": 62.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [], "crossRefs": []
+    }
    ]
   },
   {
@@ -1242,7 +1262,70 @@ window.SE_DATA = {
      "Work completed"
     ]
    ]
-  }
+  },
+  {
+   "id": "100120",
+   "issue": "Drive motor and tilt sensor fault",
+   "equip": "FL-122",
+   "machine": "Genie Z-45/25J",
+   "status": "Open",
+   "tone": "danger",
+   "updated": "35 min ago",
+   "assignee": "J. Carter",
+   "due": "Oct 10",
+   "priority": "High",
+   "warranty": null,
+   "opened": "Oct 7, 2026",
+   "kind": "equipment",
+   "desc": "Unit reports tilt sensor fault and intermittent drive shutoff. Controller flags E12 (tilt) and E07 (drive motor overcurrent). Service call pending — parts pre-staged.",
+   "notes": [
+    { "text": "E12 tilt sensor confirmed faulty — need replacement. Drive motor brushes worn beyond spec.", "author": "J. Carter", "time": "8:15 AM" }
+   ],
+   "log": [
+    [ "Oct 7, 2026", "Opened by J. Carter" ],
+    [ "35 min ago", "Parts added to cart, 7 lines" ]
+   ],
+   "cart": [
+    {
+     "id": "GEN-TM-4411", "partNum": "GEN-TM-4411", "description": "Drive motor brush set", "vendor": "Genie", "price": 46.00, "qty": 1, "uom": "SET", "inStock": true, "oemOnly": true,
+     "localInventory": [],
+     "crossRefs": [{ "partNum": "GEN-TM-4411-R2", "description": "Drive motor brush set — Rev 2 (supersedes 4411)", "vendor": "Genie", "uom": "SET", "price": 46.00, "mandatory": true }]
+    },
+    {
+     "id": "GEN-MC-1127", "partNum": "GEN-MC-1127", "description": "Motor controller module", "vendor": "Genie", "price": 312.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": true,
+     "localInventory": [],
+     "crossRefs": [{ "partNum": "GEN-MC-1127-B", "description": "Motor controller module — Rev B (mandatory upgrade)", "vendor": "Genie", "uom": "EA", "price": 334.00, "mandatory": true }]
+    },
+    {
+     "id": "GEN-TS-2200", "partNum": "GEN-TS-2200", "description": "Tilt sensor assembly", "vendor": "Genie", "price": 88.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [
+      { "locationId": "houston", "locationName": "Houston Yard", "qty": 2, "distance": "14 mi" },
+      { "locationId": "dallas", "locationName": "Dallas Shop", "qty": 1, "distance": "239 mi" }
+     ],
+     "crossRefs": []
+    },
+    {
+     "id": "GEN-BT-7731", "partNum": "GEN-BT-7731", "description": "Battery terminal kit", "vendor": "Genie", "price": 18.00, "qty": 2, "uom": "KIT", "inStock": true, "oemOnly": false,
+     "localInventory": [
+      { "locationId": "austin", "locationName": "Austin Shop", "qty": 5, "distance": "On-site" }
+     ],
+     "crossRefs": []
+    },
+    {
+     "id": "GEN-HF-0920", "partNum": "GEN-HF-0920", "description": "Hydraulic return filter", "vendor": "Genie", "price": 29.00, "qty": 1, "uom": "EA", "inStock": false, "oemOnly": false,
+     "localInventory": [],
+     "crossRefs": [{ "partNum": "PAR-HF-0920", "description": "Hydraulic return filter — Parker equivalent", "vendor": "Parker", "uom": "EA", "price": 22.50, "mandatory": false }]
+    },
+    {
+     "id": "GEN-WH-3310", "partNum": "GEN-WH-3310", "description": "Wheel hub bearing", "vendor": "Genie", "price": 54.00, "qty": 2, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [], "crossRefs": []
+    },
+    {
+     "id": "GEN-FS-0012", "partNum": "GEN-FS-0012", "description": "Fuel strainer", "vendor": "Genie", "price": 14.00, "qty": 1, "uom": "EA", "inStock": true, "oemOnly": false,
+     "localInventory": [], "crossRefs": []
+    }
+   ]
+  },
  ],
  "approvals": [
   {
