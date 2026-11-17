@@ -430,7 +430,7 @@ SE.views['work-order'] = function (el, p) {
           (w.desc ? '<p class="wo-desc">' + esc(w.desc) + '</p>' : '') + '</section>' +
         '<section class="sec ci-sec" id="wo-cart-sec">' + cart() + '</section>' +
         SE.ui.sec('Orders submitted', '', submittedOrders(), 'h-ord') +
-        SE.ui.sec('Notes &amp; activity', '', timeline(), 'h-log') +
+        SE.ui.sec('Notes & activity', '', timeline(), 'h-log') +
       '</div>' +
       '<aside class="panel wo-panel" aria-label="Work order details"><div class="panel-body">' +
         '<h2 class="wo-panel-h">Details</h2>' +
