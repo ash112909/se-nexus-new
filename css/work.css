@@ -126,6 +126,10 @@
   .ci-local { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #4a9b26; border: none; background: none; cursor: pointer; padding: 0; font-family: inherit; border-radius: 4px; }
   .ci-local:hover { text-decoration: underline; }
   .ci-local-sel { color: var(--brand); }
+  .ci-src-grp { display: inline-flex; align-items: center; gap: 4px; }
+  .ci-src-clr { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: none; background: none; cursor: pointer; color: var(--muted); border-radius: 3px; padding: 0; }
+  .ci-src-clr .i { width: 14px; height: 14px; }
+  .ci-src-clr:hover { background: var(--tint-danger, #fef2f2); color: var(--danger, #b93030); }
   .ci-dash { color: var(--muted); }
   /* Qty controls */
   .ci-qty { display: flex; align-items: center; justify-content: center; gap: 0; border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; width: 88px; }

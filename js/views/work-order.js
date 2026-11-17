@@ -83,7 +83,10 @@ SE.views['work-order'] = function (el, p) {
     if (src.length) {
       var qty = src.reduce(function (s, x) { return s + (x.qty || 0); }, 0);
       var lbl = src.length === 1 ? src[0].locationName : src.length + ' locations';
-      return '<button type="button" class="ci-local ci-local-sel" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + ' ' + esc(lbl) + (qty ? ' (' + qty + ')' : '') + '</button>';
+      return '<span class="ci-src-grp">' +
+        '<button type="button" class="ci-local ci-local-sel" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + ' ' + esc(lbl) + (qty ? ' (' + qty + ')' : '') + '</button>' +
+        '<button type="button" class="ci-src-clr" data-ci-clrsrc="' + esc(c.id) + '" title="Clear source">' + icon('cross-small') + '</button>' +
+      '</span>';
     }
     var inv = c.localInventory || [];
     if (!inv.length) return '<span class="ci-dash">—</span>';
@@ -529,6 +532,13 @@ SE.views['work-order'] = function (el, p) {
     // Source / local stock badge → open dialog
     var ciStockBtn = e.target.closest('[data-ci-stock]');
     if (ciStockBtn) { stockDialogWO(ciStockBtn.dataset.ciStock); return; }
+    // Clear applied source selection
+    var clrSrcBtn = e.target.closest('[data-ci-clrsrc]');
+    if (clrSrcBtn) {
+      var clrItems = cartItems(), clrC = clrItems.find(function (x) { return x.id === clrSrcBtn.dataset.ciClrsrc; });
+      if (clrC) { clrC.selectedSources = undefined; clrC.selectedSource = undefined; SE.save(); var clrCs = el.querySelector('#wo-cart-sec'); if (clrCs) clrCs.innerHTML = cart(); }
+      return;
+    }
     // Cart actions menu
     var ciToolsBtn = e.target.closest('[data-ci-tools]');
     if (ciToolsBtn) {
