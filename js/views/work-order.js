@@ -192,6 +192,9 @@ SE.views['work-order'] = function (el, p) {
       : '<div class="ci-qty"><button type="button" class="qty-btn" data-cart-dec="' + esc(c.id) + '">−</button><span class="qty-val">' + (c.qty || 1) + '</span><button type="button" class="qty-btn" data-cart-inc="' + esc(c.id) + '">+</button></div>';
     var removeBtn = withRemove && !replaced
       ? '<button type="button" class="ci-rm" data-cart-rm="' + esc(c.id) + '" title="Remove">' + icon('trash') + '</button>' : '';
+    var unitCell = replaced
+      ? '<span class="ci-orig-price">' + SE.money(c.price) + '</span>'
+      : SE.money(c.price);
     return '<tr class="ci-row' + rowCls + '">' +
       '<td class="col-st">' + statusIcon(c) + '</td>' +
       '<td class="col-pn"><div class="ci-pn"' + lineThru + '>' + esc(c.partNum) + '</div><div class="ci-vendor">' + esc(c.vendor || '') + (c.oemOnly ? ' <span class="oem-badge">OEM</span>' : '') + '</div></td>' +
@@ -201,8 +204,8 @@ SE.views['work-order'] = function (el, p) {
       '<td class="col-uom"><span class="uom-badge">' + esc(c.uom || 'EA') + '</span></td>' +
       '<td class="col-loc">' + stockCell(c) + '</td>' +
       '<td class="col-qty">' + qtyCtrl + '</td>' +
-      '<td class="col-unit">' + (replaced ? '<span class="ci-dash">—</span>' : SE.money(c.price)) + '</td>' +
-      '<td class="col-tot">' + (replaced ? '<span class="ci-dash">—</span>' : '<b>' + SE.money(c.price * (c.qty || 1)) + '</b>') + '</td>' +
+      '<td class="col-unit">' + unitCell + '</td>' +
+      '<td class="col-tot">' + (replaced ? '<span class="ci-orig-price">' + SE.money(c.price * (c.qty || 1)) + '</span>' : '<b>' + SE.money(c.price * (c.qty || 1)) + '</b>') + '</td>' +
       (withRemove ? '<td class="col-rm">' + removeBtn + '</td>' : '') +
     '</tr>';
   }
@@ -234,7 +237,9 @@ SE.views['work-order'] = function (el, p) {
       var sep = idx > 0 ? '<tr class="ci-sep"><td colspan="' + (withRemove ? 9 : 8) + '"></td></tr>' : '';
       if (u.length === 2) {
         return sep + '<tbody class="ci-pair">' + cartRow(u[0], withRemove) +
-          '<tr class="ci-xref-lbl"><td colspan="' + (withRemove ? 9 : 8) + '"><div class="ci-xref-lbl-inner">' + icon('arrows-exchange') + ' Cross-ref applied — replaced by</div></td></tr>' +
+          '<tr class="ci-xref-lbl"><td colspan="' + (withRemove ? 9 : 8) + '"><div class="ci-xref-lbl-inner">' + icon('arrows-exchange') + ' Cross-ref applied — replaced by' +
+            (withRemove ? '<button type="button" class="ci-undo-swap" data-ci-undoswap="' + esc(u[0].id) + '">' + icon('undo') + ' Undo</button>' : '') +
+          '</div></td></tr>' +
           cartRow(u[1], withRemove) + '</tbody>';
       }
       return sep + '<tbody>' + cartRow(u[0], withRemove) + '</tbody>';
@@ -537,6 +542,21 @@ SE.views['work-order'] = function (el, p) {
     if (clrSrcBtn) {
       var clrItems = cartItems(), clrC = clrItems.find(function (x) { return x.id === clrSrcBtn.dataset.ciClrsrc; });
       if (clrC) { clrC.selectedSources = undefined; clrC.selectedSource = undefined; SE.save(); var clrCs = el.querySelector('#wo-cart-sec'); if (clrCs) clrCs.innerHTML = cart(); }
+      return;
+    }
+    // Undo cross-ref swap
+    var undoSwapBtn = e.target.closest('[data-ci-undoswap]');
+    if (undoSwapBtn) {
+      var undoItems = cartItems(), origId = undoSwapBtn.dataset.ciUndoswap;
+      var origItem = undoItems.find(function (x) { return x.id === origId; });
+      if (origItem && origItem.replacedBy) {
+        var repIdx = undoItems.findIndex(function (x) { return x.id === origItem.replacedBy; });
+        if (repIdx >= 0) undoItems.splice(repIdx, 1);
+        origItem.replacedBy = undefined;
+        SE.save();
+        var undoCs = el.querySelector('#wo-cart-sec'); if (undoCs) undoCs.innerHTML = cart();
+        SE.toast('Swap undone', 'undo');
+      }
       return;
     }
     // Cart actions menu

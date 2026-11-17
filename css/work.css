@@ -92,7 +92,7 @@
   .ci-thead th { font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 7px 10px; text-align: left; background: var(--surface-raised, var(--surface)); border-bottom: 1px solid var(--line); white-space: nowrap; }
   .ci-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 13px; }
   .ci-row:last-child td, .ci-table tbody:last-child .ci-row:last-child td { border-bottom: none; }
-  .ci-row-dim { opacity: .45; }
+  .ci-row-dim { opacity: .6; }
   /* Column widths */
   .col-st  { width: 40px; padding-left: 14px !important; }
   .col-pn  { width: 140px; }
@@ -152,6 +152,9 @@
   .ci-pair .ci-row td:first-child { padding-left: 11px !important; }
   .ci-xref-lbl td { padding: 0; border-bottom: none; }
   .ci-xref-lbl-inner { font-size: 10px; font-weight: 700; color: #534ab7; background: #f3f1fe; padding: 3px 12px; display: flex; align-items: center; gap: 5px; letter-spacing: .3px; }
+  .ci-undo-swap { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; color: #534ab7; font-size: 10px; font-weight: 700; padding: 1px 4px; border-radius: 4px; font-family: inherit; }
+  .ci-undo-swap:hover { background: #e8e6fd; }
+  .ci-orig-price { text-decoration: line-through; color: var(--muted); }
   /* Cart footer */
   .cart-foot { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: var(--surface-raised, #fafaf8); flex-wrap: wrap; }
   .cart-foot-ct  { flex: 1; font-size: 13px; color: var(--muted); }
