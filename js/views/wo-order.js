@@ -170,7 +170,8 @@ SE.views['wo-order'] = function (el, p) {
   }
 
   function formRow(label, id, input) {
-    return '<div class="form-row or-row"><label for="' + id + '">' + esc(label) + '</label><div class="control">' + input + '</div></div>';
+    var isArea = input.indexOf('<textarea') >= 0;
+    return '<div class="form-row or-row"><label for="' + id + '">' + esc(label) + '</label><div class="control' + (isArea ? ' area' : '') + '">' + input + '</div></div>';
   }
 
   function renderGroupForm(gi) {
