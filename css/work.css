@@ -116,13 +116,15 @@
   .ci-desc { font-size: 13px; line-height: 1.4; }
   .ci-replaces { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 3px; }
   .ci-xref-wrap { margin-top: 3px; }
-  .ci-xref { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; border: none; cursor: default; white-space: nowrap; }
+  .ci-xref { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; transition: filter .12s; }
+  .ci-xref:hover { filter: brightness(.92); }
   .ci-xref-opt  { background: #eeedfe; color: #534ab7; }
   .ci-xref-mand { background: #fef3c7; color: #92400e; }
   /* UOM badge */
   .uom-badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 5px; background: var(--surface-raised, #f5f2ee); color: var(--text); font-size: 11px; font-weight: 600; }
   /* Stock / local cell */
-  .ci-local { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #4a9b26; }
+  .ci-local { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #4a9b26; border: none; background: none; cursor: pointer; padding: 0; font-family: inherit; border-radius: 4px; }
+  .ci-local:hover { text-decoration: underline; }
   .ci-local-sel { color: var(--brand); }
   .ci-dash { color: var(--muted); }
   /* Qty controls */
@@ -151,6 +153,15 @@
   .cart-foot-ct  { flex: 1; font-size: 13px; color: var(--muted); }
   .cart-foot-tot { font-size: 14px; font-weight: 700; margin-right: 4px; }
   .ci-unord { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 6px; background: rgba(0,0,0,.15); border-radius: 4px; padding: 1px 6px; }
+
+  /* ── Cross-ref dialog ──────────────────────────────────── */
+  .xr-list { display: flex; flex-direction: column; gap: 12px; }
+  .xr-row { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .xr-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+  .xr-top { display: flex; align-items: center; gap: 8px; }
+  .xr-top b { font-size: 13px; font-weight: 700; }
+  .xr-desc { font-size: 13px; color: var(--ink); }
+  .xr-meta { font-size: 12px; }
 
   /* ── Submitted orders accordion ──────────────────────── */
   .ord-acc { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }

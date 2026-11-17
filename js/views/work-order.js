@@ -73,8 +73,8 @@ SE.views['work-order'] = function (el, p) {
     var refs = c.crossRefs || [];
     if (!refs.length) return '';
     if (refs.some(function (r) { return r.mandatory; }))
-      return '<span class="ci-xref ci-xref-mand">' + icon('switch') + ' Mandatory cross-ref</span>';
-    return '<span class="ci-xref ci-xref-opt">' + icon('switch') + ' ' + refs.length + ' optional cross-ref' + (refs.length !== 1 ? 's' : '') + '</span>';
+      return '<button type="button" class="ci-xref ci-xref-mand" data-ci-openxref="' + esc(c.id) + '">' + icon('switch') + ' Mandatory cross-ref</button>';
+    return '<button type="button" class="ci-xref ci-xref-opt" data-ci-openxref="' + esc(c.id) + '">' + icon('switch') + ' ' + refs.length + ' optional cross-ref' + (refs.length !== 1 ? 's' : '') + '</button>';
   }
 
   function stockCell(c) {
@@ -83,46 +83,57 @@ SE.views['work-order'] = function (el, p) {
     if (src.length) {
       var qty = src.reduce(function (s, x) { return s + (x.qty || 0); }, 0);
       var lbl = src.length === 1 ? src[0].locationName : src.length + ' locations';
-      return '<span class="ci-local ci-local-sel">' + icon('map-marker') + ' ' + esc(lbl) + (qty ? ' (' + qty + ')' : '') + '</span>';
+      return '<button type="button" class="ci-local ci-local-sel" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + ' ' + esc(lbl) + (qty ? ' (' + qty + ')' : '') + '</button>';
     }
     var inv = c.localInventory || [];
     if (!inv.length) return '<span class="ci-dash">—</span>';
     var tot = inv.reduce(function (s, l) { return s + l.qty; }, 0);
-    return '<span class="ci-local">' + icon('map-marker') + ' ' + tot + ' avail</span>';
+    return '<button type="button" class="ci-local" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + ' ' + tot + ' avail</button>';
   }
 
-  // ── Review panel (before checkout) ───────────────────────────────────────
-  function reviewPanel(items) {
-    var issues = [];
-    items.forEach(function (c) {
-      if (c.replacedBy) return;
-      var st = itemStatus(c);
-      if (st === 'blocked') {
-        var refs = c.crossRefs || [], mandIdx = refs.findIndex(function (r) { return r.mandatory; });
-        var mand = mandIdx >= 0 ? refs[mandIdx] : null;
-        issues.push({ blocking: true, title: 'Mandatory cross-ref', text: 'Must use an approved alternative before ordering.', c: c,
-          act: mand ? '<button class="btn btn-primary btn-sm" data-ci-swap="' + esc(c.id) + '" data-ci-xref="' + mandIdx + '">' + icon('swap') + 'Swap to ' + esc(mand.partNum) + ' · ' + SE.money(mand.price) + '</button>' : '' });
-      } else if (st === 'unorderable') {
-        issues.push({ blocking: true, title: 'Cannot order', text: 'Out of stock with no available alternatives.', c: c, act: '' });
-      } else if (st === 'needs_attention' && !c.inStock && (c.crossRefs || []).length) {
-        issues.push({ blocking: false, title: 'Out of stock', text: 'Backordered from supplier. Use an alternative or wait.', c: c,
-          act: '<button class="btn btn-primary btn-sm" data-ci-swap="' + esc(c.id) + '" data-ci-xref="0">' + icon('swap') + 'Use ' + esc((c.crossRefs || [])[0].partNum) + ' · ' + SE.money((c.crossRefs || [])[0].price) + '</button>' });
-      } else if (st === 'needs_attention' && (c.localInventory || []).length) {
-        issues.push({ blocking: false, title: 'Branch stock available', text: 'Nearby branches have stock. Review before ordering.', c: c,
-          act: '<button class="btn btn-secondary btn-sm" data-ci-stock="' + esc(c.id) + '">' + icon('map-marker') + 'Review branch stock</button>' });
-      }
+  // ── Cross-refs dialog ─────────────────────────────────────────────────────
+  function openCrossRefDialog(id) {
+    var items = cartItems(), c = items.find(function (x) { return x.id === id; });
+    if (!c) return;
+    var refs = c.crossRefs || [];
+    if (!refs.length) return;
+    var hasMand = refs.some(function (r) { return r.mandatory; });
+    var rows = refs.map(function (r, i) {
+      return '<div class="xr-row">' +
+        '<div class="xr-info">' +
+          '<div class="xr-top">' +
+            (r.mandatory ? SE.chip('Required', 'danger') : SE.chip('Optional', 'neutral')) +
+            '<b>' + esc(r.partNum) + '</b>' +
+          '</div>' +
+          '<span class="xr-desc">' + esc(r.description) + '</span>' +
+          '<span class="xr-meta muted">' + esc(r.vendor) + ' · ' + esc(r.uom || 'EA') + ' · ' + SE.money(r.price) + '</span>' +
+        '</div>' +
+        '<button type="button" class="btn btn-primary btn-sm xr-swap" data-xr-swap="' + esc(c.id) + '" data-xr-idx="' + i + '">' + icon('swap') + 'Swap</button>' +
+      '</div>';
+    }).join('');
+    var intro = hasMand
+      ? '<p class="muted" style="margin-bottom:16px;">This item has a mandatory cross-reference. You must swap to an approved alternative before placing the order.</p>'
+      : '<p class="muted" style="margin-bottom:16px;">These are optional alternatives — no action required. Swap if preferred.</p>';
+    var d = open = SE.ui.dialog({
+      title: 'Cross-references: ' + esc(c.partNum),
+      body: intro + '<div class="xr-list">' + rows + '</div>',
+      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Close</button>',
     });
-    if (!issues.length) return '';
-    var blocking = issues.filter(function (x) { return x.blocking; }).length;
-    return '<section class="card rv" aria-labelledby="ci-rv-h"><header class="rv-head">' +
-      '<span class="rv-ico">' + icon('shield-check') + '</span>' +
-      '<div><h2 id="ci-rv-h">Before checkout: ' + issues.length + ' line' + (issues.length === 1 ? '' : 's') + ' to sort out</h2>' +
-      '<p class="muted">' + (blocking ? blocking + ' must change' + (issues.length > blocking ? ', ' + (issues.length - blocking) + ' need' + (issues.length - blocking === 1 ? 's' : '') + ' a decision' : '') : 'Each needs a decision') + '.</p></div></header>' +
-      '<ul class="rv-list">' + issues.map(function (x) {
-        return '<li class="rv-row">' + SE.chip(x.blocking ? 'Must change' : 'Decide', x.blocking ? 'danger' : 'warning') +
-          '<div class="rv-txt"><b>' + esc(x.c.partNum) + '</b><span><b>' + esc(x.title) + '.</b> ' + esc(x.text) + '</span></div>' +
-          '<div class="rv-acts">' + x.act + '</div></li>';
-      }).join('') + '</ul></section>';
+    d.el.addEventListener('click', function (ev) {
+      var sb = ev.target.closest('[data-xr-swap]');
+      if (!sb) return;
+      var xrefIdx = parseInt(sb.dataset.xrIdx, 10);
+      var xref = refs[xrefIdx];
+      if (!xref) return;
+      c.replacedBy = xref.partNum;
+      var newItem = { id: xref.partNum, partNum: xref.partNum, description: xref.description, vendor: xref.vendor, price: xref.price, qty: c.qty || 1, uom: xref.uom || c.uom, inStock: true, oemOnly: false, localInventory: [], crossRefs: [], replacesId: c.id };
+      var si = items.indexOf(c);
+      items.splice(si + 1, 0, newItem);
+      SE.save();
+      var cs = el.querySelector('#wo-cart-sec'); if (cs) cs.innerHTML = cart();
+      SE.toast('Swapped to ' + xref.partNum, 'check');
+      d.close();
+    });
   }
 
   // ── Branch stock dialog (WO version using localInventory) ─────────────────
@@ -285,7 +296,6 @@ SE.views['work-order'] = function (el, p) {
     if (!items.length) {
       return '<div class="card ci-cart-card">' + hdr + '<div class="cart-empty">' + icon('box') + '<span>No items in cart.</span></div></div>';
     }
-    var rv = reviewPanel(items);
     var thead = cartTableHead(canEdit);
     var tbody = groupBy === 'none' ? cartTableBody(items, canEdit) : groupedCartBody(items, canEdit);
     var byVendor = {}, vOrder = [];
@@ -308,7 +318,7 @@ SE.views['work-order'] = function (el, p) {
           '</div>'
         : '') +
       '</aside>';
-    return rv + '<div class="card ci-cart-card">' +
+    return '<div class="card ci-cart-card">' +
       hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div>' +
       aside;
   }
@@ -513,26 +523,10 @@ SE.views['work-order'] = function (el, p) {
       if (idx >= 0) { items3.splice(idx, 1); SE.save(); var cs4 = el.querySelector('#wo-cart-sec'); if (cs4) cs4.innerHTML = cart(); } return;
     }
 
-    // Review panel: swap item with a cross-ref
-    var swapBtn2 = e.target.closest('[data-ci-swap]');
-    if (swapBtn2) {
-      var swapItems = cartItems(), swapId = swapBtn2.dataset.ciSwap;
-      var swapOrig = swapItems.find(function (x) { return x.id === swapId; });
-      if (swapOrig) {
-        var xrefIdx = parseInt(swapBtn2.dataset.ciXref, 10);
-        var xref = (swapOrig.crossRefs || [])[xrefIdx];
-        if (xref) {
-          swapOrig.replacedBy = xref.partNum;
-          var newSwapItem = { id: xref.partNum, partNum: xref.partNum, description: xref.description, vendor: xref.vendor, price: xref.price, qty: swapOrig.qty || 1, uom: xref.uom || swapOrig.uom, inStock: true, oemOnly: false, localInventory: [], crossRefs: [], replacesId: swapId };
-          var si = swapItems.indexOf(swapOrig);
-          swapItems.splice(si + 1, 0, newSwapItem);
-          SE.save(); var csSwap = el.querySelector('#wo-cart-sec'); if (csSwap) csSwap.innerHTML = cart();
-          SE.toast('Swapped to ' + xref.partNum, 'check');
-        }
-      }
-      return;
-    }
-    // Review panel: branch stock dialog
+    // Cross-ref badge → open dialog
+    var xrefBadgeBtn = e.target.closest('[data-ci-openxref]');
+    if (xrefBadgeBtn) { openCrossRefDialog(xrefBadgeBtn.dataset.ciOpenxref); return; }
+    // Source / local stock badge → open dialog
     var ciStockBtn = e.target.closest('[data-ci-stock]');
     if (ciStockBtn) { stockDialogWO(ciStockBtn.dataset.ciStock); return; }
     // Cart actions menu
