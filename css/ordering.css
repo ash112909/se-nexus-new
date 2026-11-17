@@ -138,3 +138,66 @@
   .oc-line { grid-template-columns: 64px minmax(0, 1fr) auto; }
   .oc-line > .img-slot.thumb { grid-area: t; align-self: start; }
 }
+
+/* ---------- work order order review (wo-order.js) */
+@layer components {
+  .or-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; grid-template-areas: "tabs aside" "main aside"; gap: 24px; align-items: start; }
+  .or-tabs { grid-area: tabs; display: flex; flex-wrap: wrap; gap: 8px; }
+  .or-main { grid-area: main; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .or-aside { grid-area: aside; position: sticky; top: 24px; }
+
+  .or-tab { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 18px; border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; transition: border-color .12s, background .12s; }
+  .or-tab .i { width: 15px; height: 15px; color: var(--muted); }
+  .or-tab:hover { background: var(--container-low); }
+  .or-tab-active { border-color: var(--ink); background: var(--ink); color: var(--on-solid); }
+  .or-tab-active .i { color: var(--on-solid); opacity: .8; }
+  .or-tab-done { border-color: var(--success); color: var(--success-fg, var(--success)); }
+  .or-tab-done.or-tab-active { background: var(--success); color: var(--on-solid); border-color: var(--success); }
+  .or-tab-cnt { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: rgba(0,0,0,.08); font-size: 12px; font-weight: 700; }
+  .or-tab-active .or-tab-cnt { background: rgba(255,255,255,.2); }
+  .or-tab-check { display: flex; align-items: center; }
+  .or-tab-check .i { width: 14px; height: 14px; }
+
+  .or-sec { display: flex; flex-direction: column; gap: 16px; }
+  .or-sec-h { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; line-height: 22px; }
+  .or-sec-h .i { width: 18px; height: 18px; color: var(--muted); flex: none; }
+  .or-item-cnt { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--muted); }
+
+  .or-tbl { min-width: 480px; }
+  .or-pn { display: block; font-weight: 600; font-size: 13px; }
+  .or-desc { display: block; font-size: 13px; color: var(--muted); }
+  .or-tfooter td { padding: 10px 16px; font-size: 14px; color: var(--muted); background: var(--container-low); font-variant-numeric: tabular-nums; }
+  .or-tfooter td:last-child { font-weight: 700; color: var(--ink); text-align: right; }
+
+  .or-rec-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .or-rec-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .or-rec-txt { flex: 1; font-size: 13px; color: var(--muted); min-width: 0; }
+  .or-use-rec { flex: none; }
+
+  .or-fields { display: flex; flex-direction: column; gap: 12px; }
+  .or-row label { font-size: 14px; font-weight: 500; min-width: 140px; }
+
+  .or-group-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 8px; }
+  .or-total-lbl { margin-left: auto; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .or-submitted-banner { display: flex; align-items: center; gap: 16px; padding: 20px; border-radius: 16px; background: var(--success-bg, #ECFDF5); border: 1px solid var(--success, #10B981); }
+  .or-submitted-banner .i { width: 28px; height: 28px; color: var(--success, #10B981); flex: none; }
+  .or-submitted-banner b { font-size: 16px; display: block; }
+  .or-submitted-banner p { font-size: 13px; }
+
+  .or-sum-wos { display: flex; flex-direction: column; gap: 2px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .or-sum-wos .i { width: 14px; height: 14px; }
+  .or-sum-wos b { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .or-sum-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; }
+  .or-sum-lbl { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .or-sum-lbl .i { width: 15px; height: 15px; color: var(--muted); flex: none; }
+  .or-sum-done .i { width: 14px; height: 14px; color: var(--success, #10B981); }
+  .or-sum-val { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .or-attn-list { margin: 8px 0 0 16px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+
+  @container (max-width: 879px) {
+    .or-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "tabs" "main" "aside"; }
+    .or-aside { position: static; }
+  }
+}

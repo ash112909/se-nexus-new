@@ -552,8 +552,44 @@ SE.views['work-order'] = function (el, p) {
       ]);
       return;
     }
-    // Cart: submit
-    if (e.target.closest('[data-cart-submit]')) { SE.toast('Order submitted — check your orders list', 'check'); return; }
+    // Cart: submit → pre-checkout check then navigate to order review
+    if (e.target.closest('[data-cart-submit]')) {
+      var sitems = cartItems();
+      var sblocked = sitems.filter(function (c) { return ['blocked', 'unorderable'].indexOf(itemStatus(c)) >= 0; });
+      var sattn = sitems.filter(function (c) { return !c.replacedBy && itemStatus(c) === 'needs_attention'; });
+      var sorderable = sitems.filter(function (c) { return !c.replacedBy && itemStatus(c) === 'orderable'; });
+
+      function goOrder() { SE.go('wo-order', { params: { id: w.id } }); }
+
+      if (sorderable.length === 0 && sattn.length === 0) {
+        SE.toast('No orderable items in cart', 'exclamation');
+        return;
+      }
+
+      if (sattn.length > 0) {
+        var dlgBody = '<p>' + sattn.length + ' item' + (sattn.length > 1 ? 's have' : ' has') +
+          ' pending decisions that haven\'t been applied yet. You can continue and order what\'s ready, or go back and address them first.</p>' +
+          '<ul class="or-attn-list">' + sattn.map(function (c) {
+            return '<li><b>' + esc(c.partNum) + '</b> — ' + esc(c.description) + '</li>';
+          }).join('') + '</ul>' +
+          (sblocked.length > 0
+            ? '<p class="muted">' + sblocked.length + ' item' + (sblocked.length > 1 ? 's' : '') + ' can\'t be ordered and will be excluded automatically.</p>'
+            : '');
+        var d = SE.ui.dialog({
+          title: 'Unapplied decisions',
+          body: dlgBody,
+          foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Go back and review</button>' +
+                '<button type="button" class="btn btn-primary" data-or-proceed>Continue with ready items</button>',
+        });
+        d.el.addEventListener('click', function (ev) {
+          if (!ev.target.closest('[data-or-proceed]')) return;
+          d.close(); goOrder();
+        });
+      } else {
+        goOrder();
+      }
+      return;
+    }
 
     // Submitted orders accordion
     var togBtn = e.target.closest('[data-ord-toggle]');
