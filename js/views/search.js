@@ -475,10 +475,6 @@
     }
     function catOutside(e) { if (!form.contains(e.target)) catClose(); }
     catBtn.addEventListener('click', function () { if (catPop.hidden) catOpen(); else catClose(); });
-    catPop.addEventListener('mouseover', function (e) {
-      var row = e.target.closest('[data-cat-pick]');
-      if (row) buildCatPop(row.dataset.catPick);
-    });
     catPop.addEventListener('click', function (e) {
       var srow = e.target.closest('[data-sup-pick]');
       if (srow) {
