@@ -614,11 +614,11 @@
     pop.addEventListener('click', onClick);
     form.addEventListener('submit', onSubmit);
     return function () {
-      clearTimeout(blurT); clearTimeout(timer); supClose();
+      clearTimeout(blurT); clearTimeout(timer); catClose();
       input.removeEventListener('keydown', onKey); input.removeEventListener('input', onInput);
       input.removeEventListener('focus', onFocus); input.removeEventListener('blur', onBlur);
       form.removeEventListener('submit', onSubmit);
-      pop.remove(); delete form.dataset.ta;
+      pop.remove(); catPop.remove(); delete form.dataset.ta;
     };
   };
 
