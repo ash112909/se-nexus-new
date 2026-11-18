@@ -198,9 +198,19 @@
 
   .or-attn-list { margin: 8px 0 0 16px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
 
+  .or-addr-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .or-addr-label { font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .or-addr-fields { display: flex; flex-direction: column; gap: 10px; }
+  .or-addr-fields .or-row { gap: 4px; }
+  .or-csz { display: flex; gap: 6px; }
+  .or-csz .input:first-child { flex: 1; min-width: 0; }
+  .or-csz .input:nth-child(2) { width: 46px; flex: none; }
+  .or-csz .input:nth-child(3) { width: 72px; flex: none; }
+
   @container (max-width: 879px) {
     .or-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "tabs" "main" "aside"; }
     .or-aside { position: static; }
     .or-fields { grid-template-columns: minmax(0, 1fr); }
+    .or-addr-cols { grid-template-columns: minmax(0, 1fr); }
   }
 }

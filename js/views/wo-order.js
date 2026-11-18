@@ -99,15 +99,26 @@ SE.views['wo-order'] = function (el, p) {
   var user = D.user || {};
   var locId = SE.state.location !== 'all' ? SE.state.location : ((D.locations || [])[0] || {}).id;
   var loc = SE.loc(locId) || (D.locations || [])[0] || {};
+  function parseAddr(s) {
+    var str = (s || '').trim(), ci = str.lastIndexOf(',');
+    var addr1 = ci >= 0 ? str.slice(0, ci).trim() : str;
+    var rest = ci >= 0 ? str.slice(ci + 1).trim() : '';
+    var m = rest.match(/^(.*?)\s+([A-Z]{2})(?:\s+(\d[\d-]*))?$/);
+    return { addr1: addr1, city: m ? m[1].trim() : rest, state: m ? m[2] : '', zip: m ? (m[3] || '') : '' };
+  }
+  var pa = parseAddr(loc.address);
   var groupStates = groups.map(function (g) {
     var rec = computeRec(g);
     return {
       submitted: false,
       poNum: '', requestedDate: w.dueDate || '',
-      orderedBy: user.name || '', email: user.email || '', phone: user.phone || '',
+      fullName: user.name || '', orderedBy: user.name || '', email: user.email || '', phone: user.phone || '',
+      notifyBy: 'email',
       carrier: rec.carrier, service: rec.service,
-      shipOption: 'ship-complete', freightTerms: 'prepaid', carrierAccount: '',
+      shipOption: 'ship-complete', freightTerms: '', carrierAccount: '',
       comments: '', rec: rec,
+      shipTo: { name: loc.name || '', attn: user.name || '', addr1: pa.addr1, addr2: '', city: pa.city, state: pa.state, zip: pa.zip, phone: '' },
+      billTo: { name: loc.name || '', attn: 'Accounts Payable', addr1: pa.addr1, addr2: '', city: pa.city, state: pa.state, zip: pa.zip, phone: '' },
     };
   });
 
@@ -174,6 +185,27 @@ SE.views['wo-order'] = function (el, p) {
     return '<div class="form-row or-row"><label for="' + id + '">' + esc(label) + '</label><div class="control' + (isArea ? ' area' : '') + '">' + input + '</div></div>';
   }
 
+  function addrRow(label, inner) {
+    return '<div class="form-row or-row"><label>' + esc(label) + '</label><div class="control">' + inner + '</div></div>';
+  }
+  function addrInp(prefix, key, gi, obj, ph, type, style) {
+    return '<input type="' + (type || 'text') + '" class="input" value="' + esc(obj[key] || '') + '" placeholder="' + esc(ph || '') + '"' + (style ? ' style="' + style + '"' : '') + ' data-or-addr="' + esc(prefix) + '" data-addr-key="' + esc(key) + '" data-gi="' + gi + '">';
+  }
+  function addrBlock(prefix, gi, obj) {
+    return '<div class="or-addr-fields">' +
+      addrRow('Company / location', addrInp(prefix, 'name', gi, obj, 'Company name')) +
+      addrRow('Attn', addrInp(prefix, 'attn', gi, obj, 'Contact name')) +
+      addrRow('Address', addrInp(prefix, 'addr1', gi, obj, 'Street address')) +
+      addrRow('Line 2', addrInp(prefix, 'addr2', gi, obj, 'Suite, floor, PO Box')) +
+      '<div class="form-row or-row"><label>City / State / ZIP</label><div class="control or-csz">' +
+        addrInp(prefix, 'city', gi, obj, 'City', 'text', 'flex:1;') +
+        addrInp(prefix, 'state', gi, obj, 'ST') +
+        addrInp(prefix, 'zip', gi, obj, 'ZIP') +
+      '</div></div>' +
+      addrRow('Phone', addrInp(prefix, 'phone', gi, obj, 'Phone number')) +
+    '</div>';
+  }
+
   function renderGroupForm(gi) {
     var g = groups[gi], gs = groupStates[gi];
     if (gs.submitted) {
@@ -181,6 +213,8 @@ SE.views['wo-order'] = function (el, p) {
     }
     var total = g.items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
     var local = g.type === 'local';
+    var carriers = ['UPS', 'FedEx', 'USPS', 'DHL', 'Internal', 'Other'];
+    var services = ['Priority Overnight', '2-Day Air', 'Express Saver', 'Ground', 'Branch Transfer', 'Freight / LTL'];
     return '<div class="or-group-form" data-group-form="' + gi + '">' +
       '<section class="card or-sec">' +
         '<h2 class="or-sec-h">' + groupIcon(g) + (local ? 'Branch transfer' : 'Purchase order') + ' · ' + esc(g.label) +
@@ -189,29 +223,65 @@ SE.views['wo-order'] = function (el, p) {
         itemsTable(g, g.items) +
       '</section>' +
       '<section class="card or-sec">' +
+        '<h2 class="or-sec-h">' + icon('map-marker') + 'Addresses</h2>' +
+        '<div class="or-addr-cols">' +
+          '<div><div class="or-addr-label">Ship to</div>' + addrBlock('shipTo', gi, gs.shipTo) + '</div>' +
+          '<div><div class="or-addr-label">Bill to</div>' + addrBlock('billTo', gi, gs.billTo) + '</div>' +
+        '</div>' +
+      '</section>' +
+      '<section class="card or-sec">' +
         '<h2 class="or-sec-h">' + icon('truck-side') + (local ? 'Transfer details' : 'Shipping') + '</h2>' +
         recBanner(gs) +
-        (!local ? '<div class="or-fields">' +
-          formRow('Carrier & service', 'or-carrier-' + gi,
-            '<select id="or-carrier-' + gi + '" class="select" data-or-field="carrier-service" data-gi="' + gi + '">' + carrierOptions(gs) + '</select>') +
+        '<div class="or-fields">' +
+          formRow('Carrier', 'or-carrier-' + gi,
+            '<select id="or-carrier-' + gi + '" class="select" data-or-field="carrier" data-gi="' + gi + '">' +
+              carriers.map(function (c) { return '<option value="' + esc(c) + '"' + (c === gs.carrier ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') +
+            '</select>') +
+          formRow('Service level', 'or-service-' + gi,
+            '<select id="or-service-' + gi + '" class="select" data-or-field="service" data-gi="' + gi + '">' +
+              services.map(function (s) { return '<option value="' + esc(s) + '"' + (s === gs.service ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
+            '</select>') +
           formRow('Ship option', 'or-shipoption-' + gi,
             '<select id="or-shipoption-' + gi + '" class="select" data-or-field="shipOption" data-gi="' + gi + '">' +
               '<option value="ship-complete"' + (gs.shipOption === 'ship-complete' ? ' selected' : '') + '>Ship complete</option>' +
               '<option value="ship-available"' + (gs.shipOption === 'ship-available' ? ' selected' : '') + '>Ship as available</option>' +
             '</select>') +
-        '</div>' : '') +
+          formRow('Freight terms', 'or-freight-' + gi,
+            '<select id="or-freight-' + gi + '" class="select" data-or-field="freightTerms" data-gi="' + gi + '">' +
+              '<option value=""' + (!gs.freightTerms ? ' selected' : '') + '>— (blank)</option>' +
+              '<option value="collect"' + (gs.freightTerms === 'collect' ? ' selected' : '') + '>Collect</option>' +
+              '<option value="prepaid"' + (gs.freightTerms === 'prepaid' ? ' selected' : '') + '>Prepaid</option>' +
+            '</select>') +
+          formRow('Fleet carrier account # (optional)', 'or-acct-' + gi,
+            '<input type="text" id="or-acct-' + gi + '" class="input" value="' + esc(gs.carrierAccount) + '" placeholder="Enter carrier account number" data-or-field="carrierAccount" data-gi="' + gi + '">') +
+        '</div>' +
       '</section>' +
       '<section class="card or-sec">' +
-        '<h2 class="or-sec-h">' + icon('file-description') + 'Order details</h2>' +
+        '<h2 class="or-sec-h">' + icon('document') + 'Order details</h2>' +
         '<div class="or-fields">' +
+          formRow('Full name', 'or-fullname-' + gi,
+            '<input type="text" id="or-fullname-' + gi + '" class="input" value="' + esc(gs.fullName) + '" data-or-field="fullName" data-gi="' + gi + '">') +
+          formRow('Ordered by', 'or-ordered-' + gi,
+            '<input type="text" id="or-ordered-' + gi + '" class="input" value="' + esc(gs.orderedBy) + '" readonly>') +
+          formRow('Phone', 'or-phone-' + gi,
+            '<input type="tel" id="or-phone-' + gi + '" class="input" value="' + esc(gs.phone) + '" placeholder="e.g. 512-555-0100" data-or-field="phone" data-gi="' + gi + '">') +
+          formRow('Email', 'or-email-' + gi,
+            '<input type="email" id="or-email-' + gi + '" class="input" value="' + esc(gs.email) + '" placeholder="notification email" data-or-field="email" data-gi="' + gi + '">') +
+          formRow('Notify by', 'or-notify-' + gi,
+            '<select id="or-notify-' + gi + '" class="select" data-or-field="notifyBy" data-gi="' + gi + '">' +
+              '<option value="email"' + (gs.notifyBy === 'email' ? ' selected' : '') + '>Email</option>' +
+              '<option value="sms"' + (gs.notifyBy === 'sms' ? ' selected' : '') + '>SMS</option>' +
+              '<option value="both"' + (gs.notifyBy === 'both' ? ' selected' : '') + '>Email + SMS</option>' +
+              '<option value="none"' + (gs.notifyBy === 'none' ? ' selected' : '') + '>None</option>' +
+            '</select>') +
+          formRow('Payment terms', 'or-pmt-' + gi,
+            '<input type="text" id="or-pmt-' + gi + '" class="input" value="MQ Terms" readonly>') +
+          formRow('Order type', 'or-otype-' + gi,
+            '<input type="text" id="or-otype-' + gi + '" class="input" value="' + esc(local ? 'Branch Transfer' : 'Standard') + '" readonly>') +
           (!local ? formRow('PO reference (optional)', 'or-po-' + gi,
             '<input type="text" id="or-po-' + gi + '" class="input" placeholder="Leave blank to auto-assign" value="' + esc(gs.poNum) + '" data-or-field="poNum" data-gi="' + gi + '">') : '') +
           formRow('Needed by', 'or-date-' + gi,
             '<input type="date" id="or-date-' + gi + '" class="input" value="' + esc(gs.requestedDate) + '" data-or-field="requestedDate" data-gi="' + gi + '">') +
-          formRow('Ordered by', 'or-ordered-' + gi,
-            '<input type="text" id="or-ordered-' + gi + '" class="input" value="' + esc(gs.orderedBy) + '" data-or-field="orderedBy" data-gi="' + gi + '">') +
-          formRow('Ship to', 'or-shipto-' + gi,
-            '<input type="text" id="or-shipto-' + gi + '" class="input" value="' + esc(loc.name || '') + '" readonly>') +
           formRow('Comments', 'or-comments-' + gi,
             '<textarea id="or-comments-' + gi + '" class="input" rows="3" placeholder="Notes for the supplier (optional)" data-or-field="comments" data-gi="' + gi + '">' + esc(gs.comments) + '</textarea>') +
         '</div>' +
@@ -302,8 +372,10 @@ SE.views['wo-order'] = function (el, p) {
       var gi = form ? parseInt(form.dataset.groupForm, 10) : activeTab;
       var gs = groupStates[gi], r = gs.rec;
       gs.carrier = r.carrier; gs.service = r.service;
-      var sel = form && form.querySelector('[data-or-field="carrier-service"]');
-      if (sel) sel.value = r.carrier + '|' + r.service;
+      var carrierSel = form && form.querySelector('[data-or-field="carrier"]');
+      var serviceSel = form && form.querySelector('[data-or-field="service"]');
+      if (carrierSel) carrierSel.value = r.carrier;
+      if (serviceSel) serviceSel.value = r.service;
       return;
     }
 
@@ -328,13 +400,14 @@ SE.views['wo-order'] = function (el, p) {
     var f = e.target.closest('[data-or-field]');
     if (!f) return;
     var field = f.dataset.orField, gi = parseInt(f.dataset.gi, 10);
-    var gs = groupStates[gi];
-    if (field === 'carrier-service') {
-      var parts = f.value.split('|');
-      gs.carrier = parts[0]; gs.service = parts[1] || '';
-    } else {
-      gs[field] = f.value;
-    }
+    groupStates[gi][field] = f.value;
+  });
+
+  el.addEventListener('input', function (e) {
+    var a = e.target.closest('[data-or-addr]');
+    if (!a) return;
+    var prefix = a.dataset.orAddr, key = a.dataset.addrKey, gi = parseInt(a.dataset.gi, 10);
+    if (groupStates[gi] && groupStates[gi][prefix]) groupStates[gi][prefix][key] = a.value;
   });
 
   function rerender() {
@@ -368,7 +441,8 @@ SE.views['wo-order'] = function (el, p) {
       status: 'Submitted', tone: 'info',
       placed: placedDate, eta: 'Awaiting confirmation',
       carrier: gs.carrier, tracking: null,
-      shipTo: locId, needBy: gs.requestedDate || null, note: gs.comments || '',
+      shipTo: gs.shipTo, billTo: gs.billTo, locId: locId, needBy: gs.requestedDate || null, note: gs.comments || '',
+      fullName: gs.fullName, phone: gs.phone, notifyBy: gs.notifyBy, freightTerms: gs.freightTerms, carrierAccount: gs.carrierAccount,
       from: 'wo-cart', kind: g.type === 'local' ? 'transfer' : 'purchase',
       items: g.items.map(function (c) { return { pn: c.partNum || c.id, qty: c.qty || 1, wo: w.id }; }),
       steps: [['Submitted', placedTime], ['Confirmed', null], ['Shipped', null], ['Delivered', null]],
