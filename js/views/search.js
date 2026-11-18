@@ -32,7 +32,7 @@
 
   // ================================================================ search core (same code on mobile, ARA.*)
   var D = X.data;
-  var TYPES = [['parts', 'Parts'], ['fleet', 'Fleet'], ['manuals', 'Manuals'], ['orders', 'Orders'], ['news', 'News & Bulletins'], ['kb', 'Knowledge Base']];
+  var TYPES = [['parts', 'Parts'], ['fleet', 'Fleet'], ['manuals', 'Manuals'], ['orders', 'Orders'], ['kb', 'Knowledge Base']];
   X.SEARCH_TYPES = TYPES;
   X.searchLabel = function (t) { var r = TYPES.find(function (x) { return x[0] === t; }); return r ? r[1] : 'Parts'; };
   X.isSearchType = function (t) { return TYPES.some(function (x) { return x[0] === t; }); };
@@ -298,7 +298,6 @@
     if (type === 'fleet' || type === 'machines') return X.searchFleet(q);
     if (type === 'manuals') return X.searchManuals(q, X.scopeSupplier());
     if (type === 'orders') return X.searchOrders(q);
-    if (type === 'news') return X.searchNews(q);
     if (type === 'kb') return X.searchKb(q);
     return [];
   };
@@ -338,7 +337,7 @@
     }
     return out;
   };
-  var TRY = { parts: ['JLG-4120-118', 'lift cylinder', 'seal kit for FL-094'], fleet: ['FL-094', 'JL1930-04', 'Kyle Branch'], manuals: ['lowering valve', 'seal replacement'], orders: ['PO-7838', '100094', 'JLG-4120-118'], news: ['recall', 'lowering valve'], kb: ['cylinder drift', 'battery'] };
+  var TRY = { parts: ['JLG-4120-118', 'lift cylinder', 'seal kit for FL-094'], fleet: ['FL-094', 'JL1930-04', 'Kyle Branch'], manuals: ['lowering valve', 'seal replacement'], orders: ['PO-7838', '100094', 'JLG-4120-118'], kb: ['cylinder drift', 'battery', 'recall'] };
   X.searchTry = function (type, q) { return TRY[type].filter(function (s) { return s.toLowerCase() !== String(q || '').toLowerCase() && X.find(s, type).length; }); };
   // where a part hit opens: the part card, or the supplier's own line for parts with no machine
   X.partRoute = function (p) { return p.machine ? ['category', { m: p.machine, cat: p.cat, pn: p.pn }] : ['supplier', { sup: p.supplier, line: p.enhanced, pn: p.pn }]; };
@@ -389,7 +388,7 @@
     if (type === 'fleet') return X.searchFleet(q).slice(0, n).map(function (a) { return ['asset', { id: a.equip }, null, X.hl(a.equip + ' · ' + a.machine, q), X.hl(a.serial, q) + ' · ' + X.hl(a.location, q) + ' · ' + esc(a.status), 'Asset']; });
     if (type === 'manuals') return X.searchManuals(q, X.scopeSupplier()).slice(0, n).map(function (x) { return ['manual', { id: x.m.id, page: x.page }, 'book-alt', X.hl(x.m.title, q), esc(x.m.type) + ' · ' + esc(x.m.edition) + ' · ' + x.m.pages + (x.m.pages === 1 ? ' page' : ' pages'), 'Manual']; });
     if (type === 'orders') return X.searchOrders(q).slice(0, n).map(function (o) { var w = o.wo ? X.wo(o.wo) : null; var sub = (o.wo ? 'WO #' + X.hl(o.wo, q) : '') + (w && w.equip ? ' · ' + X.hl(w.equip, q) : '') + (o.placed ? ' · ' + esc(o.placed) : '') + ' · ' + X.chip(o.status, o.tone); return ['order', { po: o.po }, 'receipt', X.hl(o.po, q), sub.replace(/^\s*·\s*/, ''), 'Order']; });
-    if (type === 'news' || type === 'kb') return (type === 'news' ? X.searchNews(q) : X.searchKb(q)).slice(0, n).map(function (x) { return ['article', { id: x.id }, type === 'kb' ? 'notebook' : 'megaphone', X.hl(x.title, q), esc(x.kind) + ' · ' + esc(x.meta), x.kind === 'Article' ? 'Article' : x.kind]; });
+    if (type === 'kb') return X.searchNews(q).concat(X.searchKb(q)).slice(0, n).map(function (x) { return ['article', { id: x.id }, x.kind === 'Article' ? 'notebook' : 'megaphone', X.hl(x.title, q), esc(x.kind) + ' · ' + esc(x.meta), x.kind === 'Article' ? 'Article' : x.kind]; });
     if (type === 'wo') {
       var tk = X.qTokens(q);
       return X.allWorkOrders().filter(function (w) { return X.hitTokens([w.id, w.equip, w.machine, w.issue || '', w.status].join(' '), tk); }).slice(0, n)
@@ -521,7 +520,7 @@
       if (t === 'fleet')   return ['fleet',   { q: q }];
       if (t === 'manuals') return ['manuals', { q: q }];
       if (t === 'orders')  return ['orders',  { q: q }];
-      if (t === 'news' || t === 'kb') return ['kb', { q: q }];
+      if (t === 'kb') return ['kb', { q: q }];
       return ['catalog', q ? { q: q } : {}]; // parts: browse the catalog tree
     }
 
@@ -548,7 +547,7 @@
         html += '<p class="ta-label">' + esc(X.scopeWords(type).replace(/^./, function (c) { return c.toUpperCase(); })) + ' · ' + total + '</p>';
         html += list.map(function (it) { return opt([it[0], it[1], it[2], it[3], it[4], '']); }).join('');
         if (!list.length) html += '<p class="ta-none">No ' + lbl + ' match "' + esc(q) + '" yet</p>';
-        var taAllLabel = type === 'manuals' ? 'View more in Manuals' : type === 'parts' ? 'View more in Parts' : type === 'fleet' ? 'View more in Fleet' : type === 'orders' ? 'View more in Orders' : type === 'news' || type === 'kb' ? 'View more in Knowledge Base' : 'See all ' + esc(X.searchLabel(type)) + ' results for "' + esc(q) + '"';
+        var taAllLabel = type === 'manuals' ? 'View more in Manuals' : type === 'parts' ? 'View more in Parts' : type === 'fleet' ? 'View more in Fleet' : type === 'orders' ? 'View more in Orders' : type === 'kb' ? 'View more in Knowledge Base' : 'See all ' + esc(X.searchLabel(type)) + ' results for "' + esc(q) + '"';
         var taNav = typeNav(type, q);
         html += opt([taNav[0], taNav[1], 'none', taAllLabel, '', '<kbd class="kbd">Enter</kbd>'], 'ta-all');
       }
@@ -653,7 +652,7 @@
         html += group('Recent ' + X.searchLabel(type).toLowerCase() + ' searches', X.recentFor(type).slice(0, 3).map(function (r) { return ['search', X.scopeParams(type, r), 'time-past', esc(r), '', 'Search']; }));
       } else {
         html += group('Pages', pages(q));
-        var recs = records('parts', q, 4).concat(records('fleet', q, 3), records('wo', q, 3), records('orders', q, 3), records('manuals', q, 3), records('news', q, 2), records('kb', q, 2));
+        var recs = records('parts', q, 4).concat(records('fleet', q, 3), records('wo', q, 3), records('orders', q, 3), records('manuals', q, 3), records('kb', q, 4));
         html += group('Records', recs);
         if (!items.length) html += '<p class="ta-none">No page or record matches "' + esc(q) + '"</p>';
       }
@@ -824,7 +823,7 @@
     function noResults(qq, r) {
       var lbl = X.searchLabel(type).toLowerCase(), sug = X.suggest(qq, type), tries = X.searchTry(type, qq);
       var browse = type === 'parts' ? '<a class="btn btn-brand" href="#/catalog">' + icon('grid-alt') + 'Browse the parts catalog</a>'
-        : '<a class="btn btn-secondary" href="#/' + ({ news: 'kb', kb: 'kb' }[type] || type) + '">' + icon({ fleet: 'truck-side', manuals: 'book-alt', orders: 'time-past', news: 'megaphone', kb: 'notebook' }[type]) + 'Open ' + ({ fleet: 'Fleet', manuals: 'the library', orders: 'order history', news: 'the Knowledge Base', kb: 'the Knowledge Base' }[type]) + '</a>';
+        : '<a class="btn btn-secondary" href="#/' + (type === 'kb' ? 'kb' : type) + '">' + icon({ fleet: 'truck-side', manuals: 'book-alt', orders: 'time-past', kb: 'notebook' }[type]) + 'Open ' + ({ fleet: 'Fleet', manuals: 'the library', orders: 'order history', kb: 'the Knowledge Base' }[type]) + '</a>';
       return hideNotice(r) + UI.empty({ icon: 'search', tone: 'neutral', title: 'No ' + lbl + ' match ' + (qq ? '"' + qq + '"' : 'these filters'),
         text: type === 'parts' ? 'Check the spelling or try a part number. Searched the ' + X.supplier(X.supplierFor()).name + ' catalog; another connected supplier is in the search bar.' : 'Check the spelling, or search another scope from the search bar.',
         action: (sug.length ? '<div class="sr-try sr-dym">' + sug.map(function (x) { return '<a class="sr-chip" href="' + searchHref(x[1], type) + '">' + (x[0] === 'spell' ? 'Did you mean <b>' + esc(x[1]) + '</b>' : '<b>' + esc(x[1]) + '</b>') + '</a>'; }).join('') + '</div>' : '') +
@@ -834,7 +833,7 @@
       var rec = X.recentFor(type);
       var go = { parts: ['catalog', 'grid-alt', 'Parts catalog', 'JLG and Skyjack, by machine and system'], fleet: ['fleet', 'truck-side', 'Fleet', 'Every unit, by location and status'],
         manuals: ['manuals', 'book-alt', 'Manuals and docs', 'The library, by machine and document type'], orders: ['orders', 'time-past', 'Order history', 'Every order, with status filters'],
-        news: ['kb', 'megaphone', 'Knowledge Base', 'Recalls, bulletins and notices'], kb: ['kb', 'notebook', 'Knowledge Base', 'How-to articles and bulletins'] }[type];
+        kb: ['kb', 'notebook', 'Knowledge Base', 'How-to articles, bulletins and recalls'] }[type];
       return (rec.length ? UI.sec('Recent ' + X.searchLabel(type).toLowerCase() + ' searches', '', '<div class="sr-recent">' + rec.map(function (r) { return '<a class="sr-chip" href="' + searchHref(r, type) + '">' + icon('time-past') + esc(r) + '</a>'; }).join('') + '</div>') : '') +
         (type === 'parts' ? UI.sec('Describe the part', '', '<p class="sr-hint">Write it the way you would say it. Equipment numbers, serials, models, work orders and part types become filters.</p><div class="sr-recent">' + (D.nlqExamples || []).map(function (r) { return '<a class="sr-chip" href="' + searchHref(r, 'parts') + '">' + icon('comment') + esc(r) + '</a>'; }).join('') + '</div>' +
           (X.ctxChips().length ? '<p class="sr-ctxall"><a href="#/search?ctx=1">See every part in this context' + icon('arrow-small-right') + '</a></p>' : '')) : '') +
@@ -874,7 +873,7 @@
           X.chip(m.type, { Service: 'neutral', Operator: 'info', Bulletin: 'warning', Parts: 'neutral' }[m.type] || 'neutral'),
           esc(m.edition), String(m.pages)];
       }), { cls: 'sr-oth', rowAttrs: function (i) { return 'data-go="manual" data-id="' + list[i].m.id + '" data-page="' + list[i].page + '" tabindex="0"'; } });
-      else if (type === 'news' || type === 'kb') tbl = UI.table([['Item'], ['Kind'], [type === 'kb' ? 'Topic' : 'Machine and date']], list.map(function (x) {
+      else if (type === 'kb') tbl = UI.table([['Item'], ['Kind'], ['Topic or date']], list.map(function (x) {
         return ['<span class="cell-part">' + UI.thumb(type === 'kb' ? 'notebook' : 'megaphone') + '<span><b>' + X.hl(x.title, q) + '</b><span class="snip">' + X.hl(x.summary, q) + '</span></span></span>', X.chip(x.kind, { Recall: 'danger', Bulletin: 'warning', Notice: 'neutral', Article: 'info' }[x.kind]), esc(x.meta)];
       }), { cls: 'sr-oth', rowAttrs: function (i) { return 'data-go="article" data-id="' + list[i].id + '" tabindex="0"'; } });
       else tbl = UI.table([['PO number'], ['WO number'], ['Equipment'], ['Order date', 'nowrap'], ['Status']], list.map(function (o) {
@@ -886,11 +885,10 @@
         manuals: ['#/manuals' + qEnc, 'book-alt', 'View more in Manuals'],
         fleet:   ['#/fleet'   + qEnc, 'truck-side', 'View more in Fleet'],
         orders:  ['#/orders'  + qEnc, 'time-past', 'View more in Orders'],
-        news:    ['#/kb'      + qEnc, 'megaphone', 'View more in Knowledge Base'],
         kb:      ['#/kb'      + qEnc, 'notebook',  'View more in Knowledge Base']
       };
       var moreLink = moreLinks[type] ? '<p class="sr-morelink"><a class="sr-chip" href="' + moreLinks[type][0] + '">' + icon(moreLinks[type][1]) + moreLinks[type][2] + icon('arrow-small-right') + '</a></p>' : '';
-      root.innerHTML = head + '<p class="sr-meta"><b>' + list.length + ' result' + (list.length === 1 ? '' : 's') + '</b>' + ({ fleet: ' in your fleet', orders: ' · filtered by PO, work order, part number and supplier', news: ' · recalls, bulletins and notices', kb: ' · how-to articles and bulletins' }[type] || '') + '</p>' + tbl + moreLink;
+      root.innerHTML = head + '<p class="sr-meta"><b>' + list.length + ' result' + (list.length === 1 ? '' : 's') + '</b>' + ({ fleet: ' in your fleet', orders: ' · filtered by PO, work order, part number and supplier', kb: ' · articles, bulletins and recalls' }[type] || '') + '</p>' + tbl + moreLink;
     }
     function rerender() { history.replaceState(null, '', url()); render(); }
     // the header field drives this page live (debounced in SE.searchBox): each settled query is an attempt
