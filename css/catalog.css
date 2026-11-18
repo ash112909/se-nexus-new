@@ -293,7 +293,8 @@
     .cat-tbl td, .cat-tbl th, .line-tbl td, .line-tbl th { padding-left: 12px; padding-right: 12px; }
   }
   .cat-list { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-  .cat-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .cat-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 8px; }
+  .cat-no-results { padding: 24px 0; color: var(--muted); }
   .cat-meta { color: var(--muted); }
   .sub-on { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 4px 0 12px; border-radius: 16px; background: var(--chip-high-bg); font-weight: 600; }
   .sub-on a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--ink); }

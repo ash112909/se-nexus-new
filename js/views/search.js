@@ -522,7 +522,7 @@
       if (t === 'manuals') return ['manuals', { q: q }];
       if (t === 'orders')  return ['orders',  { q: q }];
       if (t === 'news' || t === 'kb') return ['kb', { q: q }];
-      return ['catalog', {}]; // parts: browse the catalog tree
+      return ['catalog', q ? { q: q } : {}]; // parts: browse the catalog tree
     }
 
     function build() {
@@ -858,7 +858,7 @@
         var shown = r.groups.map(function (g) { var ps = g.parts.filter(facetPass); return ps.length ? Object.assign({}, g, { parts: ps, lead: ps[0] }) : null; }).filter(Boolean);
         root.innerHTML = head + '<div class="sr-grid">' + facets(r.groups) + '<div class="sr-main"><p class="sr-meta"><b>' + shown.length + ' result' + (shown.length === 1 ? '' : 's') + '</b> from the ' + esc(mName) + ' catalog' +
           (r.outside ? ' · ' + r.outside + ' more outside this context' : '') + (pending ? ' · press Enter to search' : '') + '</p>' + partsTable(shown) +
-          '<p class="sr-morelink"><a class="sr-chip" href="#/catalog">' + icon('grid-alt') + 'View more in Parts' + icon('arrow-small-right') + '</a></p>' + '</div></div>';
+          '<p class="sr-morelink"><a class="sr-chip" href="#/catalog' + (useQ ? '?q=' + encodeURIComponent(useQ) : '') + '">' + icon('grid-alt') + 'View more in Parts' + icon('arrow-small-right') + '</a></p>' + '</div></div>';
         return;
       }
       var list = X.find(q, type);
