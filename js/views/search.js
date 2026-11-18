@@ -516,6 +516,15 @@
     input.setAttribute('aria-controls', id + '-list');
     var items = [], active = -1, blurT, timer, settled = '';
 
+    // map a search type + query to the native section route [route, params]
+    function typeNav(t, q) {
+      if (t === 'fleet')   return ['fleet',   { q: q }];
+      if (t === 'manuals') return ['manuals', { q: q }];
+      if (t === 'orders')  return ['orders',  { q: q }];
+      if (t === 'news' || t === 'kb') return ['kb', { q: q }];
+      return ['search', X.scopeParams(t, q)]; // parts: full results page with facets
+    }
+
     function build() {
       if (onPage) type = activeType();
       var q = input.value.trim(), html = '', lbl = X.searchLabel(type).toLowerCase();
@@ -529,7 +538,7 @@
       }
       if (q.length < 2) {
         var rec = X.recentFor(type);
-        html = '<p class="ta-label">Recent ' + lbl + ' searches</p>' + rec.map(function (r) { return opt(['search', X.scopeParams(type, r), 'time-past', esc(r), '', '']); }).join('') +
+        html = '<p class="ta-label">Recent ' + lbl + ' searches</p>' + rec.map(function (r) { var nav = typeNav(type, r); return opt([nav[0], nav[1], 'time-past', esc(r), '', '']); }).join('') +
           '<p class="ta-tip">Searching ' + esc(X.scopeWords(type)) + '. Type at least 2 characters to search.<span class="ta-tip-k"> <kbd class="kbd">⌘K</kbd> jumps to any page or record.</span></p>';
       } else {
         var pq = type === 'parts' ? X.parseQuery(q) : null, pending = pq && Object.keys(pq.ents).length;
@@ -539,8 +548,9 @@
         html += '<p class="ta-label">' + esc(X.scopeWords(type).replace(/^./, function (c) { return c.toUpperCase(); })) + ' · ' + total + '</p>';
         html += list.map(function (it) { return opt([it[0], it[1], it[2], it[3], it[4], '']); }).join('');
         if (!list.length) html += '<p class="ta-none">No ' + lbl + ' match "' + esc(q) + '" yet</p>';
-        var taAllLabel = type === 'manuals' ? 'View more in Manuals' : type === 'parts' ? 'View more in Parts' : type === 'fleet' ? 'View more in Fleet' : type === 'orders' ? 'View more in Orders' : 'See all ' + esc(X.scopeWords(type)) + ' results for "' + esc(q) + '"';
-        html += opt(['search', X.scopeParams(type, q), 'none', taAllLabel, '', '<kbd class="kbd">Enter</kbd>'], 'ta-all');
+        var taAllLabel = type === 'manuals' ? 'View more in Manuals' : type === 'parts' ? 'View more in Parts' : type === 'fleet' ? 'View more in Fleet' : type === 'orders' ? 'View more in Orders' : type === 'news' || type === 'kb' ? 'View more in Knowledge Base' : 'See all ' + esc(X.searchLabel(type)) + ' results for "' + esc(q) + '"';
+        var taNav = typeNav(type, q);
+        html += opt([taNav[0], taNav[1], 'none', taAllLabel, '', '<kbd class="kbd">Enter</kbd>'], 'ta-all');
       }
       pop.innerHTML = '<div class="ta-list" role="listbox" id="' + id + '-list" aria-label="' + esc(X.searchLabel(type)) + ' suggestions">' + html + '</div>' +
         '<div class="ta-foot" aria-hidden="true"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> Move</span><span><kbd class="kbd">Enter</kbd> Open</span><span><kbd class="kbd">esc</kbd> Close</span></div>';
@@ -571,9 +581,10 @@
       clearTimeout(timer);
       var q = input.value.trim();
       close();
-      if (!q) { X.go('search', { params: X.scopeParams(type, '') }); return; }
+      var nav = typeNav(type, q);
+      if (!q) { X.go(nav[0], { params: nav[1] }); return; }
       X.addRecent(type, q); X.countAttempt(type);
-      X.go('search', { params: X.scopeParams(type, q) });
+      X.go(nav[0], { params: nav[1] });
     }
     function settle() {
       if (onPage) type = activeType();
@@ -870,7 +881,14 @@
         var w = o.wo ? X.wo(o.wo) : null;
         return ['<b>' + X.hl(o.po, q) + '</b>', o.wo ? '#' + X.hl(o.wo, q) : '<span class="muted">—</span>', w && w.equip ? X.hl(w.equip, q) : '<span class="muted">—</span>', esc(o.placed || '—'), X.chip(o.status, o.tone)];
       }), { cls: 'sr-oth', rowAttrs: function (i) { return 'data-go="order" data-po="' + list[i].po + '" tabindex="0"'; } });
-      var moreLinks = { manuals: ['#/manuals', 'book-alt', 'View more in Manuals'], fleet: ['#/fleet', 'truck-side', 'View more in Fleet'], orders: ['#/orders', 'time-past', 'View more in Orders'] };
+      var qEnc = q ? '?q=' + encodeURIComponent(q) : '';
+      var moreLinks = {
+        manuals: ['#/manuals' + qEnc, 'book-alt', 'View more in Manuals'],
+        fleet:   ['#/fleet'   + qEnc, 'truck-side', 'View more in Fleet'],
+        orders:  ['#/orders'  + qEnc, 'time-past', 'View more in Orders'],
+        news:    ['#/kb'      + qEnc, 'megaphone', 'View more in Knowledge Base'],
+        kb:      ['#/kb'      + qEnc, 'notebook',  'View more in Knowledge Base']
+      };
       var moreLink = moreLinks[type] ? '<p class="sr-morelink"><a class="sr-chip" href="' + moreLinks[type][0] + '">' + icon(moreLinks[type][1]) + moreLinks[type][2] + icon('arrow-small-right') + '</a></p>' : '';
       root.innerHTML = head + '<p class="sr-meta"><b>' + list.length + ' result' + (list.length === 1 ? '' : 's') + '</b>' + ({ fleet: ' in your fleet', orders: ' · filtered by PO, work order, part number and supplier', news: ' · recalls, bulletins and notices', kb: ' · how-to articles and bulletins' }[type] || '') + '</p>' + tbl + moreLink;
     }
