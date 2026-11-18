@@ -40,10 +40,10 @@ SE.views.kb = function (el, p) {
   var field = '<form class="search mw-find kb-find" role="search" data-kb-form><label class="sr-only" for="kb-q">Search the knowledge base</label>' + icon('search') +
     '<input id="kb-q" type="search" value="' + esc(q) + '" placeholder="Search bulletins, recalls and articles" autocomplete="off"></form>';
   var s = SE.shell(el, {
-    nav: 'kb', title: 'Knowledge Base', crumbs: [['Home', 'home']], search: field,
+    nav: 'kb', title: 'Knowledge Base', crumbs: [['Home', 'home']],
     sub: esc(D.news.length + ' bulletins, recalls and notices · ' + D.kb.length + ' how-to articles'),
     body: '<div id="kb-feat">' + (SE.mkt ? SE.mkt.featured() : '') + '</div>' +
-      '<section class="sec kb" aria-label="Library"><div class="nf-bar"><div id="kb-seg">' + seg() + '</div></div><div id="kb-list">' + list() + '</div></section>' +
+      '<section class="sec kb" aria-label="Library"><div class="nf-bar">' + field + '<div id="kb-seg">' + seg() + '</div></div><div id="kb-list">' + list() + '</div></section>' +
       UI.sec('Manuals', '', '<a class="sr-browse card" href="#/manuals">' + icon('book-alt') + '<span><b>Manuals & Docs</b><small>' + D.manuals.length + ' manuals and bulletins by machine</small></span>' + icon('angle-small-right') + '</a>'),
   });
   var input = el.querySelector('#kb-q');

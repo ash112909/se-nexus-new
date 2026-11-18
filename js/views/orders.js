@@ -66,10 +66,10 @@ SE.views.orders = function (el, p) {
           o.wo ? '<a href="#/work-order?id=' + esc(o.wo) + '">#' + hl(o.wo, q) + '</a>' : '<span class="muted">None</span>'];
       }), { rowAttrs: function (i) { return 'data-go="order" data-po="' + r[i].po + '"'; }, cls: 'oh-tbl' });
   }
-  var s = SE.shell(el, { search: '<div class="search page-search" role="search"><label class="sr-only" for="oh-q">Search orders by PO, work order, part or supplier</label>' + icon('search') + '<input type="text" id="oh-q" value="' + esc(q) + '" placeholder="Search orders by PO, part or supplier" autocomplete="off" spellcheck="false" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>', nav: 'orders', title: 'Order history', sub: SE.orders().length + ' orders · purchases, transfers and shelf picks · newest first', crumbs: [['Home', 'home']],
+  var s = SE.shell(el, { nav: 'orders', title: 'Order history', sub: SE.orders().length + ' orders · purchases, transfers and shelf picks · newest first', crumbs: [['Home', 'home']],
     body: '<section class="oh sec">' +
       '<div class="sx-bar">' +
-        
+        '<div class="search page-search" role="search"><label class="sr-only" for="oh-q">Search orders</label>' + icon('search') + '<input type="text" id="oh-q" value="' + esc(q) + '" placeholder="Search by PO, part or supplier" autocomplete="off" spellcheck="false" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>' +
         '<div class="oh-bar" id="oh-seg">' + seg() + '</div>' +
       '</div>' +
       '<div id="oh-recent">' + recents() + '</div>' +

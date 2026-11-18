@@ -105,11 +105,11 @@ SE.views.manuals = function (el, p) {
     var n = items.length + ' document' + (items.length === 1 ? '' : 's');
     return '<p class="mw-count">' + (q.trim() ? n + (items.length === 1 ? ' matches' : ' match') : n) + '</p><ul class="mw-grid">' + items.map(card).join('') + '</ul>';
   }
-  var s = SE.shell(el, { search: '<div class="search page-search" role="search"><label class="sr-only" for="mw-q">Search manuals</label>' + icon('search') + '<input type="text" id="mw-q" value="' + esc(q) + '" placeholder="Search manuals by title or section" autocomplete="off" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>',
+  var s = SE.shell(el, {
     nav: 'manuals', title: 'Manuals & Docs', sub: 'Service and operator manuals, parts manuals and bulletins for your fleet.', crumbs: [['Home', 'home']],
     body: '<section class="sec mw" aria-label="Documents">' +
       '<div class="sx-bar">' +
-        
+        '<div class="search page-search" role="search"><label class="sr-only" for="mw-q">Search manuals</label>' + icon('search') + '<input type="text" id="mw-q" value="' + esc(q) + '" placeholder="Search manuals by title or section" autocomplete="off" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>' +
         '<div class="mw-lang" role="radiogroup" aria-label="Language" id="mw-lang">' + langs() + '</div>' +
       '</div>' +
       '<div class="mw-filters"><div id="mw-seg">' + seg() + '</div>' +

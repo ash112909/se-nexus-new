@@ -72,12 +72,12 @@ SE.views.fleet = function (el, p) {
       }), { cls: 'fl-tbl', rowAttrs: function (i) { return 'data-row="' + esc(rows[i].equip) + '"'; } });
   }
 
-  var s = SE.shell(el, { search: '<div class="search page-search" role="search"><label class="sr-only" for="fl-q">Search fleet by equipment, serial, model</label>' + icon('search') + '<input type="text" id="fl-q" value="' + esc(q) + '" placeholder="Search fleet by equipment, serial or model" autocomplete="off" spellcheck="false" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>',
+  var s = SE.shell(el, {
     nav: 'fleet', title: 'Fleet', sub: '<span id="fl-sub" class="fl-sub">' + sub() + '</span>', crumbs: [['Home', 'home']],
     onLocation: function () { render(); },
     body: '<section class="sec fl" aria-label="Fleet assets">' +
       '<div class="sx-bar">' +
-        
+        '<div class="search page-search" role="search"><label class="sr-only" for="fl-q">Search fleet</label>' + icon('search') + '<input type="text" id="fl-q" value="' + esc(q) + '" placeholder="Equipment, serial or model" autocomplete="off" spellcheck="false" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>' +
         '<div id="fl-seg">' + seg() + '</div>' +
       '</div>' +
       '<div id="fl-recent">' + (q.trim() ? '' : recents()) + '</div>' +
