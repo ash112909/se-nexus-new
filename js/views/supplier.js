@@ -54,8 +54,38 @@ SE.views.supplier = function (el, p) {
 
   var lineCount = lines.reduce(function (n, l) { return n + C.lineItems(s.id, l[0]).length; }, 0);
 
+  // per-supplier brand palettes: [gradient-start, gradient-end]
+  var BRAND = {
+    JLG:  ['#D97B00', '#8C4600'],
+    SKJ:  ['#6B2FA0', '#3A1060'],
+    RDH:  ['#1565C0', '#0A3A7A'],
+    PRF:  ['#2E7D32', '#1B4D1E'],
+    NGE:  ['#0277BD', '#01427A'],
+    STT:  ['#B71C1C', '#6D0909'],
+    LKF:  ['#EF6C00', '#B34700'],
+    IWE:  ['#4E342E', '#2D1B17']
+  };
+  var PALETTES = [
+    ['#1A6B4A', '#0D3D2A'], ['#1A3D7A', '#0A2050'], ['#6B2FA0', '#3A1060'],
+    ['#8C2A00', '#4A1500'], ['#1E5C8A', '#0C2F47'], ['#5C3A8A', '#2D1A50']
+  ];
+  function brandFor(id) {
+    if (BRAND[id]) return BRAND[id];
+    var h = id.split('').reduce(function (n, c) { return n + c.charCodeAt(0); }, 0);
+    return PALETTES[h % PALETTES.length];
+  }
+  var bp = brandFor(s.id);
+  var brandPanel = '<div class="sup-brand-panel" style="background: linear-gradient(145deg, ' + bp[0] + ' 0%, ' + bp[1] + ' 100%)">' +
+    '<div class="sbp-dots"></div>' +
+    '<div class="sbp-glow"></div>' +
+    '<div class="sbp-mark" aria-hidden="true">' + esc(s.name.split(' ')[0]) + '</div>' +
+    '<div class="sbp-badge" aria-hidden="true">' + esc(s.id) + '</div>' +
+    (s.status ? '<div class="sbp-status">' + esc(s.status) + '</div>' : '') +
+    '<div class="sbp-label"><b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + '</span></div>' +
+  '</div>';
+
   var hero = '<div class="sup-hero">' +
-    UI.imgSlot(s.name + ' branding') +
+    brandPanel +
     '<div class="card sup-info">' +
       '<div class="si-head">' + C.badge(s, 'lg') +
         '<div><h2>' + esc(s.name) + '</h2><p class="si-tagline">' + esc(s.tagline) + ' · ' + esc(s.status || 'OEM') + '</p></div>' +
