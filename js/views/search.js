@@ -522,7 +522,7 @@
       if (t === 'manuals') return ['manuals', { q: q }];
       if (t === 'orders')  return ['orders',  { q: q }];
       if (t === 'news' || t === 'kb') return ['kb', { q: q }];
-      return ['search', X.scopeParams(t, q)]; // parts: full results page with facets
+      return ['catalog', {}]; // parts: browse the catalog tree
     }
 
     function build() {
