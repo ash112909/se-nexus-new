@@ -191,3 +191,65 @@
     .search.scoped .ss-list { left: 0; right: 0; width: auto; }
   }
 }
+
+/* Category/subcategory picker: dark pill button + two-column dropdown */
+@layer components {
+  /* ---- trigger button ---- */
+  .ss-cat-btn {
+    display: inline-flex; align-items: center; gap: 6px; flex: none;
+    height: 30px; padding: 0 10px 0 12px; border-radius: 15px;
+    background: var(--rail); color: #fff;
+    font: inherit; font-size: 14px; font-weight: 600; line-height: 20px;
+    white-space: nowrap; cursor: pointer;
+  }
+  .ss-cat-btn .i { width: 14px; height: 14px; opacity: .75; }
+  .ss-cat-btn:hover { background: #2f2f2f; }
+  .ss-cat-btn[aria-expanded="true"] { background: #2f2f2f; }
+
+  /* ---- picker panel ---- */
+  .ss-cpick {
+    position: absolute; z-index: 70;
+    top: calc(100% + 8px); left: 0;
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+    overflow: hidden;
+  }
+  .ss-cpick[hidden] { display: none; }
+  .ss-cpick-left { width: 210px; flex: none; padding: 14px 8px; }
+  .ss-cpick-right { width: 210px; flex: none; padding: 14px 8px; border-left: 1px solid var(--line); }
+  .ss-cph { padding: 0 8px 2px; font-size: 12px; font-weight: 600; line-height: 17px; color: var(--muted); }
+  .ss-cpt { padding: 0 8px 8px; font-size: 16px; font-weight: 700; line-height: 22px; color: var(--ink); }
+  .ss-clist, .ss-slist { display: flex; flex-direction: column; }
+
+  /* ---- category rows ---- */
+  .ss-crow {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    min-height: 36px; padding: 6px 8px; border-radius: 8px;
+    font: inherit; font-size: 14px; font-weight: 500; line-height: 20px;
+    color: var(--ink); text-align: left; cursor: pointer; width: 100%;
+  }
+  .ss-crow:hover { background: var(--container-low); }
+  .ss-crow-on { background: var(--container-low); font-weight: 700; }
+  .ss-crow .ss-crow-label { flex: 1; }
+  .ss-crow > .i { width: 15px; height: 15px; color: var(--muted); flex: none; }
+
+  /* ---- supplier rows ---- */
+  .ss-srow {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    min-height: 36px; padding: 6px 8px; border-radius: 8px;
+    font: inherit; font-size: 14px; font-weight: 500; line-height: 20px;
+    color: var(--ink); text-align: left; cursor: pointer; width: 100%;
+  }
+  .ss-srow:hover { background: var(--container-low); }
+  .ss-srow-on { font-weight: 700; }
+  .ss-srow .ss-srow-label { flex: 1; }
+  .ss-srow > .i { width: 15px; height: 15px; color: var(--success); flex: none; }
+
+  @media (max-width: 767px) {
+    .ss-cpick { left: 0; right: 0; flex-direction: column; border-radius: 12px; }
+    .ss-cpick-right { width: auto; border-left: 0; border-top: 1px solid var(--line); }
+  }
+}

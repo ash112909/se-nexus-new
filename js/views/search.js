@@ -416,91 +416,98 @@
     // list says who else exists without offering a search the back end cannot run. A native select could not
     // carry the header, and its open list never reaches a screenshot or the .fig files.
     form.insertAdjacentHTML('afterbegin',
-      '<span class="ss-pick ss-scope"><label class="sr-only" for="' + id + '-scope">Search in</label><select class="ss-sel" id="' + id + '-scope" data-scope>' +
-        X.SEARCH_TYPES.map(function (t) { return '<option value="' + t[0] + '">' + esc(t[1]) + '</option>'; }).join('') + '</select>' + icon('angle-small-down') + '</span>' +
-      '<span class="ss-pick ss-supplier" data-supplier-wrap><span class="sr-only" id="' + id + '-sup-l">Supplier</span>' +
-        '<button type="button" class="ss-sel ss-btn" id="' + id + '-supplier" data-supplier role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + id + '-sup-list" aria-labelledby="' + id + '-sup-l ' + id + '-supplier"></button>' + icon('angle-small-down') +
-        '<div class="ss-list" id="' + id + '-sup-list" role="listbox" aria-label="Suppliers" tabindex="-1" hidden></div></span>' +
-      '<span class="ss-div" aria-hidden="true"></span>');
-    var sSel = form.querySelector('[data-scope]'), pBtn = form.querySelector('[data-supplier]'), pWrap = form.querySelector('[data-supplier-wrap]'), pList = pWrap.querySelector('.ss-list');
+      '<button type="button" class="ss-cat-btn" aria-haspopup="true" aria-expanded="false" data-cat-btn>' +
+        '<span data-cat-label></span>' + icon('angle-small-down') +
+      '</button>');
+    var catBtn = form.querySelector('[data-cat-btn]');
     var lbl = form.querySelector('label[for="q"]');
-    var pOpts = [], pAct = -1;
-    function supOption(x, sel) {
-      var k = pOpts.length; pOpts.push({ id: x.id, on: true });
-      return '<div class="ss-opt" role="option" id="' + id + '-sup-o' + k + '" data-sup-opt="' + x.id + '" aria-selected="' + sel + '">' +
-        '<span class="ss-name">' + esc(x.name) + '</span>' + (sel ? icon('check') : '') + '</div>';
+    var catPop = document.createElement('div');
+    catPop.className = 'ss-cpick';
+    catPop.hidden = true;
+    form.appendChild(catPop);
+    function typeHasSub(t) { return t === 'parts' || t === 'manuals'; }
+    function activeSup(t) {
+      return t === 'parts' ? X.supplierFor() : t === 'manuals' ? X.scopeSupplier() : null;
     }
-    function supList(sup) {
-      pOpts = [];
-      pList.innerHTML = '<p class="ss-head" aria-hidden="true">Suppliers</p>' +
-        D.suppliers.map(function (x) { return supOption(x, x.id === sup); }).join('');
+    function buildCatPop(hoverType) {
+      var ht = hoverType || type;
+      var sup = activeSup(ht);
+      var leftHtml = X.SEARCH_TYPES.map(function (t) {
+        var on = t[0] === ht;
+        return '<button type="button" class="ss-crow' + (on ? ' ss-crow-on' : '') + '" data-cat-pick="' + t[0] + '">' +
+          '<span class="ss-crow-label">' + esc(t[1]) + '</span>' +
+          (typeHasSub(t[0]) ? icon('angle-small-right') : '') + '</button>';
+      }).join('');
+      var rightHtml = '';
+      if (typeHasSub(ht)) {
+        rightHtml = '<div class="ss-cpick-right">' +
+          '<p class="ss-cph">' + esc(X.searchLabel(ht)) + '</p>' +
+          '<h3 class="ss-cpt">Supplier</h3>' +
+          '<div class="ss-slist">' +
+            D.suppliers.map(function (s) {
+              var sel = s.id === sup;
+              return '<button type="button" class="ss-srow' + (sel ? ' ss-srow-on' : '') + '" data-sup-pick="' + esc(s.id) + '">' +
+                '<span class="ss-srow-label">' + esc(s.name) + '</span>' +
+                (sel ? icon('check') : '') + '</button>';
+            }).join('') +
+          '</div></div>';
+      }
+      catPop.innerHTML =
+        '<div class="ss-cpick-left">' +
+          '<p class="ss-cph">Search by</p>' +
+          '<h3 class="ss-cpt">Category</h3>' +
+          '<div class="ss-clist">' + leftHtml + '</div>' +
+        '</div>' + rightHtml;
     }
-    function supMove(k) {
-      if (!pOpts.length) return;
-      pAct = Math.max(0, Math.min(pOpts.length - 1, k));
-      pList.querySelectorAll('.ss-opt').forEach(function (o, n) { o.classList.toggle('act', n === pAct); });
-      var cur = pList.querySelector('#' + id + '-sup-o' + pAct);
-      pBtn.setAttribute('aria-activedescendant', cur.id);
-      cur.scrollIntoView({ block: 'nearest' });
+    function catOpen() {
+      if (!catPop.hidden) return;
+      close();
+      catPop.hidden = false;
+      catBtn.setAttribute('aria-expanded', 'true');
+      buildCatPop(type);
+      document.addEventListener('mousedown', catOutside, true);
     }
-    function supOpen() {
-      if (!pList.hidden) return;
-      close(); // the typeahead and the list never show together
-      pList.hidden = false; pBtn.setAttribute('aria-expanded', 'true');
-      supMove(Math.max(0, pOpts.findIndex(function (o) { return o.id === pBtn.value; })));
-      document.addEventListener('mousedown', supOutside, true);
+    function catClose() {
+      if (catPop.hidden) return;
+      catPop.hidden = true;
+      catBtn.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('mousedown', catOutside, true);
     }
-    function supClose() {
-      if (pList.hidden) return;
-      pList.hidden = true; pBtn.setAttribute('aria-expanded', 'false'); pBtn.removeAttribute('aria-activedescendant'); pAct = -1;
-      document.removeEventListener('mousedown', supOutside, true);
-    }
-    function supOutside(e) { if (!pWrap.contains(e.target)) supClose(); }
-    function supChoose(k) {
-      var o = pOpts[k];
-      if (!o) return;
-      supClose();
-      pBtn.focus();
-      if (o.id === pBtn.value) return;
-      var msg = X.setScopeSupplier(o.id);
-      if (msg) X.toast(msg, 'filter');
-      X.searchBarSync();
-      if (onPage && X._srRefresh) X._srRefresh();
-    }
-    pBtn.addEventListener('click', function () { if (pList.hidden) supOpen(); else supClose(); });
-    pBtn.addEventListener('keydown', function (e) {
-      var open = !pList.hidden;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!open) supOpen(); else supMove(pAct + (e.key === 'ArrowDown' ? 1 : -1)); }
-      else if (e.key === 'Home' && open) { e.preventDefault(); supMove(0); }
-      else if (e.key === 'End' && open) { e.preventDefault(); supMove(pOpts.length - 1); }
-      else if ((e.key === 'Enter' || e.key === ' ') && open) { e.preventDefault(); supChoose(pAct); }
-      else if (e.key === 'Escape' && open) { e.preventDefault(); e.stopPropagation(); supClose(); }
-      else if (e.key === 'Tab' && open) supClose();
+    function catOutside(e) { if (!form.contains(e.target)) catClose(); }
+    catBtn.addEventListener('click', function () { if (catPop.hidden) catOpen(); else catClose(); });
+    catPop.addEventListener('mouseover', function (e) {
+      var row = e.target.closest('[data-cat-pick]');
+      if (row) buildCatPop(row.dataset.catPick);
     });
-    pList.addEventListener('mousedown', function (e) { e.preventDefault(); }); // focus stays on the button
-    pList.addEventListener('click', function (e) { var o = e.target.closest('[data-sup-opt]'); if (o) supChoose(+o.id.split('-sup-o')[1]); });
-    pList.addEventListener('mousemove', function (e) { var o = e.target.closest('[data-sup-opt]'); if (o) { var k = +o.id.split('-sup-o')[1]; if (k !== pAct) supMove(k); } });
+    catPop.addEventListener('click', function (e) {
+      var srow = e.target.closest('[data-sup-pick]');
+      if (srow) {
+        var sid = srow.dataset.supPick;
+        var msg = X.setScopeSupplier(sid);
+        if (msg) X.toast(msg, 'filter');
+        catClose(); X.searchBarSync();
+        if (onPage && X._srRefresh) X._srRefresh();
+        return;
+      }
+      var row = e.target.closest('[data-cat-pick]');
+      if (row) {
+        type = row.dataset.catPick;
+        X._barScope = { route: route, type: type };
+        if (typeHasSub(type)) { buildCatPop(type); return; }
+        catClose(); sync();
+        if (onPage && X._srScope) X._srScope(type);
+        else if (!pop.hidden) build();
+      }
+    });
     function sync() {
-      var parts = type === 'parts', withSup = parts || type === 'manuals';
-      var sup = withSup ? (parts ? X.supplierFor() : X.scopeSupplier()) : null;
-      sSel.value = type;
-      pWrap.hidden = !withSup;
-      if (!withSup) supClose();
-      if (sup) { pBtn.value = sup; pBtn.textContent = X.supplier(sup).name; supList(sup); }
+      catBtn.querySelector('[data-cat-label]').textContent = X.searchLabel(type);
       form.dataset.searchScope = type;
-      // the selects say the scope; the placeholder says what to type (the label says both)
+      var parts = type === 'parts';
       input.placeholder = parts ? 'Part name or number' : 'Search ' + X.searchLabel(type).toLowerCase();
       if (lbl) lbl.textContent = 'Search ' + X.scopeWords(type) + '. Press Control K or Command K to jump to any page or record';
     }
     form._ssSync = sync;
     sync();
-    sSel.addEventListener('change', function () {
-      type = sSel.value;
-      X._barScope = { route: route, type: type };
-      sync();
-      if (onPage && X._srScope) X._srScope(type);
-      else if (!pop.hidden) build();
-    });
     var kbd = form.querySelector('.kbd');
     if (kbd) { kbd.setAttribute('role', 'button'); kbd.removeAttribute('aria-hidden'); kbd.setAttribute('aria-label', 'Open the command palette'); kbd.title = 'Jump to any page or record'; kbd.addEventListener('mousedown', function (e) { e.preventDefault(); X.palette.open(); }); }
     var pop = document.createElement('div');
@@ -544,7 +551,7 @@
       active = -1;
       input.removeAttribute('aria-activedescendant');
     }
-    function open() { supClose(); if (onPage) return; build(); pop.hidden = false; input.setAttribute('aria-expanded', 'true'); }
+    function open() { catClose(); if (onPage) return; build(); pop.hidden = false; input.setAttribute('aria-expanded', 'true'); }
     function close() { pop.hidden = true; active = -1; input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); }
     function move(d) {
       if (pop.hidden) open();

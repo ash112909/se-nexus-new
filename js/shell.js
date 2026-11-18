@@ -76,7 +76,7 @@
         (withSettings ? '<a class="qa" href="#/profile" aria-label="Profile and notifications">' + icon('settings') + '</a>' : '');
     }
     SE.searchForm = function (value) {
-      return '<form class="search" role="search" data-search><label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' + icon('search') +
+      return '<form class="search" role="search" data-search><label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
         '<input id="q" name="q" type="search" placeholder="Search parts, manuals…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
         '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
         '<kbd class="kbd" aria-hidden="true">⌘K</kbd></form>';
