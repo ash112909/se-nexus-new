@@ -174,7 +174,7 @@ SE.catSearch = function (currentWo) {
   var s = SE.cat.search, q = (s.query || '').trim();
   if (!q) return;
   var D = SE.data;
-  if (s.mode === 'keyword') { SE.go('search', { params: { q: q } }); return; }
+  if (s.mode === 'keyword') { SE.go('catalog', { params: currentWo ? { q: q, wo: currentWo } : { q: q } }); return; }
   if (s.mode === 'equip' || s.mode === 'serial') {
     var asset = SE.asset(q);
     if (asset) {
