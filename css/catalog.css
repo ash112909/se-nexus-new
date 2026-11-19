@@ -415,6 +415,59 @@
   .wr-clear:hover { opacity: 1; }
 }
 
+/* Supplier landing: 2-column layout (main + aside) */
+@layer components {
+  .sup-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+  .sup-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .sup-aside { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+
+  /* brand panel: tagline in uppercase small caps */
+  .sup-brand-panel .sbp-label span { text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+
+  /* aside: identity */
+  .sup-asi-id { display: flex; align-items: center; gap: 12px; }
+  .sup-asi-name { display: block; font-size: 18px; font-weight: 700; line-height: 24px; }
+  .sup-asi-tagline { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .sup-asi-desc { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); }
+
+  /* aside: capabilities checklist */
+  .sup-feat-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  .sup-feat-list li { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .sup-feat-list li .i { flex: none; width: 16px; height: 16px; }
+  .sup-feat-list li.ok .i { color: var(--success); }
+  .sup-feat-list li.off { color: var(--muted); }
+  .sup-feat-list li.off .i { color: var(--danger); }
+
+  /* aside: news */
+  .sup-asi-news-h { font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--subtle); }
+  .sup-asi-news { display: flex; flex-direction: column; }
+  .sup-asi-news-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--line); color: inherit; text-decoration: none; }
+  .sup-asi-news-item:last-child { border-bottom: 0; }
+  .sup-asi-news-item:hover .sup-asi-news-title { text-decoration: underline; }
+  .sup-asi-news-date { font-size: 11px; color: var(--muted); }
+  .sup-asi-news-title { font-size: 13px; font-weight: 500; line-height: 18px; }
+
+  /* product families grid */
+  .sup-pf-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .sup-pf-card { display: flex; align-items: center; gap: 12px; padding: 16px; color: inherit; text-decoration: none; }
+  .sup-pf-card:hover { border-color: var(--line-strong); }
+  .sup-pf-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 10px; background: var(--container); color: var(--muted); }
+  .sup-pf-icon .i { width: 20px; height: 20px; }
+  .sup-pf-body { flex: 1; min-width: 0; }
+  .sup-pf-body b { display: block; font-weight: 600; }
+  .sup-pf-body small { display: block; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sup-pf-card > .i:last-child { flex: none; color: var(--muted); }
+
+  /* WO table in supplier page */
+  .sup-wo-asset { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .sup-wo-browse { white-space: nowrap; }
+
+  /* responsive */
+  @container (max-width: 1099px) { .sup-pf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @container (max-width: 849px) { .sup-layout { grid-template-columns: minmax(0, 1fr); } .sup-aside { order: -1; } }
+  @container (max-width: 599px) { .sup-pf-grid { grid-template-columns: minmax(0, 1fr); } }
+}
+
 /* Catalog tree search panel */
 @layer components {
   .ctree-search { padding: 12px 12px 8px; border-bottom: 1px solid var(--line); }
