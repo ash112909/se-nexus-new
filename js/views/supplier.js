@@ -178,7 +178,7 @@ SE.views.supplier = function (el, p) {
   var linksHtml = '<div class="sup-asi-links-h">Resources &amp; links</div>' +
     '<ul class="sup-asi-links">' + supLinks.map(function (l) {
       return '<li><a class="sup-asi-link-item" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' +
-        icon('link') + '<span>' + esc(l[0]) + '</span>' + icon('external-link-alt') +
+        icon('external') + '<span>' + esc(l[0]) + '</span>' + icon('arrow-small-right') +
       '</a></li>';
     }).join('') + '</ul>';
 
