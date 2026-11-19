@@ -4,6 +4,7 @@
 SE.titles['enhanced-catalog'] = 'Enhanced Catalog';
 SE.views['enhanced-catalog'] = function (el, p) {
   var D = SE.data, esc = SE.esc, icon = SE.icon, UI = SE.ui, C = SE.cat;
+  var catQ = 'catalog' + (p.wo ? '?wo=' + p.wo : '');
 
   var FEATURES = [
     { icon: 'swap',           title: 'Cross-references',    desc: 'Find alternate part numbers across OEM, aftermarket, and house brand sources. Identify substitutes when a part is backordered.' },
@@ -43,9 +44,10 @@ SE.views['enhanced-catalog'] = function (el, p) {
     supSection;
 
   var s = SE.shell(el, {
-    nav: 'enhanced-catalog', title: 'Enhanced Catalog',
+    nav: 'catalog', title: 'Enhanced Catalog', wide: true,
+    crumbs: [['Parts catalog', catQ]],
     sub: 'Cross-references, supersessions, fitment guides, and technical specs',
-    body: body
+    body: C.layout({ extra: 'enhanced-catalog' }, p.wo, body)
   });
 
   return s.cleanup;

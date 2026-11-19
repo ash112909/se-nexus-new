@@ -478,6 +478,9 @@
   @container (max-width: 599px) { .sup-pf-grid { grid-template-columns: minmax(0, 1fr); } }
 }
 
+/* Catalog tree divider (separates supplier entries from extra catalog types) */
+.ctree-divider { border: none; border-top: 1px solid var(--line); margin: 6px 12px; }
+
 /* Enhanced Catalog — feature card grid */
 .ecat-features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ecat-feature { display: flex; flex-direction: column; gap: 10px; padding: 20px; }

@@ -3,7 +3,8 @@
    #/company-catalog   #/company-catalog?cat=shop-supplies */
 SE.titles['company-catalog'] = 'Company Catalog';
 SE.views['company-catalog'] = function (el, p) {
-  var esc = SE.esc, icon = SE.icon, UI = SE.ui;
+  var esc = SE.esc, icon = SE.icon, UI = SE.ui, C = SE.cat;
+  var catQ = 'catalog' + (p.wo ? '?wo=' + p.wo : '');
 
   var CATS = [
     { id: 'shop-supplies',   name: 'Shop Supplies',         icon: 'box',              count: 48,  desc: 'Consumables, lubricants, fluids, cleaning agents' },
@@ -50,9 +51,10 @@ SE.views['company-catalog'] = function (el, p) {
       '</tr></thead><tbody>' + recentRows + '</tbody></table></div>', 'h-recent');
 
   var s = SE.shell(el, {
-    nav: 'company-catalog', title: 'Company Catalog',
+    nav: 'catalog', title: 'Company Catalog', wide: true,
+    crumbs: [['Parts catalog', catQ]],
     sub: 'Internal parts, supplies, and equipment stocked by your operation',
-    body: body
+    body: C.layout({ extra: 'company-catalog' }, p.wo, body)
   });
 
   return s.cleanup;

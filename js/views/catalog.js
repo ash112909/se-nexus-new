@@ -132,7 +132,11 @@
       }
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
-    return '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p><ul>' + sups + '</ul></nav>';
+    var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
+    var extraItems =
+      node(1, 'Company Catalog', '#/company-catalog' + catQ2, cur.extra === 'company-catalog', null, false, null) +
+      node(1, 'Enhanced Catalog', '#/enhanced-catalog' + catQ2, cur.extra === 'enhanced-catalog', null, false, null);
+    return '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p><ul>' + sups + '<li class="ctree-divider" role="separator"></li>' + extraItems + '</ul></nav>';
   };
   // page body with the tree beside it; under 960px of content the tree folds away and the breadcrumb leads.
   // The WO ribbon (dark bar) and search panel live in the aside above the tree.
