@@ -105,7 +105,7 @@ SE.views.supplier = function (el, p) {
   '</button>';
   var actions = '<div class="si-actions">' +
     '<a class="btn btn-secondary" href="#/manuals?m=' + s.machines[0] + '">' + icon('book-alt') + 'Manuals</a>' +
-    '<a class="btn btn-secondary" href="#/orders">' + icon('time-past') + 'Orders</a>' +
+    '<a class="btn btn-secondary" href="#/orders?q=' + encodeURIComponent(s.name) + '">' + icon('time-past') + 'Orders</a>' +
     '<a class="btn btn-secondary" href="#/catalog?q=' + encodeURIComponent(s.name) + C.woQ(p.wo) + '">' + icon('grid-alt') + 'Browse catalog</a>' +
     woBtn +
   '</div>';
