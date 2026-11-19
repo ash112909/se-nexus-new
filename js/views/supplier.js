@@ -162,6 +162,26 @@ SE.views.supplier = function (el, p) {
     '<a class="btn btn-secondary" href="#/catalog?q=' + encodeURIComponent(s.name) + C.woQ(p.wo) + '">' + icon('grid-alt') + 'Catalog</a>' +
   '</div>';
 
+  // aside — external links (dummy placeholders per supplier)
+  var SUP_LINKS = {
+    JLG:  [['jlg.com', '#'], ['OEM parts portal', '#'], ['Service & manuals', '#'], ['Training academy', '#']],
+    SKJ:  [['skyjack.com', '#'], ['Technical support', '#'], ['Parts & service', '#'], ['Warranty portal', '#']],
+    RDH:  [['Redhead Equipment', '#'], ['OEM support', '#'], ['Service bulletins', '#'], ['Dealer locator', '#']],
+    PRF:  [['primeforce.com', '#'], ['Technical docs', '#'], ['Parts ordering', '#'], ['Support center', '#']],
+    NGE:  [['ngage.com', '#'], ['OEM catalog', '#'], ['Service portal', '#'], ['Training & certs', '#']],
+    STT:  [['stratton.com', '#'], ['Dealer support', '#'], ['Parts & diagrams', '#'], ['Recall notices', '#']],
+    LKF:  [['lakeforest.com', '#'], ['OEM parts', '#'], ['Service bulletins', '#'], ['Warranty claims', '#']],
+    IWE:  [['ironwork.com', '#'], ['Technical support', '#'], ['Parts catalog', '#'], ['Dealer portal', '#']]
+  };
+  var defLinks = [[s.name.split(' ')[0].toLowerCase() + '.com', '#'], ['OEM support portal', '#'], ['Technical documentation', '#'], ['Parts ordering', '#']];
+  var supLinks = SUP_LINKS[s.id] || defLinks;
+  var linksHtml = '<div class="sup-asi-links-h">Resources &amp; links</div>' +
+    '<ul class="sup-asi-links">' + supLinks.map(function (l) {
+      return '<li><a class="sup-asi-link-item" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' +
+        icon('link') + '<span>' + esc(l[0]) + '</span>' + icon('external-link-alt') +
+      '</a></li>';
+    }).join('') + '</ul>';
+
   // aside — news
   var newsHtml = supNews.length
     ? '<div class="sup-asi-news-h">' + esc(s.name) + ' news</div>' +
@@ -180,6 +200,7 @@ SE.views.supplier = function (el, p) {
     '<p class="sup-asi-desc">' + esc(desc) + '</p>' +
     capList +
     asideActions +
+    linksHtml +
     newsHtml +
   '</aside>';
 
