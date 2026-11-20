@@ -253,59 +253,26 @@ SE.views.catalog = function (el, p) {
   var D = SE.data, esc = SE.esc, icon = SE.icon, UI = SE.ui, C = SE.cat;
   var total = SE.assets().length;
   var allModels = Object.keys(D.machines).sort(function (a, b) { return D.machines[b].units.length - D.machines[a].units.length; });
-  var q = p.q || '';
 
-  function hits(str) { return !q.trim() || str.toLowerCase().indexOf(q.trim().toLowerCase()) >= 0; }
-  function fleetCards() {
-    var list = allModels.filter(function (k) {
-      var m = D.machines[k], s = SE.supplier(m.supplier);
-      return hits(m.name) || hits(s.name) || hits(m.type) || hits(k);
-    });
-    if (!list.length) return '<p class="cat-no-results">No models match "' + esc(q.trim()) + '"</p>';
-    return '<ul class="mach-grid fleet-grid">' + list.map(function (k) {
-      var m = D.machines[k], s = SE.supplier(m.supplier);
-      return '<li><a class="mach-card fleet-card" href="#/machine?m=' + k + C.woQ(p.wo) + '">' + UI.thumb() + '<span><b>' + esc(m.name) + '</b><small>' + esc(s.name) + ' · ' + esc(m.type) + '</small><small>' + (m.schematic ? 'Interactive diagram' : 'Image with callouts') + '</small></span>' +
-        '<span class="fc-count"><b>' + m.units.length + '</b><small>units</small></span>' + icon('angle-small-right') + '</a></li>';
-    }).join('') + '</ul>';
-  }
-  function supCards() {
-    var list = D.suppliers.filter(function (s) { return !q.trim() || hits(s.name) || hits(s.tagline); });
-    if (!list.length) return '';
-    return '<ul class="sup-grid">' + list.map(function (s) {
-      if (!s.active) return '<li><div class="sup-card off" aria-disabled="true"><div class="sc-top">' + C.badge(s) + SE.chip('Not connected', 'neutral') + '</div><b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + '</span></div></li>';
-      return '<li><a class="sup-card" href="#/supplier?sup=' + s.id + C.woQ(p.wo) + '"><div class="sc-top">' + C.badge(s) + '<span class="sc-units">' + C.units(s) + ' units in fleet</span></div>' +
-        '<b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + ' · ' + s.machines.length + ' model, ' + C.lines(s.id).length + ' own lines</span><span class="sc-go">Browse catalog' + icon('arrow-small-right') + '</span></a></li>';
-    }).join('') + '</ul>';
-  }
-  function render() {
-    el.querySelector('#cat-fleet').innerHTML = fleetCards();
-    var supsEl = el.querySelector('#cat-sups'), supsHtml = supCards();
-    supsEl.innerHTML = supsHtml;
-    supsEl.closest('.sec').hidden = !supsHtml;
-    el.querySelector('[data-cat-qx]').hidden = !q;
-  }
+  var fleetHtml = '<ul class="mach-grid fleet-grid">' + allModels.map(function (k) {
+    var m = D.machines[k], s = SE.supplier(m.supplier);
+    return '<li><a class="mach-card fleet-card" href="#/machine?m=' + k + C.woQ(p.wo) + '">' + UI.thumb() + '<span><b>' + esc(m.name) + '</b><small>' + esc(s.name) + ' · ' + esc(m.type) + '</small><small>' + (m.schematic ? 'Interactive diagram' : 'Image with callouts') + '</small></span>' +
+      '<span class="fc-count"><b>' + m.units.length + '</b><small>units</small></span>' + icon('angle-small-right') + '</a></li>';
+  }).join('') + '</ul>';
 
-  var searchBar = '<div class="sx-bar cat-bar">' +
-    '<div class="search page-search" role="search"><label class="sr-only" for="cat-q">Search catalog</label>' + icon('search') +
-    '<input type="text" id="cat-q" value="' + esc(q) + '" placeholder="Search models and suppliers" autocomplete="off" spellcheck="false" enterkeyhint="search">' +
-    '<button type="button" class="sx-x" data-cat-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div></div>';
+  var supsHtml = '<ul class="sup-grid">' + D.suppliers.map(function (s) {
+    if (!s.active) return '<li><div class="sup-card off" aria-disabled="true"><div class="sc-top">' + C.badge(s) + SE.chip('Not connected', 'neutral') + '</div><b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + '</span></div></li>';
+    return '<li><a class="sup-card" href="#/supplier?sup=' + s.id + C.woQ(p.wo) + '"><div class="sc-top">' + C.badge(s) + '<span class="sc-units">' + C.units(s) + ' units in fleet</span></div>' +
+      '<b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + ' · ' + s.machines.length + ' model, ' + C.lines(s.id).length + ' own lines</span><span class="sc-go">Browse catalog' + icon('arrow-small-right') + '</span></a></li>';
+  }).join('') + '</ul>';
 
   var s = SE.shell(el, {
     nav: 'catalog', title: 'Parts catalog', wide: true, crumbs: [['Home', 'home']],
     sub: 'Your fleet first, then browse by supplier, model, assembly group and sub-assembly. 2 connected catalogs.',
     body: C.layout({}, p.wo,
-      searchBar +
-      UI.sec('Your fleet · ' + total + ' units', '', '<div id="cat-fleet">' + fleetCards() + '</div>', 'h-fleet') +
-      UI.sec('Suppliers in your network · ' + D.suppliers.length, '<span class="sec-note">JLG and Skyjack are connected to Mid-County Rental</span>', '<div id="cat-sups">' + supCards() + '</div>', 'h-sups')),
+      UI.sec('Your fleet · ' + total + ' units', '', fleetHtml, 'h-fleet') +
+      UI.sec('Suppliers in your network · ' + D.suppliers.length, '<span class="sec-note">JLG and Skyjack are connected to Mid-County Rental</span>', supsHtml, 'h-sups')),
   });
 
-  var input = el.querySelector('#cat-q'), timer;
-  input.addEventListener('input', function () { q = input.value; clearTimeout(timer); timer = setTimeout(render, 120); });
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && q) { e.stopPropagation(); q = ''; input.value = ''; render(); }
-  });
-  el.addEventListener('click', function (e) {
-    if (e.target.closest('[data-cat-qx]')) { q = ''; input.value = ''; render(); input.focus(); }
-  });
-  return function () { clearTimeout(timer); s.cleanup(); };
+  return s.cleanup;
 };
