@@ -36,11 +36,6 @@
     var back = part.stock === 'Backordered', good = part.stock === 'In stock';
     var cm = part.comments || [];
 
-    var oemBadge = (part.reman || part.oem === false)
-      ? '<span class="badge-am">Aftermarket OK</span>'
-      : '<span class="badge-oem">OEM only</span>';
-    var recBadge = part.recommended ? '<span class="badge-rec">' + icon('star') + ' Recommended</span>' : '';
-
     var catLabel = cat ? cat.name : (line ? line[1] : s.name + ' line');
     var availDot = good ? 'g' : 'a';
     var availLabel = back ? 'Backordered' : part.stock;
@@ -68,9 +63,7 @@
     }
 
     return '<div class="pd' + (o.title ? ' pd-page' : '') + '" data-pd="' + esc(part.pn) + '">' +
-      '<div class="dp-header"><div class="dp-title">' + esc(part.name) + '</div></div>' +
-      '<div class="dp-partnum">' + esc(part.pn) + '</div>' +
-      '<div class="dp-badges">' + oemBadge + recBadge + '</div>' +
+      (!o.title ? '<div class="dp-header"><div class="dp-title">' + esc(part.name) + '</div></div><div class="dp-partnum">' + esc(part.pn) + '</div>' : '') +
       '<div class="dp-div"></div>' +
       '<div class="dp-field"><span class="dp-lbl">Vendor</span><span class="dp-val">' + esc(s.name) + '</span></div>' +
       '<div class="dp-field"><span class="dp-lbl">Category</span><span class="dp-val">' + esc(catLabel) + '</span></div>' +
