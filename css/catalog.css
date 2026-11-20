@@ -484,8 +484,10 @@
 /* Enhanced Catalog — part cards with image, description, and enhanced attributes */
 .ecat-part-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ecat-part-card { display: flex; flex-direction: column; overflow: hidden; }
-.ecat-part-img { background: var(--container); border-bottom: 1px solid var(--line); aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
+.ecat-part-img { background: var(--container); border-bottom: 1px solid var(--line); aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.ecat-part-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ecat-part-img .pthumb { width: 100%; height: 100%; border-radius: 0; border: none; background: transparent; }
+.ecat-feat-badge { position: absolute; top: 8px; left: 8px; background: var(--link); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px 3px; border-radius: 3px; z-index: 1; pointer-events: none; }
 .ecat-part-body { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 10px; flex: 1; }
 .ecat-part-pn { font-size: 11px; font-family: ui-monospace, monospace; font-weight: 700; color: var(--link); letter-spacing: .02em; }
 .ecat-part-name { font-size: 14px; font-weight: 600; line-height: 20px; }
@@ -498,6 +500,13 @@
 .ecat-part-price { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @container (max-width: 1099px) { .ecat-part-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (max-width: 599px)  { .ecat-part-grid { grid-template-columns: minmax(0, 1fr); } }
+.ecat-featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container (max-width: 599px) { .ecat-featured-grid { grid-template-columns: minmax(0, 1fr); } }
+.ecat-filter-bar { padding: 0 0 20px; }
+.ecat-filter-input { width: 100%; height: 38px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; outline: none; box-sizing: border-box; }
+.ecat-filter-input:focus { border-color: var(--link); box-shadow: 0 0 0 3px color-mix(in srgb, var(--link) 15%, transparent); }
+.ecat-filter-input::placeholder { color: var(--muted); }
+.ecat-no-results { padding: 36px 0; text-align: center; color: var(--muted); font-size: 14px; }
 
 /* Catalog tree search panel */
 @layer components {

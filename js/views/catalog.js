@@ -133,10 +133,20 @@
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
     var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
-    // Enhanced Catalog — expandable: top → supplier → supplier's own categories
+    // Enhanced Catalog — 4 levels: top → supplier → category → sub-category
     var ECAT_BY_SUP = {
-      JLG: [['drive', 'Drive & Mobility'], ['hydraulics', 'Hydraulic Systems'], ['electrical', 'Electrical & Controls'], ['platform', 'Structural & Platform']],
-      SKJ: [['drive', 'Drive Components'], ['structure', 'Platform & Structure'], ['electrical', 'Electrical Systems'], ['fluids', 'Consumables & Fluids']]
+      JLG: [
+        { id: 'drive',      name: 'Drive & Mobility',     subs: [['motors','Drive Motors'],['wheels','Wheels & Tires'],['brakes','Brakes']] },
+        { id: 'hydraulics', name: 'Hydraulic Systems',     subs: [['pumps','Pumps & Motors'],['cylinders','Cylinders'],['valves','Valves & Fittings']] },
+        { id: 'electrical', name: 'Electrical & Controls', subs: [['controllers','Controllers & Modules'],['sensors','Sensors & Switches'],['charging','Charging Systems']] },
+        { id: 'platform',   name: 'Structural & Platform', subs: [['extensions','Platform Extensions'],['guardrails','Guardrails & Safety']] }
+      ],
+      SKJ: [
+        { id: 'drive',     name: 'Drive Components',    subs: [['motors','Hub Motors'],['wheels','Wheels & Hubs']] },
+        { id: 'structure', name: 'Platform & Structure', subs: [['arms','Scissor Arms & Pins'],['deck','Deck & Extensions'],['guardrails','Guardrails']] },
+        { id: 'electrical',name: 'Electrical Systems',  subs: [['boards','Control Boards'],['valves','Solenoid Valves']] },
+        { id: 'fluids',    name: 'Consumables & Fluids', subs: [['hydraulic','Hydraulic Fluid & Filters'],['lubricants','Lubricants & Greases']] }
+      ]
     };
     var eOpen = cur.extra === 'enhanced-catalog';
     var eKids = '';
@@ -146,9 +156,15 @@
         var esOpen = cur.esup === s.id;
         var catList = ECAT_BY_SUP[s.id] || [];
         var catKids = !esOpen ? '' : catList.map(function (cat) {
-          return node(3, cat[1],
-            '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
-            cur.ecat === cat[0], null, false, null);
+          var cOpen = cur.ecat === cat.id;
+          var subKids = !cOpen ? '' : (cat.subs || []).map(function (sub) {
+            return node(4, sub[1],
+              '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat.id + '&sub=' + sub[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+              cur.esub === sub[0], null, false, null);
+          }).join('');
+          return node(3, cat.name,
+            '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat.id + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+            cOpen && !cur.esub, null, cOpen, subKids);
         }).join('');
         return node(2, s.name,
           '#/enhanced-catalog?sup=' + esc(s.id) + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
