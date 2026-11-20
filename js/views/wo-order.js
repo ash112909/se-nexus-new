@@ -147,13 +147,14 @@ SE.views['wo-order'] = function (el, p) {
         String(c.qty || 1),
         money(c.price || 0),
         '<b>' + money((c.price || 0) * (c.qty || 1)) + '</b>',
+        '<button class="btn btn-secondary q-add" type="button" data-rtc-pn="' + esc(c.partNum || c.id) + '" data-rtc-qty="' + (c.qty || 1) + '" title="Return to cart" aria-label="Return to cart">' + icon('shopping-cart') + '</button>',
       ];
     });
     var total = items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
     var tfoot = g.type === 'local'
-      ? '<tfoot><tr class="or-tfooter"><td colspan="5">Internal transfer — no purchase charge</td><td><b>No charge</b></td></tr></tfoot>'
-      : '<tfoot><tr class="or-tfooter"><td colspan="5">Subtotal</td><td><b>' + money(total) + '</b></td></tr></tfoot>';
-    return SE.ui.table([['Part / description'], ['UOM'], ['Source'], ['Qty', 'num'], ['Unit', 'num'], ['Total', 'num']], rows, { cls: 'or-tbl' }) + tfoot;
+      ? '<tfoot><tr class="or-tfooter"><td colspan="6">Internal transfer — no purchase charge</td><td><b>No charge</b></td></tr></tfoot>'
+      : '<tfoot><tr class="or-tfooter"><td colspan="6">Subtotal</td><td><b>' + money(total) + '</b></td></tr></tfoot>';
+    return SE.ui.table([['Part / description'], ['UOM'], ['Source'], ['Qty', 'num'], ['Unit', 'num'], ['Total', 'num'], ['', 'num']], rows, { cls: 'or-tbl' }) + tfoot;
   }
 
   function recBanner(gs) {
@@ -392,6 +393,15 @@ SE.views['wo-order'] = function (el, p) {
     if (subBtn) {
       var gi2 = parseInt(subBtn.dataset.orSubmitGroup, 10);
       placeGroup(gi2);
+      return;
+    }
+
+    // Return item to cart
+    var rtc = e.target.closest('[data-rtc-pn]');
+    if (rtc) {
+      var pn = rtc.dataset.rtcPn, qty = parseInt(rtc.dataset.rtcQty, 10) || 1;
+      SE.addToCart(pn, qty, w.id);
+      SE.toast((SE.part(pn).name || pn) + ' added to cart', 'shopping-cart');
       return;
     }
   });
