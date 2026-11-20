@@ -107,7 +107,7 @@ SE.views['wo-order'] = function (el, p) {
     return { addr1: addr1, city: m ? m[1].trim() : rest, state: m ? m[2] : '', zip: m ? (m[3] || '') : '' };
   }
   var pa = parseAddr(loc.address);
-  var groupStates = groups.map(function (g) {
+  function defaultGroupState(g) {
     var rec = computeRec(g);
     return {
       submitted: false,
@@ -120,7 +120,8 @@ SE.views['wo-order'] = function (el, p) {
       shipTo: { name: loc.name || '', attn: user.name || '', addr1: pa.addr1, addr2: '', city: pa.city, state: pa.state, zip: pa.zip, phone: '' },
       billTo: { name: loc.name || '', attn: 'Accounts Payable', addr1: pa.addr1, addr2: '', city: pa.city, state: pa.state, zip: pa.zip, phone: '' },
     };
-  });
+  }
+  var groupStates = groups.map(defaultGroupState);
 
   var activeTab = 0;
 
@@ -147,7 +148,7 @@ SE.views['wo-order'] = function (el, p) {
         String(c.qty || 1),
         money(c.price || 0),
         '<b>' + money((c.price || 0) * (c.qty || 1)) + '</b>',
-        '<button class="btn btn-secondary q-add" type="button" data-rtc-pn="' + esc(c.partNum || c.id) + '" data-rtc-qty="' + (c.qty || 1) + '" title="Return to cart" aria-label="Return to cart">' + icon('shopping-cart') + '</button>',
+        '<button class="btn btn-secondary q-add" type="button" data-rtc-id="' + esc(c.id) + '" title="Return to cart" aria-label="Return to cart">' + icon('shopping-cart') + '</button>',
       ];
     });
     var total = items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
@@ -396,12 +397,41 @@ SE.views['wo-order'] = function (el, p) {
       return;
     }
 
-    // Return item to cart
-    var rtc = e.target.closest('[data-rtc-pn]');
-    if (rtc) {
-      var pn = rtc.dataset.rtcPn, qty = parseInt(rtc.dataset.rtcQty, 10) || 1;
-      SE.addToCart(pn, qty, w.id);
-      SE.toast((SE.part(pn).name || pn) + ' added to cart', 'shopping-cart');
+    // Return item to WO cart (remove from current order placement)
+    var rtcBtn = e.target.closest('[data-rtc-id]');
+    if (rtcBtn) {
+      var rtcId = rtcBtn.dataset.rtcId;
+      // Count items still active (in unsubmitted groups)
+      var activeCount = groups.reduce(function (n, g, i) {
+        return groupStates[i].submitted ? n : n + g.items.length;
+      }, 0);
+      function doReturn() {
+        // Remove from allItems — item stays in SE.state.woCart for the WO page
+        var idx = allItems.findIndex(function (c) { return c.id === rtcId; });
+        if (idx >= 0) allItems.splice(idx, 1);
+        // Rebuild groups, preserving any form state already entered
+        var stateByKey = groups.reduce(function (m, g, i) { m[g.type + '|' + g.key] = groupStates[i]; return m; }, {});
+        groups = buildPoGroups(allItems);
+        groupStates = groups.map(function (g) { return stateByKey[g.type + '|' + g.key] || defaultGroupState(g); });
+        if (activeTab >= groups.length) activeTab = Math.max(0, groups.length - 1);
+        var layout = el.querySelector('.or-layout');
+        if (layout) layout.outerHTML = fullBody();
+        SE.toast('Item returned to work order cart', 'shopping-cart');
+      }
+      if (activeCount <= 1) {
+        var dlg = SE.ui.dialog({
+          title: 'Cancel this order?',
+          body: '<p>This is the only item left. Removing it will cancel the order and return you to the work order.</p>',
+          foot: '<button class="btn btn-secondary" type="button" data-dlg-close>Keep it</button>' +
+                '<button class="btn btn-primary" type="button" data-rtc-confirm>Remove &amp; cancel</button>'
+        });
+        dlg.el.querySelector('[data-rtc-confirm]').addEventListener('click', function () {
+          dlg.close();
+          SE.go('work-order', { params: { id: w.id } });
+        });
+      } else {
+        doReturn();
+      }
       return;
     }
   });
