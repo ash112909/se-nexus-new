@@ -217,7 +217,18 @@ SE.catSearch = function (currentWo) {
   var s = SE.cat.search, q = (s.query || '').trim();
   if (!q) return;
   var D = SE.data;
-  if (s.mode === 'keyword') { SE.go('catalog', { params: currentWo ? { q: q, wo: currentWo } : { q: q } }); return; }
+  if (s.mode === 'keyword') {
+    var h = location.hash.replace(/^#\/?/, ''), hi = h.indexOf('?');
+    var pgParams = {};
+    if (hi >= 0) new URLSearchParams(h.slice(hi + 1)).forEach(function (v, k) { pgParams[k] = v; });
+    var supId = pgParams.sup;
+    if (!supId && pgParams.m) { var machData = SE.data.machines[pgParams.m]; if (machData) supId = machData.supplier; }
+    var sp = { q: q };
+    if (currentWo) sp.wo = currentWo;
+    if (supId) sp.sup = supId;
+    SE.go(supId ? 'catalog-search' : 'catalog', { params: sp });
+    return;
+  }
   if (s.mode === 'equip' || s.mode === 'serial') {
     var asset = SE.asset(q);
     if (asset) {
