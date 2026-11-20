@@ -63,7 +63,6 @@
     }
 
     return '<div class="pd' + (o.title ? ' pd-page' : '') + '" data-pd="' + esc(part.pn) + '">' +
-      (!o.title ? '<div class="dp-header"><div class="dp-title">' + esc(part.name) + '</div></div><div class="dp-partnum">' + esc(part.pn) + '</div>' : '') +
       '<div class="dp-div"></div>' +
       '<div class="dp-field"><span class="dp-lbl">Vendor</span><span class="dp-val">' + esc(s.name) + '</span></div>' +
       '<div class="dp-field"><span class="dp-lbl">Category</span><span class="dp-val">' + esc(catLabel) + '</span></div>' +
