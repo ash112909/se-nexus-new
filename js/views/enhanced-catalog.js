@@ -286,7 +286,7 @@ SE.views['enhanced-catalog'] = function (el, p) {
   };
 
   function partCard(x, cat, unit) {
-    var search = [x.pn, x.name, x.desc, x.model].join(' ').toLowerCase();
+    var search = [x.pn, x.name, x.desc].join(' ').toLowerCase();
     return '<div class="ecat-part-card card" data-search="' + esc(search) + '">' +
       (x.featured ? '<span class="ecat-feat-badge">Featured</span>' : '') +
       '<div class="ecat-part-img"><img src="' + imgUrl(cat) + '" alt="" loading="lazy"></div>' +
@@ -294,12 +294,8 @@ SE.views['enhanced-catalog'] = function (el, p) {
         '<b class="ecat-part-pn">' + esc(x.pn) + '</b>' +
         '<span class="ecat-part-name">' + esc(x.name) + '</span>' +
         '<p class="ecat-part-desc">' + esc(x.desc) + '</p>' +
-        '<span class="ecat-part-model">' + icon('grid-alt') + esc(x.model) + '</span>' +
       '</div>' +
       '<div class="ecat-part-foot">' +
-        '<div class="ecat-part-badges">' +
-          (x.xrefs > 0 ? SE.chip(x.xrefs + (x.xrefs > 1 ? ' alternates' : ' alternate'), 'neutral') : '') +
-        '</div>' +
         '<div class="ecat-part-actions">' +
           '<span class="ecat-part-price">' + esc(x.price) + '</span>' +
           C.quickBtn(x, unit) +

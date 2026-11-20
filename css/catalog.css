@@ -492,10 +492,7 @@
 .ecat-part-pn { font-size: 11px; font-family: ui-monospace, monospace; font-weight: 700; color: var(--link); letter-spacing: .02em; }
 .ecat-part-name { font-size: 14px; font-weight: 600; line-height: 20px; }
 .ecat-part-desc { margin: 4px 0 0; font-size: 13px; line-height: 19px; color: var(--muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
-.ecat-part-model { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); margin-top: 8px; }
-.ecat-part-model .i { width: 13px; height: 13px; flex: none; }
-.ecat-part-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
-.ecat-part-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.ecat-part-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--line); }
 .ecat-part-actions { display: flex; align-items: center; gap: 10px; }
 .ecat-part-price { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @container (max-width: 1099px) { .ecat-part-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
