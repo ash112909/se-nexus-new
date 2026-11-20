@@ -76,7 +76,6 @@
         (mine || w ? '<p class="pd-for">' + icon(w ? 'clipboard-list' : 'truck-side') + '<span>' + (mine ? 'For <b>' + esc(unit.equip) + '</b> · ' + esc(unit.serial) : '') + (w ? (mine ? ' · ' : '') + 'Work order <b>#' + w.id + '</b>' : '') + '</span></p>' : '') +
         (o.title ? '<div class="pd-name"><h2>' + esc(part.name) + '</h2><p>' + esc(part.pn) + '</p></div>' : '') +
         '<p class="pd-path">' + path.filter(Boolean).map(esc).join(' <span aria-hidden="true">›</span> ') + '</p>' +
-        '<div class="chips">' + (part.reman ? SE.chip('Non-OEM', 'warning') : SE.chip('OEM', 'neutral')) + SE.chip(m ? 'Fits ' + m.name : s.name + ' ' + (line ? line[1] : 'line'), 'info') + (repl ? SE.chip('Superseded', 'warning') : '') + '</div>' +
         price +
         (repl ? '<a class="banner t-warning pd-sup" href="' + href(repl.pn, o.wo) + '" data-pick="' + repl.pn + '">' + icon('exclamation') + '<p><b>Superseded by ' + esc(repl.pn) + '.</b> The old number can no longer be ordered.</p>' + icon('arrow-small-right') + '</a>' : '') +
         (replaces ? '<a class="banner t-info pd-sup" href="' + href(replaces.pn, o.wo) + '" data-pick="' + replaces.pn + '">' + icon('swap') + '<p><b>Replaces ' + esc(replaces.pn) + '.</b> Order this number for the retired part.</p>' + icon('arrow-small-right') + '</a>' : '') +
