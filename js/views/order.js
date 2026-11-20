@@ -15,9 +15,10 @@ SE.views.order = function (el, p) {
   }
   document.title = o.po + ' · Mid-County Rental';
   var l = SE.loc(o.shipTo), n = o.items.reduce(function (t, i) { return t + i.qty; }, 0), w = o.wo ? SE.wo(o.wo) : null;
-  var items = UI.table([['Part'], ['Unit', 'num'], ['Qty', 'num'], ['Total', 'num']], o.items.map(function (i) {
+  var items = UI.table([['Part'], ['Unit', 'num'], ['Qty', 'num'], ['Total', 'num'], ['', 'num']], o.items.map(function (i) {
     var pt = SE.part(i.pn);
-    return ['<div class="cell-part">' + UI.thumb() + '<span><a href="#/part?pn=' + encodeURIComponent(pt.pn) + '"><b>' + esc(pt.name) + '</b></a><span class="sub">' + esc(pt.pn) + (i.wo ? ' · WO #' + esc(i.wo) : '') + (i.unit ? ' · ' + esc(i.unit) : '') + '</span></span></div>', money(pt.price), String(i.qty), '<b>' + money(pt.price * i.qty) + '</b>'];
+    return ['<div class="cell-part">' + UI.thumb() + '<span><a href="#/part?pn=' + encodeURIComponent(pt.pn) + '"><b>' + esc(pt.name) + '</b></a><span class="sub">' + esc(pt.pn) + (i.wo ? ' · WO #' + esc(i.wo) : '') + (i.unit ? ' · ' + esc(i.unit) : '') + '</span></span></div>', money(pt.price), String(i.qty), '<b>' + money(pt.price * i.qty) + '</b>',
+      '<button class="btn btn-secondary q-add" type="button" data-rtc-pn="' + esc(i.pn) + '" data-rtc-qty="' + i.qty + '" title="Return to cart" aria-label="Return to cart">' + icon('shopping-cart') + '</button>'];
   }), { cls: 'od-items' });
   var cancelled = o.status === 'Cancelled', pick = o.kind === 'pick' || o.kind === 'local-pick', transfer = o.kind === 'transfer';
   var body =
@@ -39,10 +40,20 @@ SE.views.order = function (el, p) {
     actions: (cancelled || transfer || pick ? '' : '<button class="btn btn-primary" type="button" data-reorder>' + icon('shopping-cart') + 'Reorder</button>') +
       (o.wo ? '<button class="btn btn-secondary" type="button" data-go="work-order" data-id="' + esc(o.wo) + '">View work order</button>' : '') });
   el.addEventListener('click', function (e) {
-    if (!e.target.closest('[data-reorder]')) return;
-    o.items.forEach(function (i) { SE.addToCart(i.pn, i.qty, i.wo || o.wo, { unit: i.unit, serial: i.serial, shipTo: i.shipTo || o.shipTo }); });
-    s.refresh();
-    SE.toast(n + ' item' + (n === 1 ? '' : 's') + ' added to cart', 'shopping-cart');
+    if (e.target.closest('[data-reorder]')) {
+      o.items.forEach(function (i) { SE.addToCart(i.pn, i.qty, i.wo || o.wo, { unit: i.unit, serial: i.serial, shipTo: i.shipTo || o.shipTo }); });
+      s.refresh();
+      SE.toast(n + ' item' + (n === 1 ? '' : 's') + ' added to cart', 'shopping-cart');
+      return;
+    }
+    var rtc = e.target.closest('[data-rtc-pn]');
+    if (rtc) {
+      var pn = rtc.dataset.rtcPn, qty = parseInt(rtc.dataset.rtcQty, 10) || 1;
+      var item = o.items.find(function (i) { return i.pn === pn; });
+      SE.addToCart(pn, qty, (item && item.wo) || o.wo, { unit: item && item.unit, serial: item && item.serial, shipTo: (item && item.shipTo) || o.shipTo });
+      s.refresh();
+      SE.toast(SE.part(pn).name + ' added to cart', 'shopping-cart');
+    }
   });
   return s.cleanup;
 };
