@@ -156,10 +156,11 @@ SE.views.supplier = function (el, p) {
       : 'Parts and service documentation are available through the catalog.'));
 
   // aside — action buttons
+  var hasEcat = !!(C.ecatBySup && C.ecatBySup[s.id]);
   var asideActions = '<div class="si-actions">' +
     '<a class="btn btn-secondary" href="#/manuals?m=' + esc(s.machines[0]) + '">' + icon('book-alt') + 'Manuals</a>' +
     '<a class="btn btn-secondary" href="#/orders?q=' + encodeURIComponent(s.name) + '">' + icon('time-past') + 'Orders</a>' +
-    '<a class="btn btn-secondary" href="#/catalog?q=' + encodeURIComponent(s.name) + C.woQ(p.wo) + '">' + icon('grid-alt') + 'Catalog</a>' +
+    (hasEcat ? '<a class="btn btn-secondary" href="#/enhanced-catalog?sup=' + esc(s.id) + (p.wo ? '&wo=' + encodeURIComponent(p.wo) : '') + '">' + icon('grid-alt') + 'Enhanced Catalog</a>' : '') +
   '</div>';
 
   // aside — external links (dummy placeholders per supplier)

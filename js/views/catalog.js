@@ -41,6 +41,20 @@
   };
   C.units = function (s) { return s.machines.reduce(function (n, k) { return n + SE.machine(k).units.length; }, 0); };
   C.lines = function (sup) { return SE.data.enhancedCategories[sup] || []; };
+  C.ecatBySup = {
+    JLG: [
+      { id: 'drive',      name: 'Drive & Mobility',     subs: [['motors','Drive Motors'],['wheels','Wheels & Tires'],['brakes','Brakes']] },
+      { id: 'hydraulics', name: 'Hydraulic Systems',     subs: [['pumps','Pumps & Motors'],['cylinders','Cylinders'],['valves','Valves & Fittings']] },
+      { id: 'electrical', name: 'Electrical & Controls', subs: [['controllers','Controllers & Modules'],['sensors','Sensors & Switches'],['charging','Charging Systems']] },
+      { id: 'platform',   name: 'Structural & Platform', subs: [['extensions','Platform Extensions'],['guardrails','Guardrails & Safety']] }
+    ],
+    SKJ: [
+      { id: 'drive',     name: 'Drive Components',    subs: [['motors','Hub Motors'],['wheels','Wheels & Hubs']] },
+      { id: 'structure', name: 'Platform & Structure', subs: [['arms','Scissor Arms & Pins'],['deck','Deck & Extensions'],['guardrails','Guardrails']] },
+      { id: 'electrical',name: 'Electrical Systems',  subs: [['boards','Control Boards'],['valves','Solenoid Valves']] },
+      { id: 'fluids',    name: 'Consumables & Fluids', subs: [['hydraulic','Hydraulic Fluid & Filters'],['lubricants','Lubricants & Greases']] }
+    ]
+  };
   C.lineItems = function (sup, id) { return SE.data.parts.filter(function (x) { return !x.machine && x.supplier === sup && x.enhanced === id; }); };
   C.per = function (part) { return part.uom === 'each' ? 'each' : 'per ' + part.uom; };
   // the unit a part is being bought for: the work order's unit, else the unit chosen in the search context
@@ -134,20 +148,7 @@
     }).join('');
     var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
     // Enhanced Catalog — 4 levels: top → supplier → category → sub-category
-    var ECAT_BY_SUP = {
-      JLG: [
-        { id: 'drive',      name: 'Drive & Mobility',     subs: [['motors','Drive Motors'],['wheels','Wheels & Tires'],['brakes','Brakes']] },
-        { id: 'hydraulics', name: 'Hydraulic Systems',     subs: [['pumps','Pumps & Motors'],['cylinders','Cylinders'],['valves','Valves & Fittings']] },
-        { id: 'electrical', name: 'Electrical & Controls', subs: [['controllers','Controllers & Modules'],['sensors','Sensors & Switches'],['charging','Charging Systems']] },
-        { id: 'platform',   name: 'Structural & Platform', subs: [['extensions','Platform Extensions'],['guardrails','Guardrails & Safety']] }
-      ],
-      SKJ: [
-        { id: 'drive',     name: 'Drive Components',    subs: [['motors','Hub Motors'],['wheels','Wheels & Hubs']] },
-        { id: 'structure', name: 'Platform & Structure', subs: [['arms','Scissor Arms & Pins'],['deck','Deck & Extensions'],['guardrails','Guardrails']] },
-        { id: 'electrical',name: 'Electrical Systems',  subs: [['boards','Control Boards'],['valves','Solenoid Valves']] },
-        { id: 'fluids',    name: 'Consumables & Fluids', subs: [['hydraulic','Hydraulic Fluid & Filters'],['lubricants','Lubricants & Greases']] }
-      ]
-    };
+    var ECAT_BY_SUP = C.ecatBySup;
     var eOpen = cur.extra === 'enhanced-catalog';
     var eKids = '';
     if (eOpen) {
