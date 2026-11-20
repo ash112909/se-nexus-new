@@ -223,8 +223,7 @@
   /* standalone page: graphic beside the detail when there is room */
   .pd-card { container-type: inline-size; }
   @container (min-width: 640px) {
-    .pd-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; align-items: start; }
-    .pd-page .pd-graphic { height: 320px; position: sticky; top: 24px; }
+    .pd-page { max-width: 540px; }
   }
   /* ---------- 1008: catalog tree (DES-44), fleet view, enhanced lines (DES-48/49), diagram views (DES-46), part card (DES-47) */
   .cat-layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 24px; align-items: start; }
@@ -390,16 +389,46 @@
   .pd-xref a span { flex: 1; min-width: 0; color: var(--muted); font-size: 13px; }
   .pd-xref a .i { flex: none; color: var(--muted); }
   .pd .btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+  /* ---------- dp-* part detail layout (matches se-nexus panel) */
+  .dp-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .dp-title { font-size: 15px; font-weight: 700; line-height: 20px; }
+  .dp-partnum { font-size: 13px; color: var(--muted); }
+  .dp-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge-oem { display: inline-flex; align-items: center; padding: 3px 8px; background: #EAF3DE; color: #3B6D11; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+  .badge-am  { display: inline-flex; align-items: center; padding: 3px 8px; background: #EEEDFE; color: #534AB7; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+  .badge-rec { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: var(--container); color: var(--subtle); border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-rec .i { width: 10px; height: 10px; }
+  .dp-div { height: 1px; background: var(--line); }
+  .dp-field { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; }
+  .dp-lbl { font-size: 12px; color: var(--muted); flex: none; }
+  .dp-val { font-size: 13px; font-weight: 500; text-align: right; }
+  .dp-avail { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+  .dp-avail.g { color: var(--success); }
+  .dp-avail.a { color: var(--chip-high-ink); }
+  .avdot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .avdot.g { background: var(--success); }
+  .avdot.a { background: var(--chip-high-ink); }
+  .dp-path { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--muted); }
+  .dp-path .i { flex: none; width: 12px; height: 12px; margin-top: 2px; }
+  .dp-sec-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .dp-manref { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 0; }
+  .dp-manref .i { flex: none; width: 12px; height: 12px; color: var(--muted); }
+  .dp-manref-link { color: var(--link); text-decoration: none; font-weight: 500; flex: 1; min-width: 0; }
+  .dp-manref-link:hover { text-decoration: underline; }
+  .dp-manref-sec { color: var(--muted); flex: none; }
+  .dp-note { background: var(--surface); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; border-left: 2px solid var(--line); }
+  .dp-note-hd { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .dp-note-hd b { font-size: 11px; font-weight: 700; }
+  .dp-note-hd span { font-size: 11px; color: var(--muted); }
+  .dp-note p { font-size: 12px; color: var(--ink); margin: 0; line-height: 1.5; }
+  .dp-actions { display: flex; flex-direction: column; gap: 8px; }
+  .dp-actions .btn { width: 100%; justify-content: center; }
 }
 
-/* 1016 (review F09): no photo yet: a 96px hatched thumbnail, and the space goes to identity, fit and availability */
 @layer components {
-  .pd-graphic.ph.thumb, .img-slot.ph.thumb { flex: none; width: 96px; height: 96px; aspect-ratio: auto; border-radius: 12px; }
-  .pd-page .pd-graphic.thumb { height: 96px; position: static; }
+  .img-slot.ph.thumb { flex: none; width: 96px; height: 96px; aspect-ratio: auto; border-radius: 12px; }
   .mach-hero, .sup-hero { grid-template-columns: minmax(0, 1fr); }
-  @container (min-width: 640px) {
-    .pd-page { grid-template-columns: 96px minmax(0, 1fr); gap: 24px; }
-  }
 }
 
 /* WO context ribbon */

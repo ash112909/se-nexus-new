@@ -31,109 +31,87 @@
     o = o || {};
     var D = SE.data, C = SE.cat, s = SE.supplierOf(part.pn), m = part.machine ? SE.machine(part.machine) : null;
     var line = m ? null : lineOf(part);
-    var repl = part.supersededBy ? SE.part(part.supersededBy) : null, alt = part.alternate ? SE.part(part.alternate) : null;
-    var replaces = D.parts.find(function (x) { return x.supersededBy === part.pn; });
     var manual = part.manualRef ? D.manuals.find(function (x) { return x.id === part.manualRef.id; }) : null;
-    var w = C.wo(o.wo), unit = C.unit(o.wo), ok = C.priceOk(part, unit), mine = unit && (!m || unit.model === part.machine);
+    var cat = m ? (m.categories.find(function (c) { return c.id === part.cat; }) || {}) : null;
     var back = part.stock === 'Backordered', good = part.stock === 'In stock';
-    var xrefs = (part.xrefs || []).map(SE.part).filter(Boolean);
-    var facts = [];
-    if (!repl && ok) facts.push('<li class="' + (good ? 'ok' : 'warn') + '">' + icon(good ? 'check' : 'clock') + '<span>' + (back ? '<b>Backordered, ' + esc(part.eta.toLowerCase()) + '</b>' : '<b>' + esc(part.stock) + ' at ' + esc(s.name) + '</b>') + '</span>' + (back ? '<small>At ' + esc(s.name) + '</small>' : '<small>' + esc(part.eta) + '</small>') + '</li>');
-    if (part.shelf && !repl && ok) facts.push('<li>' + icon('marker') + '<span>' + esc(part.shelf) + '</span></li>');
-    if (m) facts.push('<li>' + icon('truck-side') + '<span>Fits ' + m.units.length + ' of your ' + SE.assets().length + ' units</span><small>' + esc(m.name) + '</small></li>');
-    else facts.push('<li>' + icon('grid-alt') + '<span>' + esc(s.name) + ' ' + esc(line ? line[1].toLowerCase() : 'line') + ', not tied to a model</span></li>');
-    if (manual) facts.push('<li>' + icon('book-alt') + '<span><a href="#/manual?id=' + manual.id + '&page=' + part.manualRef.page + '">' + esc(part.manual || manual.title) + '</a></span><small>Page ' + part.manualRef.page + ' of the PDF</small></li>');
-
-    var fx = SE.branchCurrency();
-    var props = '<dl class="pd-props"><div><dt>Unit of measure</dt><dd>' + esc(cap(part.uom)) + '</dd></div><div><dt>Currency</dt><dd>' + (fx ? esc(fx.code) + ' (' + esc(fx.branch) + ')' : esc(part.currency)) + '</dd></div>' +
-      '<div><dt>Status</dt><dd>' + (part.reman || part.oem === false ? 'Non-OEM, remanufactured' : 'OEM') + '</dd></div><div><dt>Cross-references</dt><dd>' + xrefs.length + '</dd></div>' +
-      (part.weight ? '<div><dt>Weight</dt><dd>' + esc(part.weight) + '</dd></div>' : '') +
-      (part.dims   ? '<div><dt>Dimensions</dt><dd>' + esc(part.dims) + '</dd></div>' : '') +
-      '</dl>';
-
-    var wos = open(m);
-    var woCtl = repl ? '' : '<div class="form-row"><label for="pd-wo-' + part.pn + '">Work order</label><div class="control pd-select"><select id="pd-wo-' + part.pn + '" data-pd-wo><option value="">No work order</option>' +
-      wos.map(function (x) { return '<option value="' + x.id + '"' + (w && w.id === x.id ? ' selected' : '') + '>#' + x.id + ' · ' + esc(x.issue) + ' · ' + esc(x.equip) + '</option>'; }).join('') +
-      (w && !wos.some(function (x) { return x.id === w.id; }) ? '<option value="' + w.id + '" selected>#' + w.id + ' · ' + esc(w.equip) + '</option>' : '') + '</select>' + icon('angle-small-down') + '</div></div>';
-    var unitSel = function (label) {
-      return '<div class="form-row"><label for="pd-unit-' + part.pn + '">' + label + '</label><div class="control pd-select"><select id="pd-unit-' + part.pn + '" data-pd-unit><option value="">Choose 1 of ' + m.units.length + ' ' + esc(m.model) + ' units</option>' +
-        m.units.map(function (u) { return '<option value="' + esc(u.equip) + '"' + (mine && unit.equip === u.equip ? ' selected' : '') + '>' + esc(u.equip) + ' · ' + esc(u.serial) + ' · ' + esc(u.location) + '</option>'; }).join('') + '</select>' + icon('angle-small-down') + '</div></div>';
-    };
-    var price = !ok
-      ? '<div class="serial-need" role="note">' + icon('lock') + '<div><b>Requires serial context for pricing</b><p>Price and availability for this ' + esc(part.type.toLowerCase()) + ' depend on the unit it goes on.</p>' + unitSel('Your unit') + '</div></div>'
-      : fx ? '<p class="pd-price' + (repl ? ' old' : '') + '"><b>' + fx.fmt(part.price) + '</b><span>' + esc(fx.code) + ' ' + esc(C.per(part)) + '</span></p>' +
-          '<p class="pd-fx">' + icon('info') + '<span>' + esc(fx.branch) + ' sees prices in ' + esc(fx.name) + ' (' + SE.money(part.price) + ' USD). Orders settle in USD.</span></p>'
-      : '<p class="pd-price' + (repl ? ' old' : '') + '"><b>' + SE.money(part.price) + '</b><span>' + esc(part.currency) + ' ' + esc(C.per(part)) + '</span></p>';
     var cm = part.comments || [];
-    var comments = cm.length ? '<div class="pd-cmts"><p class="pd-alt-l">Published comments · ' + cm.length + '</p>' + cm.map(function (x) {
-      return '<article class="pd-cmt"><header><b>' + esc(x.by) + '</b><span>' + esc(x.role) + ' · ' + esc(x.date) + '</span><span class="pub">Published</span></header><p>' + esc(x.text) + '</p></article>';
-    }).join('') + '</div>' : '';
-    var path = m ? [s.name, m.model, (m.categories.find(function (c) { return c.id === part.cat; }) || {}).name, part.sub] : [s.name + ' ' + (line ? line[1].toLowerCase() : 'line')];
 
-    return '<div class="pd' + (o.title ? ' pd-page' : '') + '" data-pd="' + part.pn + '">' +
-      '<div class="pd-graphic ph thumb" role="img" aria-label="' + esc(part.name) + ' image"></div>' +
-      '<div class="pd-info">' +
-        (mine || w ? '<p class="pd-for">' + icon(w ? 'clipboard-list' : 'truck-side') + '<span>' + (mine ? 'For <b>' + esc(unit.equip) + '</b> · ' + esc(unit.serial) : '') + (w ? (mine ? ' · ' : '') + 'Work order <b>#' + w.id + '</b>' : '') + '</span></p>' : '') +
-        (o.title ? '<div class="pd-name"><h2>' + esc(part.name) + '</h2><p>' + esc(part.pn) + '</p></div>' : '') +
-        '<p class="pd-path">' + path.filter(Boolean).map(esc).join(' <span aria-hidden="true">›</span> ') + '</p>' +
-        price +
-        (repl ? '<a class="banner t-warning pd-sup" href="' + href(repl.pn, o.wo) + '" data-pick="' + repl.pn + '">' + icon('exclamation') + '<p><b>Superseded by ' + esc(repl.pn) + '.</b> The old number can no longer be ordered.</p>' + icon('arrow-small-right') + '</a>' : '') +
-        (replaces ? '<a class="banner t-info pd-sup" href="' + href(replaces.pn, o.wo) + '" data-pick="' + replaces.pn + '">' + icon('swap') + '<p><b>Replaces ' + esc(replaces.pn) + '.</b> Order this number for the retired part.</p>' + icon('arrow-small-right') + '</a>' : '') +
-        '<ul class="pd-facts">' + facts.join('') + '</ul>' + props +
-        (xrefs.length ? '<div class="pd-xref"><p class="pd-alt-l">Cross-references · ' + xrefs.length + '</p><ul>' + xrefs.map(function (x) {
-          return '<li><a href="' + href(x.pn, o.wo) + '" data-pick="' + x.pn + '"><b>' + esc(x.pn) + '</b><span>' + esc(x.name) + ' · ' + esc(SE.supplierOf(x.pn).name) + '</span>' + icon('angle-small-right') + '</a></li>';
-        }).join('') + '</ul></div>' : '') +
-        (alt ? '<div class="pd-alt"><p class="pd-alt-l">Optional alternate</p><div class="pd-alt-row">' + SE.ui.thumb() + '<span><b>' + esc(alt.name) + '</b><small>' + esc(alt.pn) + ' · ' + (alt.reman ? 'Non-OEM, remanufactured' : 'OEM') + ' · <span class="ok">' + esc(alt.stock) + ', ' + esc(alt.eta.toLowerCase()) + '</span></small></span><b>' + SE.money(alt.price) + '</b></div>' +
-          '<p class="pd-note">' + (ok ? 'Ships 3 days sooner and costs ' + SE.money(part.price - alt.price) + ' less. You can still order the original.' : 'Ships 3 days sooner and is priced without a serial. You can still order the original.') + '</p>' +
-          '<button class="btn btn-secondary pd-wide" type="button" data-pick="' + alt.pn + '">Use alternate</button></div>' : '') +
-        (ok && mine && part.serialPricing && !w ? unitSel('Priced for') : '') +
-        woCtl +
-        (repl ? '<button class="btn btn-brand pd-wide" type="button" data-pick="' + repl.pn + '">View replacement' + icon('arrow-small-right') + '</button>'
-          : !ok ? '<button class="btn btn-brand pd-wide" type="button" disabled>' + icon('lock') + 'Choose your unit to order</button>'
-          : '<div class="pd-buy"><div class="form-row"><label>Quantity</label>' + SE.ui.stepper(1) + '</div><button class="btn btn-brand pd-add" type="button" data-add>Add to cart · ' + SE.money(part.price) + '</button><button class="btn btn-secondary pd-save-list" type="button" data-savelist>' + SE.icon('star') + 'Save to list</button></div>' +
-            '<p class="pd-added" role="status" hidden></p>') +
-        comments +
-      '</div></div>';
+    var oemBadge = (part.reman || part.oem === false)
+      ? '<span class="badge-am">Aftermarket OK</span>'
+      : '<span class="badge-oem">OEM only</span>';
+    var recBadge = part.recommended ? '<span class="badge-rec">' + icon('star') + ' Recommended</span>' : '';
+
+    var catLabel = cat ? cat.name : (line ? line[1] : s.name + ' line');
+    var availDot = good ? 'g' : 'a';
+    var availLabel = back ? 'Backordered' : part.stock;
+
+    var pathParts = m
+      ? [s.name, m.model, cat ? cat.name : '', part.sub]
+      : [s.name + ' ' + (line ? line[1].toLowerCase() : 'line')];
+    var pathStr = pathParts.filter(Boolean).map(esc).join(' › ');
+
+    var manRefsHtml = '';
+    if (manual) {
+      manRefsHtml = '<div class="dp-sec-label">Manual References</div>' +
+        '<div class="dp-manref">' + icon('book-alt') +
+        '<a class="dp-manref-link" href="#/manual?id=' + esc(manual.id) + '&page=' + part.manualRef.page + '">' + esc(part.manual || manual.title) + '</a>' +
+        '<span class="dp-manref-sec">p.' + part.manualRef.page + '</span>' +
+        '</div>';
+    }
+
+    var notesHtml = '';
+    if (cm.length) {
+      notesHtml = '<div class="dp-sec-label">Supplier &amp; fleet notes</div>' +
+        cm.map(function (x) {
+          return '<div class="dp-note"><div class="dp-note-hd"><b>' + esc(x.by) + '</b><span>' + esc(x.role) + ' · ' + esc(x.date) + '</span></div><p>' + esc(x.text) + '</p></div>';
+        }).join('');
+    }
+
+    return '<div class="pd' + (o.title ? ' pd-page' : '') + '" data-pd="' + esc(part.pn) + '">' +
+      '<div class="dp-header"><div class="dp-title">' + esc(part.name) + '</div></div>' +
+      '<div class="dp-partnum">' + esc(part.pn) + '</div>' +
+      '<div class="dp-badges">' + oemBadge + recBadge + '</div>' +
+      '<div class="dp-div"></div>' +
+      '<div class="dp-field"><span class="dp-lbl">Vendor</span><span class="dp-val">' + esc(s.name) + '</span></div>' +
+      '<div class="dp-field"><span class="dp-lbl">Category</span><span class="dp-val">' + esc(catLabel) + '</span></div>' +
+      '<div class="dp-field"><span class="dp-lbl">Price</span><span class="dp-val" style="font-size:18px;font-weight:700;">$' + part.price.toFixed(2) + '</span></div>' +
+      '<div class="dp-field"><span class="dp-lbl">Availability</span><span class="dp-avail ' + availDot + '"><span class="avdot ' + availDot + '"></span>' + esc(availLabel) + '</span></div>' +
+      (part.weight ? '<div class="dp-field"><span class="dp-lbl">Weight</span><span class="dp-val">' + esc(part.weight) + '</span></div>' : '') +
+      (part.dims   ? '<div class="dp-field"><span class="dp-lbl">Dimensions</span><span class="dp-val">' + esc(part.dims) + '</span></div>' : '') +
+      '<div class="dp-div"></div>' +
+      '<div class="dp-path">' + icon('sitemap') + '<span>' + pathStr + '</span></div>' +
+      manRefsHtml +
+      notesHtml +
+      '<div class="dp-actions">' +
+        '<button class="btn btn-brand pd-add" type="button" data-add>' + icon('shopping-cart') + 'Add to cart · ' + SE.money(part.price) + '</button>' +
+        '<button class="btn btn-secondary pd-save-list" type="button" data-savelist>' + icon('star') + 'Save to list</button>' +
+      '</div>' +
+      '<p class="pd-added" role="status" hidden></p>' +
+    '</div>';
   };
   // wire a rendered SE.partDetail; o.pick(pn, wo) opens another part, o.refresh(wo) re-renders after the
   // unit or work order changes (both change what the card may say)
   SE.partDetailBind = function (root, part, o) {
     o = o || {};
-    var qty = 1, wo = o.wo || null;
-    function label() { return 'Add to cart · ' + SE.money(part.price * qty); }
+    var wo = o.wo || null;
     function onClick(e) {
-      var a = e.target.closest('a[data-pick]');
-      if (a && root.contains(a)) { e.preventDefault(); o.pick(a.dataset.pick, wo); return; }
       var t = e.target.closest('button');
       if (!t || !root.contains(t)) return;
-      if (t.dataset.step) { qty = Math.max(1, Math.min(99, qty + +t.dataset.step)); root.querySelector('.stepper output').textContent = qty; root.querySelector('[data-add]').textContent = label(); return; }
       if (t.hasAttribute('data-savelist')) { if (SE.addToShoppingList) SE.addToShoppingList(part); return; }
       if (t.hasAttribute('data-add')) {
-        var selectedUnit = SE.cat.unit(wo); SE.addToCart(part.pn, qty, wo, { unit: selectedUnit && selectedUnit.equip, serial: selectedUnit && selectedUnit.serial });
+        SE.addToCart(part.pn, 1, wo, {});
         SE.toast('Added to cart', 'shopping-cart');
         var msg = root.querySelector('.pd-added');
-        var woCart = wo && SE.state.woCart && SE.state.woCart[wo];
-        var woLine = woCart && woCart.find(function (l) { return l.id === part.pn; });
-        var globLine = !wo && SE.state.cart.find(function (l) { return l.pn === part.pn; });
-        var qtyShown = (woLine || globLine || {}).qty || qty;
-        var viewLink = wo ? '<a class="btn btn-secondary" href="#/work-order?id=' + esc(wo) + '">View work order</a>' : '';
-        msg.innerHTML = icon('check') + '<span>Added · ' + qtyShown + ' · for WO #' + esc(wo || '') + '</span>' + viewLink;
-        msg.hidden = false;
+        if (msg) {
+          var viewLink = wo ? '<a class="btn btn-secondary" href="#/work-order?id=' + esc(wo) + '">View work order</a>' : '';
+          msg.innerHTML = icon('check') + '<span>Added to cart</span>' + viewLink;
+          msg.hidden = false;
+        }
         return;
-      }
-      if (t.dataset.pick) { o.pick(t.dataset.pick, wo); }
-    }
-    function onChange(e) {
-      if (e.target.matches('[data-pd-wo]')) { wo = e.target.value || null; if (part.serialPricing && o.refresh) o.refresh(wo); return; }
-      if (e.target.matches('[data-pd-unit]') && e.target.value) {
-        SE.setContext({ equip: e.target.value });
-        SE.toast('Priced for ' + e.target.value, 'check');
-        if (o.refresh) o.refresh(wo);
       }
     }
     root.addEventListener('click', onClick);
-    root.addEventListener('change', onChange);
-    return function () { root.removeEventListener('click', onClick); root.removeEventListener('change', onChange); };
+    return function () { root.removeEventListener('click', onClick); };
   };
 })();
 
@@ -160,12 +138,8 @@ SE.views.part = function (el, p) {
   var host = el.querySelector('#pd-host');
   function render() {
     if (unbind) unbind();
-    host.innerHTML = SE.partDetail(part, { wo: wo });
-    unbind = SE.partDetailBind(host.querySelector('.pd'), part, {
-      wo: wo,
-      pick: function (pn, w) { SE.go('part', { params: w ? { pn: pn, wo: w } : { pn: pn } }); },
-      refresh: function (w) { wo = w; render(); },
-    });
+    host.innerHTML = SE.partDetail(part, { wo: wo, title: true });
+    unbind = SE.partDetailBind(host.querySelector('.pd'), part, { wo: wo });
   }
   render();
   var stopTogether = SE.mkt ? SE.mkt.bind(el) : null;
