@@ -133,9 +133,30 @@
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
     var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
+    // Enhanced Catalog — expandable: top → supplier → section
+    var ESEC_LABELS = [
+      ['cross-refs', 'Cross-references'], ['supersessions', 'Supersessions'],
+      ['fitment', 'Fitment guide'],       ['specs', 'Enhanced specs']
+    ];
+    var eOpen = cur.extra === 'enhanced-catalog';
+    var eKids = '';
+    if (eOpen) {
+      var connSups = D.suppliers.filter(function (s) { return s.active && s.status === 'Connected'; });
+      eKids = connSups.map(function (s) {
+        var esOpen = cur.esup === s.id;
+        var secKids = !esOpen ? '' : ESEC_LABELS.map(function (sec) {
+          return node(3, sec[1],
+            '#/enhanced-catalog?sup=' + esc(s.id) + '&sec=' + sec[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+            cur.esec === sec[0], null, false, null);
+        }).join('');
+        return node(2, s.name,
+          '#/enhanced-catalog?sup=' + esc(s.id) + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+          esOpen && !cur.esec, null, esOpen, secKids);
+      }).join('');
+    }
     var extraItems =
       node(1, 'Company Catalog', '#/company-catalog' + catQ2, cur.extra === 'company-catalog', null, false, null) +
-      node(1, 'Enhanced Catalog', '#/enhanced-catalog' + catQ2, cur.extra === 'enhanced-catalog', null, false, null);
+      node(1, 'Enhanced Catalog', '#/enhanced-catalog' + catQ2, eOpen && !cur.esup, null, eOpen, eKids);
     return '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p><ul>' + sups + '<li class="ctree-divider" role="separator"></li>' + extraItems + '</ul></nav>';
   };
   // page body with the tree beside it; under 960px of content the tree folds away and the breadcrumb leads.

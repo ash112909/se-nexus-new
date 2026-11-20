@@ -481,6 +481,21 @@
 /* Catalog tree divider (separates supplier entries from extra catalog types) */
 .ctree-divider { border: none; border-top: 1px solid var(--line); margin: 6px 12px; }
 
+/* Enhanced Catalog — featured parts grid */
+.ecat-fp-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ecat-fp-card { display: flex; flex-direction: column; gap: 6px; padding: 16px; }
+.ecat-fp-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
+.ecat-fp-pn { font-size: 12px; font-family: ui-monospace, monospace; color: var(--link); font-weight: 600; }
+.ecat-fp-name { font-size: 14px; font-weight: 500; line-height: 20px; }
+.ecat-fp-model { font-size: 12px; color: var(--muted); }
+.ecat-fp-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.ecat-fp-price { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ecat-fits span { display: inline-block; font-size: 12px; color: var(--muted); margin-right: 12px; white-space: nowrap; }
+.ecat-spec-cell { font-size: 12px; letter-spacing: .02em; }
+@container (max-width: 1099px) { .ecat-fp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (max-width: 759px)  { .ecat-fp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (max-width: 499px)  { .ecat-fp-grid { grid-template-columns: minmax(0, 1fr); } }
+
 /* Enhanced Catalog — feature card grid */
 .ecat-features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ecat-feature { display: flex; flex-direction: column; gap: 10px; padding: 20px; }
