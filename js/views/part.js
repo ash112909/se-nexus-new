@@ -86,18 +86,54 @@
   SE.partDetailBind = function (root, part, o) {
     o = o || {};
     var wo = o.wo || null;
+
+    function doAdd(targetWo) {
+      SE.addToCart(part.pn, 1, targetWo, {});
+      SE.toast('Added to cart', 'shopping-cart');
+      var msg = root.querySelector('.pd-added');
+      if (msg) {
+        var viewLink = targetWo ? '<a class="btn btn-secondary" href="#/work-order?id=' + esc(targetWo) + '">View work order</a>' : '';
+        msg.innerHTML = icon('check') + '<span>Added to cart</span>' + viewLink;
+        msg.hidden = false;
+      }
+    }
+
+    function showWoPicker() {
+      var openWos = SE.allWorkOrders().filter(function (w) { return w.status !== 'Done' && !SE.state.cancelled[w.id]; });
+      var rows = openWos.map(function (w) {
+        return '<label class="wo-pick-row"><input type="radio" name="wo-pick" value="' + esc(w.id) + '">' +
+          '<span class="wo-pick-label"><b>#' + esc(w.id) + '</b><span>' + esc(w.issue || w.equip) + ' · ' + esc(w.equip) + '</span></span>' +
+          '</label>';
+      }).join('');
+      var body = '<div class="wo-pick-list">' + rows + '</div>' +
+        '<button class="btn btn-secondary wo-pick-new" type="button" data-wo-pick-new>' + icon('plus') + 'Create new work order</button>';
+      var dlg = SE.ui.dialog({
+        title: 'Add to work order',
+        body: body,
+        foot: '<button class="btn btn-secondary" type="button" data-dlg-close>Cancel</button>' +
+              '<button class="btn btn-brand" type="button" data-wo-pick-confirm>Add to order</button>',
+      });
+      dlg.el.querySelector('[data-wo-pick-confirm]').addEventListener('click', function () {
+        var sel = dlg.el.querySelector('input[name="wo-pick"]:checked');
+        if (!sel) { SE.toast('Select a work order first', 'exclamation'); return; }
+        dlg.close();
+        doAdd(sel.value);
+      });
+      dlg.el.querySelector('[data-wo-pick-new]').addEventListener('click', function () {
+        dlg.close();
+        SE.work.newDialog({ onCreate: function (w) { doAdd(w.id); } });
+      });
+    }
+
     function onClick(e) {
       var t = e.target.closest('button');
       if (!t || !root.contains(t)) return;
       if (t.hasAttribute('data-savelist')) { if (SE.addToShoppingList) SE.addToShoppingList(part); return; }
       if (t.hasAttribute('data-add')) {
-        SE.addToCart(part.pn, 1, wo, {});
-        SE.toast('Added to cart', 'shopping-cart');
-        var msg = root.querySelector('.pd-added');
-        if (msg) {
-          var viewLink = wo ? '<a class="btn btn-secondary" href="#/work-order?id=' + esc(wo) + '">View work order</a>' : '';
-          msg.innerHTML = icon('check') + '<span>Added to cart</span>' + viewLink;
-          msg.hidden = false;
+        if (wo) {
+          doAdd(wo);
+        } else {
+          showWoPicker();
         }
         return;
       }
