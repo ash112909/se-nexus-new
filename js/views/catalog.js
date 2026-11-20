@@ -133,25 +133,26 @@
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
     var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
-    // Enhanced Catalog — expandable: top → supplier → section
-    var ESEC_LABELS = [
-      ['cross-refs', 'Cross-references'], ['supersessions', 'Supersessions'],
-      ['fitment', 'Fitment guide'],       ['specs', 'Enhanced specs']
-    ];
+    // Enhanced Catalog — expandable: top → supplier → supplier's own categories
+    var ECAT_BY_SUP = {
+      JLG: [['drive', 'Drive & Mobility'], ['hydraulics', 'Hydraulic Systems'], ['electrical', 'Electrical & Controls'], ['platform', 'Structural & Platform']],
+      SKJ: [['drive', 'Drive Components'], ['structure', 'Platform & Structure'], ['electrical', 'Electrical Systems'], ['fluids', 'Consumables & Fluids']]
+    };
     var eOpen = cur.extra === 'enhanced-catalog';
     var eKids = '';
     if (eOpen) {
       var connSups = D.suppliers.filter(function (s) { return s.active && s.status === 'Connected'; });
       eKids = connSups.map(function (s) {
         var esOpen = cur.esup === s.id;
-        var secKids = !esOpen ? '' : ESEC_LABELS.map(function (sec) {
-          return node(3, sec[1],
-            '#/enhanced-catalog?sup=' + esc(s.id) + '&sec=' + sec[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
-            cur.esec === sec[0], null, false, null);
+        var catList = ECAT_BY_SUP[s.id] || [];
+        var catKids = !esOpen ? '' : catList.map(function (cat) {
+          return node(3, cat[1],
+            '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+            cur.ecat === cat[0], null, false, null);
         }).join('');
         return node(2, s.name,
           '#/enhanced-catalog?sup=' + esc(s.id) + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
-          esOpen && !cur.esec, null, esOpen, secKids);
+          esOpen && !cur.ecat, null, esOpen, catKids);
       }).join('');
     }
     var extraItems =
