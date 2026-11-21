@@ -16,6 +16,7 @@
   var esc = SE.esc, icon = SE.icon;
   // [icon, label, route] ; '#' rows are group labels ; route null = deferred (shown, not clickable)
   SE.NAV = [
+    ['#', 'My Work'],
     ['home', 'Home', 'home'], ['clipboard-list', 'Orders', 'work-orders'],
     ['shopping-cart-check', 'Approvals', 'approvals'], ['truck-side', 'Fleet', 'fleet'],
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
@@ -43,11 +44,11 @@
     function railHtml() {
       return '<nav class="rail" id="rail" aria-label="Primary">' +
         '<div class="rail-brand">' +
-          '<a class="rail-lockup" href="#/home" aria-label="' + esc(D.fleet.name) + ', Home">' + '<span class="rail-wordmark">' + SE.mcLogo('#FFFFFF', 'var(--brand)', D.fleet.name) + '</span><span class="rail-chev" aria-hidden="true">' + SE.mcMark('var(--brand)') + '</span></a>' +
+          '<a class="rail-lockup" href="#/home" aria-label="' + esc(D.fleet.name) + ', Home">' + '<span class="rail-wordmark"><b class="rail-org-name">' + esc(D.fleet.name) + '</b></span><span class="rail-chev" aria-hidden="true">' + SE.mcMark('var(--brand)') + '</span></a>' +
           '<button class="rail-toggle" type="button" aria-controls="rail">' + icon('angle-small-left') + '</button>' +
         '</div>' +
         '<ul class="rail-nav">' + SE.NAV.map(function (r) {
-          if (r[0] === '#') return '<li class="nav-group"><span>' + r[1].toUpperCase() + '</span></li>';
+          if (r[0] === '#') return '<li class="nav-group"><span>' + r[1] + '</span></li>';
           var n = r[2] ? count(r[2]) : 0;
           var inner = icon(r[0]) + '<span class="nav-label">' + esc(r[1]) + '</span>' +
             (n ? '<span class="nav-count" data-count="' + r[2] + '">' + n + '</span>' : '<span class="nav-count" data-count="' + r[2] + '" hidden></span>');
@@ -56,7 +57,7 @@
           return '<li><a class="nav-item" href="#/' + r[2] + '"' + (cur ? ' aria-current="page"' : '') + ' data-tip="' + esc(r[1]) + '">' + inner + '</a></li>';
         }).join('') + '</ul>' +
         // 1017: the new SmartEquip wordmark (negative, the rail is black in both themes); the collapsed rail shows the symbol
-        '<div class="rail-powered"><span class="rp-full"><span>Powered by</span>' + SE.seLogo('dark') + '</span><span class="rp-wrench" title="Powered by SmartEquip">' + SE.seLogo('dark', 'Powered by SmartEquip', 'symbol') + '</span></div>' +
+        '<div class="rail-powered"><span class="rp-full"><span>Powered by</span>' + SE.seLogo('auto') + '</span><span class="rp-wrench" title="Powered by SmartEquip">' + SE.seLogo('auto', 'Powered by SmartEquip', 'symbol') + '</span></div>' +
       '</nav>';
     }
     function quick(withSettings) {

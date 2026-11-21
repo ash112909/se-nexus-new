@@ -415,6 +415,57 @@
   .dash > .lay-hero + .qa-sec { --qa-under: 36px; }
 }
 
-/* TEMP: SmartEquip logo hidden until re-enabled — remove these two rules to restore */
-.rail-powered { display: none; }
-.auth-se { display: none; }
+/* Light sidebar redesign — overrides the dark-rail rules above */
+@layer components {
+  /* Rail becomes a light/surface panel with a right border instead of a background gradient */
+  .rail { background: var(--surface); color: var(--ink); border-right: 1px solid var(--line); }
+  .shell:not([data-rail="drawer"]) { background: var(--sunken); }
+  .shell:not([data-rail="drawer"]) .rail { border-radius: 0; }
+
+  /* Org name in the brand row (replaces the logo SVG) */
+  .rail-org-name { font-size: 16px; font-weight: 700; line-height: 20px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shell[data-rail="collapsed"] .rail-wordmark { display: none; }
+  .shell[data-rail="collapsed"] .rail-chev { display: grid; }
+
+  /* Collapse button: light card style */
+  .rail-toggle { background: var(--surface); border: 1.5px solid var(--line); color: var(--ink); border-radius: 8px; }
+  .rail-toggle:hover { background: var(--container-low); color: var(--ink); }
+  /* Keep toggle in flow (undo the absolute positioning from the 1021 branding block) */
+  .shell:not([data-rail="drawer"]) .rail-toggle { position: static; }
+  /* Brand row: enough height for the text */
+  .shell:not([data-rail="collapsed"]):not([data-rail="drawer"]) .rail-brand { height: auto; min-height: 44px; align-items: center; }
+  .shell[data-rail="collapsed"] .rail-brand { padding-top: 8px; }
+
+  /* Nav items: dark text, contained width with border-radius */
+  .nav-item { color: var(--ink); }
+  .shell:not([data-rail="collapsed"]) .rail-nav .nav-item { width: 100%; margin-inline: 0; padding: 0 12px; border-radius: 10px; }
+  .nav-item:hover { background: var(--container-low); }
+  .nav-item[aria-current="page"] { background: var(--tint-select); color: var(--ink); font-weight: 600; }
+  .nav-item[aria-current="page"]:hover { background: color-mix(in srgb, var(--brand) 18%, transparent); }
+
+  /* Icons: gray when idle, amber when active */
+  .rail .nav-item .i { color: var(--muted); }
+  .rail .nav-item:not([aria-current="page"]) .i { color: var(--muted); }
+  .rail .nav-item:not([aria-current="page"]):hover .i { color: var(--ink); }
+  .rail .nav-item[aria-current="page"] .i { color: var(--brand); }
+
+  /* Group labels: sentence-case, gray, with top padding */
+  .nav-group { margin-top: 4px; }
+  .nav-group span { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: 0; height: auto; padding: 10px 12px 2px; display: block; }
+  .shell[data-rail="collapsed"] .nav-group span { height: 1px; padding: 0; background: var(--line); text-indent: 100%; width: 36px; overflow: hidden; }
+
+  /* Tooltip (collapsed rail): dark background still looks best */
+  .shell[data-rail="collapsed"] .nav-item:is(:hover, :focus-visible)::after { background: var(--tip); color: var(--on-tip); }
+
+  /* AppBar (drawer/mobile): stays dark */
+  .shell[data-rail="drawer"] .appbar { background: var(--ink); }
+
+  /* Powered by footer: show it, in light mode use the positive logo */
+  .rail-powered { display: flex; }
+  .rp-full { color: var(--muted); font-size: 11px; }
+  .rp-full .se-logo { --se-w: 100px; }
+  .auth-se { display: none; }
+
+  /* Badge: on a white rail the brand-yellow badge still works; active item keeps it readable */
+  .nav-item[aria-current="page"] .nav-count { background: var(--brand-pressed); color: var(--brand-on); }
+}
