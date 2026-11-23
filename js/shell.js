@@ -75,19 +75,18 @@
           icon('angle-small-down') +
         '</button>';
     }
-    var SF_SUBS = {
-      orders:    { eyebrow: 'Orders',    title: 'Status',   items: ['View all', 'Open', 'In progress', 'Completed'] },
-      parts:     { eyebrow: 'Parts',     title: 'Category', items: ['View all', 'Filters', 'Belts', 'Fluids'] },
-      equipment: { eyebrow: 'Equipment', title: 'Status',   items: ['View all', 'Active', 'In service', 'Retired'] },
-      manuals:   { eyebrow: 'Manuals',   title: 'Type',     items: ['View all', 'Service', 'Operations', 'Safety'] },
-    };
-    function sfSubHtml(cat, selItem) {
-      var d = SF_SUBS[cat]; if (!d) return '';
-      return '<span class="sf-eyebrow">' + esc(d.eyebrow) + '</span>' +
-        '<strong class="sf-heading">' + esc(d.title) + '</strong>' +
+    function sfSupItems() {
+      return (D.suppliers || []).filter(function (s) { return s.active && s.status === 'Connected'; }).map(function (s) { return s.name; });
+    }
+    function sfSubHtml(cat) {
+      var sups = cat === 'parts' || cat === 'manuals' ? sfSupItems() : null;
+      if (!sups || !sups.length) return '';
+      var eyebrow = cat === 'parts' ? 'Parts' : 'Manuals';
+      return '<span class="sf-eyebrow">' + eyebrow + '</span>' +
+        '<strong class="sf-heading">Suppliers</strong>' +
         '<ul class="sf-sub-list">' +
-        d.items.map(function (item) {
-          var sel = item === selItem;
+        ['View all'].concat(sups).map(function (item, i) {
+          var sel = i === 0;
           return '<li' + (sel ? ' class="sf-sel"' : '') + '>' +
             '<button type="button" class="sf-sub-btn" data-sf-sub="' + esc(item) + '">' +
               '<span>' + esc(item) + '</span>' + icon('check') +
@@ -96,8 +95,9 @@
     }
     SE.searchForm = function (value) {
       var sfCats = [
-        { id: 'orders', label: 'Orders' }, { id: 'parts', label: 'Parts' },
-        { id: 'equipment', label: 'Equipment', sel: true }, { id: 'manuals', label: 'Manuals' },
+        { id: 'orders', label: 'Orders' }, { id: 'parts', label: 'Parts', sel: true },
+        { id: 'equipment', label: 'Equipment' }, { id: 'manuals', label: 'Manuals' },
+        { id: 'kb', label: 'Knowledge Base' },
       ];
       var catList = sfCats.map(function (c) {
         return '<li' + (c.sel ? ' class="sf-sel"' : '') + '>' +
@@ -122,7 +122,7 @@
             '<strong class="sf-heading">Category</strong>' +
             '<ul class="sf-cat-list">' + catList + '</ul>' +
           '</div>' +
-          '<div class="sf-col-sub" data-sf-sub>' + sfSubHtml('equipment', 'View all') + '</div>' +
+          '<div class="sf-col-sub" data-sf-sub>' + sfSubHtml('parts') + '</div>' +
         '</div>' +
       '</div>';
     };
@@ -278,7 +278,7 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
         w.querySelectorAll('.sf-cat-list li').forEach(function (li) {
           li.classList.toggle('sf-sel', li.querySelector('[data-sf-cat]').dataset.sfCat === cat);
         });
-        w.querySelector('[data-sf-sub]').innerHTML = sfSubHtml(cat, 'View all'); return;
+        w.querySelector('[data-sf-sub]').innerHTML = sfSubHtml(cat); return;
       }
       if (t.hasAttribute('data-sf-sub')) {
         var w = t.closest('[data-sf]'), val = t.dataset.sfSub;
