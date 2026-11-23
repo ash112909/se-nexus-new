@@ -75,11 +75,56 @@
           icon('angle-small-down') +
         '</button>';
     }
+    var SF_SUBS = {
+      orders:    { eyebrow: 'Orders',    title: 'Status',   items: ['View all', 'Open', 'In progress', 'Completed'] },
+      parts:     { eyebrow: 'Parts',     title: 'Category', items: ['View all', 'Filters', 'Belts', 'Fluids'] },
+      equipment: { eyebrow: 'Equipment', title: 'Status',   items: ['View all', 'Active', 'In service', 'Retired'] },
+      manuals:   { eyebrow: 'Manuals',   title: 'Type',     items: ['View all', 'Service', 'Operations', 'Safety'] },
+    };
+    function sfSubHtml(cat, selItem) {
+      var d = SF_SUBS[cat]; if (!d) return '';
+      return '<span class="sf-eyebrow">' + esc(d.eyebrow) + '</span>' +
+        '<strong class="sf-heading">' + esc(d.title) + '</strong>' +
+        '<ul class="sf-sub-list">' +
+        d.items.map(function (item) {
+          var sel = item === selItem;
+          return '<li' + (sel ? ' class="sf-sel"' : '') + '>' +
+            '<button type="button" class="sf-sub-btn" data-sf-sub="' + esc(item) + '">' +
+              '<span>' + esc(item) + '</span>' + icon('check') +
+            '</button></li>';
+        }).join('') + '</ul>';
+    }
     SE.searchForm = function (value) {
-      return '<form class="search" role="search" data-search><label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
-        '<input id="q" name="q" type="search" placeholder="Search parts, manuals…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
-        '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
-        '<kbd class="kbd" aria-hidden="true">⌘K</kbd></form>';
+      var sfCats = [
+        { id: 'orders', label: 'Orders' }, { id: 'parts', label: 'Parts' },
+        { id: 'equipment', label: 'Equipment', sel: true }, { id: 'manuals', label: 'Manuals' },
+      ];
+      var catList = sfCats.map(function (c) {
+        return '<li' + (c.sel ? ' class="sf-sel"' : '') + '>' +
+          '<button type="button" class="sf-cat-btn" data-sf-cat="' + c.id + '">' +
+            esc(c.label) + icon('angle-right') +
+          '</button></li>';
+      }).join('');
+      return '<div class="sf-wrap" data-sf>' +
+        '<form class="search" role="search" data-search>' +
+          '<button type="button" class="sf-scope" aria-expanded="false" aria-haspopup="true" data-sf-scope>' +
+            '<span class="sf-scope-txt">Parts</span>' + icon('angle-small-down') +
+          '</button>' +
+          '<label class="sr-only" for="q">Search</label>' +
+          '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
+          '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
+          '<span class="sf-sep" aria-hidden="true"></span>' +
+          '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
+        '</form>' +
+        '<div class="sf-panel" hidden>' +
+          '<div class="sf-col-cats">' +
+            '<span class="sf-eyebrow">Search by</span>' +
+            '<strong class="sf-heading">Category</strong>' +
+            '<ul class="sf-cat-list">' + catList + '</ul>' +
+          '</div>' +
+          '<div class="sf-col-sub" data-sf-sub>' + sfSubHtml('equipment', 'View all') + '</div>' +
+        '</div>' +
+      '</div>';
     };
     SE.tools = function () {
       // a page with its own search (fleet, manuals, orders) shows it here, in the header's search slot
@@ -201,9 +246,14 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
     SE.refreshShell = api.refresh;
 
     // ---------- events
+    function closeSfPanel(wrap) {
+      var p = wrap.querySelector('.sf-panel'); if (!p) return;
+      p.hidden = true; wrap.querySelector('[data-sf-scope]').setAttribute('aria-expanded', 'false');
+    }
     el.addEventListener('click', function (e) {
       var t = e.target.closest('button, a, [data-go]');
       if (!account.hidden && !e.target.closest('#account') && !(t && t.hasAttribute('data-account'))) closeAccount(false);
+      el.querySelectorAll('[data-sf]').forEach(function (w) { if (!w.querySelector('.sf-panel').hidden && !e.target.closest('[data-sf]')) closeSfPanel(w); });
       if (!t) return;
       if (t.closest('.rail') && mode() === 'drawer' && t.matches('a')) closeDrawer(true);
       if (t.hasAttribute('data-account')) { if (account.hidden) openAccount(t); else closeAccount(true); return; }
@@ -219,6 +269,23 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
       if (t.hasAttribute('data-settings')) { closeAccount(false); return; }
       if (t.hasAttribute('data-ann-x')) { SE.mkt.dismiss(t); return; }
       if (t.hasAttribute('data-whatsnew')) { closeAccount(false); if (SE.mkt) SE.mkt.whatsNew(); return; }
+      if (t.hasAttribute('data-sf-scope')) {
+        var w = t.closest('[data-sf]'), p = w.querySelector('.sf-panel'), open = !p.hidden;
+        p.hidden = open; t.setAttribute('aria-expanded', String(!open)); return;
+      }
+      if (t.hasAttribute('data-sf-cat')) {
+        var w = t.closest('[data-sf]'), cat = t.dataset.sfCat;
+        w.querySelectorAll('.sf-cat-list li').forEach(function (li) {
+          li.classList.toggle('sf-sel', li.querySelector('[data-sf-cat]').dataset.sfCat === cat);
+        });
+        w.querySelector('[data-sf-sub]').innerHTML = sfSubHtml(cat, 'View all'); return;
+      }
+      if (t.hasAttribute('data-sf-sub')) {
+        var w = t.closest('[data-sf]'), val = t.dataset.sfSub;
+        w.querySelectorAll('.sf-sub-list li').forEach(function (li) {
+          li.classList.toggle('sf-sel', li.querySelector('[data-sf-sub]').dataset.sfSub === val);
+        }); return;
+      }
       if (t.hasAttribute('data-voice')) { e.preventDefault(); SE.voice.start(); return; }
       if (t.dataset.out) { SE.toast(t.dataset.out + ' is coming soon', 'time-past'); return; }
       if (t.dataset.go && !e.defaultPrevented) { e.preventDefault(); SE.goFrom(t); }
