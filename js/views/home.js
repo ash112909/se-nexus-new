@@ -87,8 +87,9 @@ SE.views.home = function (el, p) {
   var s = SE.shell(el, {
     nav: 'home',
     head: '<header class="page-head">' +
+      '__TOOLS__' +
       '<div class="greeting"><h1 tabindex="-1" data-focus>Welcome back, <span class="greet-name">' + esc(D.user.first) + '</span></h1><p id="subline">' + esc(subline()) + '</p>' + '</div>' +
-      '__TOOLS__</header>',
+      '</header>',
     body:
       '<div id="push-slot">' + (SE.push.due() ? SE.push.card() : '') + '</div>' +
       '<div class="dash" id="dash">' +

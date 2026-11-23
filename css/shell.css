@@ -86,20 +86,11 @@
   .greeting { display: flex; flex-direction: column; gap: 8px; }
   .greeting h1 { font-size: 28px; font-weight: 700; line-height: 34px; letter-spacing: -.01em; }
   .greeting p { font-size: 14px; line-height: 20px; color: var(--muted); }
-  .tools { display: flex; gap: 16px; height: 48px; }
-  /* wide content: search and the icon bar move up beside the greeting, anchored right on the heading's level */
-  @container (min-width: 1000px) {
-    .page-head { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 24px; }
-    .greeting { min-width: 0; }
-    .page-head .tools { flex: none; align-items: center; gap: 12px; height: 40px; margin-top: -3px; }
-    .page-head .search { flex: 0 1 480px; width: 480px; height: 40px; border-color: var(--line); transition: flex-basis .2s cubic-bezier(.32,.72,0,1), width .2s cubic-bezier(.32,.72,0,1); }
-    /* 1019 (owner): the search page widens its header search (js/views/search.js adds .on-page and focuses it) */
-    .page-head .search.on-page { flex-basis: 640px; width: 640px; }
-    /* 1026 (CR-01): the bar carries the scope and model selects, so it is 480 (640 on the results page) */
-    .page-head .search input { font-size: 14px; }
-    .page-head .quickbar { height: 40px; padding: 0; gap: 4px; border: 0; background: none; }
-    .page-head .quickbar .qa { width: 36px; height: 36px; }
-  }
+  .ph-topbar { display: flex; align-items: center; gap: 12px; height: 48px; }
+  .ph-topbar .search { flex: 1; height: 40px; border-color: var(--line); }
+  .ph-topbar .search input { font-size: 14px; }
+  .ph-topbar .search.on-page { flex: 1 1 640px; }
+  .ph-topbar .quickbar { flex: none; height: 40px; padding: 0; gap: 4px; border: 0; background: none; }
   .search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 8px 0 16px; border: 1px solid var(--line-field); border-radius: 12px; background: var(--surface); }
   .search:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
   .search > .i { color: var(--muted); }

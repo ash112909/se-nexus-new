@@ -60,7 +60,7 @@
         '<div class="rail-powered"><span class="rp-full"><span>Powered by</span>' + SE.seLogo('auto') + '</span><span class="rp-wrench" title="Powered by SmartEquip">' + SE.seLogo('auto', 'Powered by SmartEquip', 'symbol') + '</span></div>' +
       '</nav>';
     }
-    function quick(withSettings) {
+    function quick() {
       var u = SE.unread();
       var av = SE.store.getLocal('avatar') || null; if (av === 'null') av = null;
       var avHtml = av ? '<img src="' + esc(av) + '" alt="" class="qa-av-img">'
@@ -73,8 +73,7 @@
           '<span class="qa-user-av">' + avHtml + '</span>' +
           '<span class="qa-user-text"><b>' + esc(shortName) + '</b><small>' + esc(SE.location().name) + '</small></span>' +
           icon('angle-small-down') +
-        '</button>' +
-        (withSettings ? '<a class="qa" href="#/profile" aria-label="Profile and notifications">' + icon('settings') + '</a>' : '');
+        '</button>';
     }
     SE.searchForm = function (value) {
       return '<form class="search" role="search" data-search><label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
@@ -84,7 +83,7 @@
     };
     SE.tools = function () {
       // a page with its own search (fleet, manuals, orders) shows it here, in the header's search slot
-      return '<div class="tools">' + (o.search || SE.searchForm(o.q)) + '<div class="quickbar" role="toolbar" aria-label="Quick actions">' + quick(true) + '</div></div>';
+      return '<div class="ph-topbar">' + (o.search || SE.searchForm(o.q)) + '<div class="quickbar" role="toolbar" aria-label="Quick actions">' + quick() + '</div></div>';
     };
     function crumbs() {
       if (!o.crumbs || !o.crumbs.length) return '';
@@ -94,8 +93,8 @@
     }
     var head = o.head != null ? o.head :
       '<header class="page-head">' +
-        '<div class="greeting">' + crumbs() + '<h1 tabindex="-1" data-focus>' + esc(o.title) + '</h1>' + (o.sub ? '<p id="subline">' + o.sub + '</p>' : '') + '</div>' +
         SE.tools() +
+        '<div class="greeting"><h1 tabindex="-1" data-focus>' + esc(o.title) + '</h1>' + (o.sub ? '<p id="subline">' + o.sub + '</p>' : '') + '</div>' +
       '</header>' + (o.actions ? '<div class="page-actions">' + o.actions + '</div>' : '');
 
     el.innerHTML =
@@ -168,6 +167,7 @@
         }).join('') + '</div>' +
         appearance() +
         (SE.mkt ? '<button type="button" class="acc-out acc-new" data-whatsnew>' + icon('star') + 'What’s new</button>' : '') +
+        '<a href="#/profile" class="acc-out" data-settings>' + icon('settings') + 'Settings &amp; profile</a>' +
         '<button type="button" class="acc-out" data-signout>' + icon('sign-out-alt') + 'Sign out</button>';
       window.ARATheme.bind(account.querySelector('.acc-theme'));
       var r = btn.getBoundingClientRect(), host = shell.getBoundingClientRect();
@@ -216,6 +216,7 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
         return;
       }
       if (t.hasAttribute('data-signout')) { closeAccount(false); SE.confirmSignOut(); return; }
+      if (t.hasAttribute('data-settings')) { closeAccount(false); return; }
       if (t.hasAttribute('data-ann-x')) { SE.mkt.dismiss(t); return; }
       if (t.hasAttribute('data-whatsnew')) { closeAccount(false); if (SE.mkt) SE.mkt.whatsNew(); return; }
       if (t.hasAttribute('data-voice')) { e.preventDefault(); SE.voice.start(); return; }
