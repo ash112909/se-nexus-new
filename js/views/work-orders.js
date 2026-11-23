@@ -227,7 +227,7 @@ SE.views['work-orders'] = function (el, p) {
     return true;
   }
   function hay(w) { return [w.id, w.machine, w.equip, w.issue, w.assignee || ''].join(' '); }
-  function base() { return W.list(tab === 'archive').filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
+  function base() { return W.list(false).filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
   function count(f) {
     var list = base();
     if (f === 'All') return list.filter(inDateRange).length;
@@ -297,8 +297,8 @@ SE.views['work-orders'] = function (el, p) {
     var hasFilter = q || filter !== 'All' || dateMode !== 'any';
     if (!list.length) {
       host.innerHTML = SE.ui.empty({ icon: 'clipboard-list', tone: 'neutral',
-        title: tab === 'archive' ? 'Nothing archived' : 'No orders match' + (q.trim() ? ' "' + q.trim() + '"' : ''),
-        text: tab === 'archive' ? 'Archived orders from their detail page appear here.' : 'Nothing at ' + SE.location().name + ' matches.',
+        title: 'No orders match' + (q.trim() ? ' "' + q.trim() + '"' : ''),
+        text: 'Nothing at ' + SE.location().name + ' matches.',
         action: hasFilter ? '<button type="button" class="btn btn-secondary" data-clear>Clear search and filter</button>' : '' });
     } else {
       host.innerHTML =
@@ -325,15 +325,12 @@ SE.views['work-orders'] = function (el, p) {
     if (poSearch) poSearch.hidden = view === 'wo';
 
     if (view === 'wo') {
-      el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' :
-        SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
-      el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' :
+      el.querySelector('#wo-seg').innerHTML =
         SE.ui.seg('Filter', FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
       el.querySelector('#wo-count').textContent = count(filter) + ' order' + (count(filter) === 1 ? '' : 's');
       var panel = el.querySelector('#wo-date-panel');
       if (panel) panel.hidden = dateMode !== 'custom';
     } else {
-      el.querySelector('#wo-tabs').innerHTML = '';
       el.querySelector('#wo-seg').innerHTML = '';
       el.querySelector('#wo-count').textContent = SE.orders().length + ' PO' + (SE.orders().length === 1 ? '' : 's');
     }
@@ -341,7 +338,6 @@ SE.views['work-orders'] = function (el, p) {
     el.querySelector('#subline').innerHTML = sub();
     var o = {};
     if (view !== 'wo') o.view = view;
-    if (tab !== 'active') o.tab = tab;
     if (filter !== 'All') o.filter = filter;
     if (q.trim()) o.q = q.trim();
     history.replaceState(null, '', '#/work-orders' + (Object.keys(o).length ? '?' + new URLSearchParams(o) : ''));
@@ -350,7 +346,6 @@ SE.views['work-orders'] = function (el, p) {
   var body =
     '<section class="sec ord-sec">' +
       '<div class="ord-bar">' +
-        '<div id="wo-tabs"></div>' +
         '<div class="ord-view-toggle" id="wo-view-toggle" role="group" aria-label="View by">' +
           '<button type="button" class="ord-vbtn" data-view="wo">Work Orders</button>' +
           '<button type="button" class="ord-vbtn" data-view="po">Purchase Orders</button>' +
@@ -415,7 +410,6 @@ SE.views['work-orders'] = function (el, p) {
     var t = e.target.closest('button');
     if (t && t.hasAttribute('data-new')) { openNew(false); return; }
     if (t && t.dataset.view) { view = t.dataset.view; q = ''; el.querySelector('#wo-q').value = ''; el.querySelector('#po-q').value = ''; render(); return; }
-    if (t && t.dataset.tab) { tab = t.dataset.tab; render(); return; }
     if (t && t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; dateMode = 'any'; dateFrom = ''; dateTo = ''; el.querySelector('#wo-date-sel').value = 'any'; render(); return; }
     if (t && t.dataset.seg) { filter = t.dataset.seg; render(); return; }
   });
