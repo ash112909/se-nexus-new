@@ -242,54 +242,7 @@ SE.views['wo-order'] = function (el, p) {
     '</div>';
   }
 
-  // ── Approval review form (read-only, Approve/Return buttons) ─────────────
-  function renderApprovalForm(gi) {
-    var g = groups[gi];
-    var gs = groupStates[gi];
-    var total = g.items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
-    var ship = SE.loc(appr.shipTo);
-    var apprSt = SE.work.apprState(appr);
-    if (apprSt !== 'pending') {
-      var doneBanner = apprSt === 'approved'
-        ? SE.ui.banner('<b>Approved.</b> Order has been placed.', 'success', 'check')
-        : (function () { var r = SE.state.returned[appr.order] || {}; return SE.ui.banner('<b>Returned to ' + esc(appr.by) + ':</b> ' + esc(r.reason || '') + (r.comment ? '. ' + esc(r.comment) : ''), 'warning', 'undo'); }());
-      return '<div class="or-group-form">' +
-        '<section class="card or-sec"><h2 class="or-sec-h">' + icon('building') + esc(g.label) + ' · ' + g.items.length + ' item' + (g.items.length !== 1 ? 's' : '') + '</h2>' + itemsTable(g, g.items) + '</section>' +
-        doneBanner +
-        '<div class="or-group-foot"><a class="btn btn-secondary" href="#/approvals">' + icon('arrow-small-left') + 'Back to approvals</a></div>' +
-      '</div>';
-    }
-    var changes = K.apprLog(appr);
-    var changeNote = changes.length
-      ? '<section class="card or-sec ap-changes"><div class="ap-ch-head"><h3>Your changes · ' + changes.length + '</h3><button type="button" class="btn btn-link" data-appr-undo>' + icon('undo') + 'Undo changes</button></div><ol>' + changes.map(function (x) { return '<li>' + esc(x.text) + '</li>'; }).join('') + '</ol></section>'
-      : '<p class="ap-edit-hint">' + icon('pencil') + 'You can adjust quantities or remove lines before approving. ' + esc(appr.by) + ' sees every change on the work order.</p>';
-    return '<div class="or-group-form">' +
-      (appr.why ? '<div class="or-appr-why">' + SE.chip(appr.why.label, 'warning') + '<p>' + esc(appr.why.text) + '</p></div>' : '') +
-      '<section class="card or-sec">' +
-        '<h2 class="or-sec-h">' + icon('building') + esc(g.label) + ' · ' + g.items.length + ' item' + (g.items.length !== 1 ? 's' : '') + '</h2>' +
-        itemsTable(g, g.items) +
-        changeNote +
-        '<dl class="kv ap-totals card"><div><dt>Subtotal</dt><dd>' + money(K.apprTotal(appr)) + '</dd></div><div><dt>Shipping</dt><dd>Per supplier quote</dd></div><div class="grand"><dt>Total</dt><dd>' + money(K.apprTotal(appr)) + (K.apprTotal(appr) !== appr.amount ? '<span class="sub">Requested ' + money(appr.amount) + '</span>' : '') + '</dd></div></dl>' +
-      '</section>' +
-      '<section class="card or-sec">' +
-        '<h2 class="or-sec-h">' + icon('map-marker') + 'Ship to</h2>' +
-        SE.ui.kv([['Location', esc(ship ? ship.name : appr.shipTo) + (ship ? '<span class="sub">' + esc(ship.address || '') + '</span>' : '')], ['Needed by', esc(gs.requestedDate)], ['Requested by', esc(appr.by)]]) +
-      '</section>' +
-      '<section class="card or-sec">' +
-        '<h2 class="or-sec-h">' + icon('document') + 'Work order</h2>' +
-        SE.ui.kv([['Order', '<a href="#/work-order?id=' + esc(appr.wo) + '">#' + esc(appr.wo) + '</a>'], ['Machine', esc(appr.machine)], ['Note', appr.note ? '<em>' + esc(appr.note) + '</em>' : '—']]) +
-      '</section>' +
-      '<div class="or-group-foot">' +
-        '<button type="button" class="btn btn-primary" data-appr-approve>' + icon('check') + 'Approve order</button>' +
-        '<button type="button" class="btn btn-secondary" data-appr-return>' + icon('undo') + 'Return to technician</button>' +
-        '<a class="btn btn-secondary" href="#/approvals">Back</a>' +
-        '<span class="or-total-lbl">' + money(total) + '</span>' +
-      '</div>' +
-    '</div>';
-  }
-
   function renderGroupForm(gi) {
-    if (approvalMode) return renderApprovalForm(gi);
     var g = groups[gi], gs = groupStates[gi];
     if (gs.submitted) {
       return '<div class="or-submitted-banner">' + icon('check') + '<div><b>' + esc(gs.poNum) + ' submitted</b><p class="muted">Order placed successfully.</p></div></div>';
@@ -370,13 +323,15 @@ SE.views['wo-order'] = function (el, p) {
         '</div>' +
       '</section>' +
       '<div class="or-group-foot">' +
-        '<button type="button" class="btn btn-primary" data-or-submit-group="' + gi + '">' + icon('check') + (local ? 'Submit transfer' : 'Place order') + '</button>' +
-        (gi < groups.length - 1
-          ? '<button type="button" class="btn btn-secondary" data-or-next="' + gi + '">Skip to ' + esc(groups[gi + 1].label) + ' ' + icon('arrow-small-right') + '</button>'
-          : '') +
-        (gi > 0
-          ? '<button type="button" class="btn btn-secondary" data-or-prev="' + gi + '">' + icon('arrow-small-left') + 'Back</button>'
-          : '<a class="btn btn-secondary" href="#/work-order?id=' + esc(w.id) + '">Cancel</a>') +
+        (approvalMode
+          ? '<button type="button" class="btn btn-primary" data-appr-approve>' + icon('check') + 'Approve order</button>' +
+            '<button type="button" class="btn btn-secondary" data-appr-return>' + icon('undo') + 'Return to technician</button>' +
+            '<a class="btn btn-secondary" href="#/approvals">' + icon('arrow-small-left') + 'Back to approvals</a>'
+          : '<button type="button" class="btn btn-primary" data-or-submit-group="' + gi + '">' + icon('check') + (local ? 'Submit transfer' : 'Place order') + '</button>' +
+            (gi < groups.length - 1 ? '<button type="button" class="btn btn-secondary" data-or-next="' + gi + '">Skip to ' + esc(groups[gi + 1].label) + ' ' + icon('arrow-small-right') + '</button>' : '') +
+            (gi > 0 ? '<button type="button" class="btn btn-secondary" data-or-prev="' + gi + '">' + icon('arrow-small-left') + 'Back</button>'
+                    : '<a class="btn btn-secondary" href="#/work-order?id=' + esc(w.id) + '">Cancel</a>')
+        ) +
         '<span class="or-total-lbl">' + (local ? 'No charge' : money(total)) + '</span>' +
       '</div>' +
     '</div>';
@@ -399,16 +354,6 @@ SE.views['wo-order'] = function (el, p) {
   var grandTotal = allItems.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
 
   function renderSummaryAside() {
-    if (approvalMode) {
-      return '<aside class="card oc-aside or-aside" aria-label="Approval summary">' +
-        '<h2 class="oc-aside-h">Approval request</h2>' +
-        '<div class="or-sum-wos"><span class="muted">' + icon('person') + esc(appr.by) + '</span><b>' + esc(appr.machine) + '</b></div>' +
-        '<div class="or-sum-row"><div class="or-sum-lbl">' + icon('building') + esc(appr.supplier) + '</div><div class="or-sum-val">' + money(K.apprTotal(appr)) + '</div></div>' +
-        '<div class="oc-grand"><span>Requested total</span><b>' + money(K.apprTotal(appr)) + '</b></div>' +
-        '<p class="oc-note">Approving sends a purchase order to ' + esc(appr.supplier) + '. Returning sends the request back to ' + esc(appr.by) + '.</p>' +
-        (appr.why ? '<div class="ap-why" style="margin-top:16px;">' + SE.chip(appr.why.label, 'warning') + '<p style="margin-top:8px;font-size:13px;color:var(--muted);">' + esc(appr.why.text) + '</p></div>' : '') +
-      '</aside>';
-    }
     var rows = groups.map(function (g, i) {
       var gs = groupStates[i];
       var t = g.items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
@@ -519,20 +464,10 @@ SE.views['wo-order'] = function (el, p) {
   // ── Event handlers ────────────────────────────────────────────────────────
   el.addEventListener('click', function (e) {
     // Approval actions
-    var apprBtn = e.target.closest('[data-appr-approve],[data-appr-return],[data-appr-undo]');
+    var apprBtn = e.target.closest('[data-appr-approve],[data-appr-return]');
     if (apprBtn && apprBtn.disabled) return;
     if (apprBtn && apprBtn.hasAttribute('data-appr-approve')) { approveOrder(apprBtn); return; }
     if (apprBtn && apprBtn.hasAttribute('data-appr-return')) { openApprReturnDlg(); return; }
-    if (apprBtn && apprBtn.hasAttribute('data-appr-undo')) {
-      K.apprReset(appr);
-      allItems = K.apprItems(appr).map(function (i) {
-        var pt = D.parts.find(function (x) { return x.pn === i.pn; }) || {};
-        return { id: 'appr-' + i.pn, partNum: i.pn, description: pt.name || i.pn, qty: i.qty, price: pt.price || 0, inStock: true, vendor: appr.supplier, uom: pt.uom || 'each', selectedSources: [], selectedSource: null };
-      });
-      groups = buildPoGroups(allItems); groupStates = groups.map(defaultGroupState);
-      var main = el.querySelector('.or-main'); if (main) main.innerHTML = renderApprovalForm(0);
-      SE.toast('Changes undone', 'undo'); return;
-    }
 
     // Tab switch
     var tabBtn = e.target.closest('[data-or-tab]');
