@@ -105,7 +105,7 @@
   .sf-wrap .ss-cat-btn { display: flex; align-items: center; gap: 6px; padding: 0 14px 0 20px; background: var(--ink) !important; color: #fff !important; font-size: 15px; font-weight: 700; white-space: nowrap; flex: none; border-radius: 999px 0 0 999px; margin: -1px 0 -1px -1px; height: calc(100% + 2px); }
   .sf-wrap .ss-cat-btn:hover, .sf-wrap .ss-cat-btn[aria-expanded="true"] { background: color-mix(in srgb, var(--ink) 88%, transparent) !important; }
   .sf-wrap .ss-cat-btn .i { width: 14px; height: 14px; opacity: .75; }
-  .sf-wrap .search { flex: 1; border: none !important; box-shadow: none !important; border-radius: 0; background: none; padding: 0 4px 0 4px; align-items: center; }
+  .sf-wrap .search { flex: 1; height: 100%; border: none !important; box-shadow: none !important; border-radius: 0; background: none; padding: 0 4px 0 0; align-items: center; }
   .sf-wrap .search input { padding: 0 4px 0 10px; font-size: 14px; }
   .sf-mic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; color: var(--muted); flex: none; }
   .sf-mic:hover { color: var(--ink); }
