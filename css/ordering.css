@@ -213,4 +213,24 @@
     .or-fields { grid-template-columns: minmax(0, 1fr); }
     .or-addr-cols { grid-template-columns: minmax(0, 1fr); }
   }
+
+  /* reorder / add-to dialog */
+  .rod-sections { display: flex; flex-direction: column; gap: 0; }
+  .rod-section { display: flex; flex-direction: column; gap: 12px; padding: 20px 0; }
+  .rod-section:first-child { padding-top: 4px; }
+  .rod-divider { height: 1px; background: var(--line); }
+  .rod-sh { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .rod-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rod-lbl { font-size: 13px; color: var(--muted); white-space: nowrap; flex: none; min-width: 120px; }
+  .rod-ctl { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; flex-wrap: wrap; }
+  .rod-sel-wrap { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
+  .rod-sel-wrap .i { position: absolute; right: 8px; pointer-events: none; color: var(--muted); width: 15px; height: 15px; }
+  .rod-sel { width: 100%; height: 36px; padding: 0 28px 0 10px; border: 1px solid var(--line-field); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 13px; -webkit-appearance: none; appearance: none; }
+  .rod-btn { white-space: nowrap; flex: none; }
+  .rod-sep-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+  .rod-sep-or::before, .rod-sep-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .rod-newbtn { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; }
+  .rod-newlist-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rod-name-in { flex: 1; min-width: 0; height: 36px; padding: 0 10px; border: 1px solid var(--line-field); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 13px; outline: none; }
+  .rod-name-in:focus { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
 }
