@@ -190,6 +190,7 @@ SE.views['work-orders'] = function (el, p) {
   var filter = FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
   var tab = p.tab === 'archive' && !SE.twin ? 'archive' : 'active', q = p.q || '';
   var dateMode = 'any', dateFrom = '', dateTo = '';
+  var view = p.view === 'po' ? 'po' : 'wo';
 
   function displayStatus(w) {
     var st = W.status(w);
@@ -242,6 +243,37 @@ SE.views['work-orders'] = function (el, p) {
   function sub() { var n = W.list().length, a = W.list(true).length; return esc(SE.location().name) + ' \xb7 ' + n + ' order' + (n === 1 ? '' : 's') + (a ? ' \xb7 ' + a + ' archived' : ''); }
   function shortName(s) { if (!s) return '—'; var p = s.split(' '); return p.length > 1 ? p[0] + ' ' + p[1].charAt(0) + '.' : s; }
 
+  var PO_STATUS_CLS = { 'Shipped': 'ord-s-active', 'Delivered': 'ord-s-closed', 'Pending': 'ord-s-open', 'Confirmed': 'ord-s-parts', 'Cancelled': 'ord-s-closed' };
+  function poRow(o) {
+    var cls = PO_STATUS_CLS[o.status] || 'ord-s-open';
+    var wo = o.wo ? SE.allWorkOrders().find(function (w) { return w.id === o.wo; }) : null;
+    var itemCount = o.items ? o.items.length : 0;
+    return '<tr class="ord-tr" data-go="order" data-po="' + esc(o.po) + '" tabindex="0" aria-label="' + esc(o.po) + '">' +
+      '<td class="ord-col-id">' + esc(o.po) + '</td>' +
+      '<td class="ord-col-equip"><b>' + (wo ? esc(wo.machine) : '—') + '</b><span class="ord-equip-sub">' + (o.wo ? '#' + esc(o.wo) : '—') + '</span></td>' +
+      '<td class="ord-col-issue">' + esc(o.supplier || '—') + '</td>' +
+      '<td class="ord-col-who">' + (itemCount ? itemCount + ' item' + (itemCount === 1 ? '' : 's') : '—') + '</td>' +
+      '<td class="ord-col-due">' + esc(o.placed || '—') + '</td>' +
+      '<td class="ord-col-status"><span class="ord-chip ' + cls + '">' + esc(o.status || 'Pending') + '</span></td>' +
+      '<td class="ord-col-pri">' + (o.total ? '$' + o.total.toLocaleString() : '—') + '</td>' +
+    '</tr>';
+  }
+  function renderPoList() {
+    var host = el.querySelector('#wo-list');
+    var orders = SE.orders().filter(function (o) { return !q.trim() || [o.po, o.wo || '', o.supplier || ''].join(' ').toLowerCase().indexOf(q.toLowerCase()) >= 0; });
+    if (!orders.length) {
+      host.innerHTML = SE.ui.empty({ icon: 'shopping-cart', tone: 'neutral', title: 'No purchase orders', text: 'Purchase orders created from approved work orders appear here.' });
+    } else {
+      host.innerHTML =
+        '<div class="tbl-wrap ord-tbl-wrap"><table class="tbl ord-tbl">' +
+          '<thead><tr>' +
+            '<th>PO #</th><th>Equipment / WO</th><th>Supplier</th><th>Items</th><th>Placed</th><th>Status</th><th>Total</th>' +
+          '</tr></thead>' +
+          '<tbody>' + orders.map(poRow).join('') + '</tbody>' +
+        '</table></div>';
+    }
+  }
+
   function row(w) {
     var ds = displayStatus(w);
     var priKey = (w.priority || 'Normal').toLowerCase();
@@ -259,6 +291,7 @@ SE.views['work-orders'] = function (el, p) {
   }
 
   function renderList() {
+    if (view === 'po') { renderPoList(); return; }
     var list = base().filter(matchFilter);
     var host = el.querySelector('#wo-list');
     var hasFilter = q || filter !== 'All' || dateMode !== 'any';
@@ -278,16 +311,36 @@ SE.views['work-orders'] = function (el, p) {
     }
   }
   function render() {
-    el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' :
-      SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
-    el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' :
-      SE.ui.seg('Filter', FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
-    el.querySelector('#wo-count').textContent = count(filter) + ' order' + (count(filter) === 1 ? '' : 's');
-    var panel = el.querySelector('#wo-date-panel');
-    if (panel) panel.hidden = dateMode !== 'custom';
+    // view toggle
+    var vt = el.querySelector('#wo-view-toggle');
+    if (vt) {
+      vt.querySelectorAll('[data-view]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.view === view);
+      });
+    }
+    // WO-only controls
+    var woOnly = el.querySelector('#wo-only-controls');
+    if (woOnly) woOnly.style.display = view === 'po' ? 'none' : 'contents';
+    var poSearch = el.querySelector('#wo-po-search-wrap');
+    if (poSearch) poSearch.hidden = view === 'wo';
+
+    if (view === 'wo') {
+      el.querySelector('#wo-tabs').innerHTML = SE.twin ? '' :
+        SE.ui.seg('Orders or archive', [['active', 'Orders', W.list().length], ['archive', 'Archive', W.list(true).length]], tab).replace(/data-seg=/g, 'data-tab=');
+      el.querySelector('#wo-seg').innerHTML = tab === 'archive' ? '' :
+        SE.ui.seg('Filter', FILTERS.map(function (f) { return [f, f, count(f)]; }), filter);
+      el.querySelector('#wo-count').textContent = count(filter) + ' order' + (count(filter) === 1 ? '' : 's');
+      var panel = el.querySelector('#wo-date-panel');
+      if (panel) panel.hidden = dateMode !== 'custom';
+    } else {
+      el.querySelector('#wo-tabs').innerHTML = '';
+      el.querySelector('#wo-seg').innerHTML = '';
+      el.querySelector('#wo-count').textContent = SE.orders().length + ' PO' + (SE.orders().length === 1 ? '' : 's');
+    }
     renderList();
     el.querySelector('#subline').innerHTML = sub();
     var o = {};
+    if (view !== 'wo') o.view = view;
     if (tab !== 'active') o.tab = tab;
     if (filter !== 'All') o.filter = filter;
     if (q.trim()) o.q = q.trim();
@@ -298,16 +351,26 @@ SE.views['work-orders'] = function (el, p) {
     '<section class="sec ord-sec">' +
       '<div class="ord-bar">' +
         '<div id="wo-tabs"></div>' +
+        '<div class="ord-view-toggle" id="wo-view-toggle" role="group" aria-label="View by">' +
+          '<button type="button" class="ord-vbtn" data-view="wo">Work Orders</button>' +
+          '<button type="button" class="ord-vbtn" data-view="po">Purchase Orders</button>' +
+        '</div>' +
         '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
       '</div>' +
       '<div class="ord-filters">' +
-        '<div id="wo-seg" class="ord-pills"></div>' +
-        '<div class="ord-extras">' +
-          '<div class="control ord-sel-wrap"><select class="ord-ctl" id="wo-date-sel" aria-label="Filter by date">' +
-            '<option value="any">Any date</option><option value="week">This week</option><option value="month">This month</option><option value="custom">Custom range…</option>' +
-          '</select>' + icon('angle-small-down') + '</div>' +
-          '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
-            '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search orders…" autocomplete="off"></form>' +
+        '<div id="wo-only-controls" style="display:contents">' +
+          '<div id="wo-seg" class="ord-pills"></div>' +
+          '<div class="ord-extras">' +
+            '<div class="control ord-sel-wrap"><select class="ord-ctl" id="wo-date-sel" aria-label="Filter by date">' +
+              '<option value="any">Any date</option><option value="week">This week</option><option value="month">This month</option><option value="custom">Custom range…</option>' +
+            '</select>' + icon('angle-small-down') + '</div>' +
+            '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
+              '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search orders…" autocomplete="off"></form>' +
+          '</div>' +
+        '</div>' +
+        '<div id="wo-po-search-wrap" class="ord-extras" hidden>' +
+          '<form class="ord-ctl ord-search" role="search" data-po-form><label class="sr-only" for="po-q">Search POs</label>' + icon('search') +
+            '<input id="po-q" type="search" value="' + esc(q) + '" placeholder="Search POs…" autocomplete="off"></form>' +
         '</div>' +
         '<span class="ord-count-label" id="wo-count"></span>' +
       '</div>' +
@@ -330,6 +393,9 @@ SE.views['work-orders'] = function (el, p) {
   var qIn = el.querySelector('#wo-q');
   qIn.addEventListener('input', function () { q = qIn.value; render(); });
   el.querySelector('[data-wo-form]').addEventListener('submit', function (e) { e.preventDefault(); e.stopPropagation(); });
+  var poQIn = el.querySelector('#po-q');
+  poQIn.addEventListener('input', function () { q = poQIn.value; render(); });
+  el.querySelector('[data-po-form]').addEventListener('submit', function (e) { e.preventDefault(); e.stopPropagation(); });
 
   el.querySelector('#wo-date-sel').addEventListener('change', function (e) {
     dateMode = e.target.value;
@@ -348,6 +414,7 @@ SE.views['work-orders'] = function (el, p) {
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button');
     if (t && t.hasAttribute('data-new')) { openNew(false); return; }
+    if (t && t.dataset.view) { view = t.dataset.view; q = ''; el.querySelector('#wo-q').value = ''; el.querySelector('#po-q').value = ''; render(); return; }
     if (t && t.dataset.tab) { tab = t.dataset.tab; render(); return; }
     if (t && t.hasAttribute('data-clear')) { q = ''; el.querySelector('#wo-q').value = ''; filter = 'All'; dateMode = 'any'; dateFrom = ''; dateTo = ''; el.querySelector('#wo-date-sel').value = 'any'; render(); return; }
     if (t && t.dataset.seg) { filter = t.dataset.seg; render(); return; }

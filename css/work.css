@@ -270,7 +270,13 @@
 
   /* ---------- orders list (table view) */
   .ord-sec { gap: 16px; }
-  .ord-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ord-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .ord-view-toggle { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; flex: none; }
+  .ord-vbtn { padding: 0 14px; height: 34px; font-size: 13px; font-weight: 500; color: var(--muted); background: var(--surface); white-space: nowrap; }
+  .ord-vbtn:not(:first-child) { border-left: 1px solid var(--line); }
+  .ord-vbtn.active { background: var(--ink); color: #fff; }
+  .ord-vbtn:not(.active):hover { background: var(--container-low); color: var(--ink); }
+  .ord-new-btn { margin-left: auto; }
   .ord-new-btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .ord-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 0 4px; border-bottom: 1px solid var(--line); }
   .ord-pills { flex: 1; min-width: 0; }
