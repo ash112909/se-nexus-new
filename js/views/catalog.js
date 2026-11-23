@@ -146,41 +146,51 @@
       }
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
-    var catQ2 = wo ? '?wo=' + encodeURIComponent(wo) : '';
-    // Enhanced Catalog — 4 levels: top → supplier → category → sub-category
-    var ECAT_BY_SUP = C.ecatBySup;
-    var eOpen = cur.extra === 'enhanced-catalog';
-    var eKids = '';
-    if (eOpen) {
+    var navHead = '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p>';
+    // Enhanced Catalog tree: 4 levels — supplier → category → sub-category
+    if (cur.extra === 'enhanced-catalog') {
+      var ECAT_BY_SUP = C.ecatBySup;
       var connSups = D.suppliers.filter(function (s) { return s.active && s.status === 'Connected'; });
-      eKids = connSups.map(function (s) {
+      var eItems = connSups.map(function (s) {
         var esOpen = cur.esup === s.id;
         var catList = ECAT_BY_SUP[s.id] || [];
         var catKids = !esOpen ? '' : catList.map(function (cat) {
           var cOpen = cur.ecat === cat.id;
           var subKids = !cOpen ? '' : (cat.subs || []).map(function (sub) {
-            return node(4, sub[1],
+            return node(3, sub[1],
               '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat.id + '&sub=' + sub[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
               cur.esub === sub[0], null, false, null);
           }).join('');
-          return node(3, cat.name,
+          return node(2, cat.name,
             '#/enhanced-catalog?sup=' + esc(s.id) + '&cat=' + cat.id + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
             cOpen && !cur.esub, null, cOpen, subKids);
         }).join('');
-        return node(2, s.name,
+        return node(1, s.name,
           '#/enhanced-catalog?sup=' + esc(s.id) + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
           esOpen && !cur.ecat, null, esOpen, catKids);
       }).join('');
+      return navHead + '<ul>' + eItems + '</ul></nav>';
     }
-    var extraItems =
-      node(1, 'Company Catalog', '#/company-catalog' + catQ2, cur.extra === 'company-catalog', null, false, null) +
-      node(1, 'Enhanced Catalog', '#/enhanced-catalog' + catQ2, eOpen && !cur.esup, null, eOpen, eKids);
-    return '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p><ul>' + sups + '<li class="ctree-divider" role="separator"></li>' + extraItems + '</ul></nav>';
+    // Parts catalog tree (default): suppliers only
+    return navHead + '<ul>' + sups + '</ul></nav>';
+  };
+  // catalog type selector bar: switches between Parts / Company / Enhanced catalog
+  C.typeBar = function (cur, wo) {
+    var q = wo ? '?wo=' + encodeURIComponent(wo) : '';
+    var types = [
+      { label: 'Parts Catalog',    href: '#/catalog' + q,          active: !cur.extra },
+      { label: 'Company Catalog',  href: '#/company-catalog' + q,  active: cur.extra === 'company-catalog' },
+      { label: 'Enhanced Catalog', href: '#/enhanced-catalog' + q, active: cur.extra === 'enhanced-catalog' },
+    ];
+    return '<div class="cat-type-bar">' + types.map(function (t) {
+      return '<a class="ctb-btn' + (t.active ? ' on' : '') + '" href="' + t.href + '"' + (t.active ? ' aria-current="true"' : '') + '>' + esc(t.label) + '</a>';
+    }).join('') + '</div>';
   };
   // page body with the tree beside it; under 960px of content the tree folds away and the breadcrumb leads.
   // The WO ribbon (dark bar) and search panel live in the aside above the tree.
   C.layout = function (cur, wo, main) {
     return C.woRibbon(wo) +
+      C.typeBar(cur, wo) +
       '<div class="cat-layout"><aside class="ctree-col">' +
       C.searchPanel(wo) +
       C.tree(cur, wo) +
@@ -262,14 +272,6 @@ SE.catClearWo = function () {
 SE.titles.catalog = 'Parts catalog';
 SE.views.catalog = function (el, p) {
   var D = SE.data, esc = SE.esc, icon = SE.icon, UI = SE.ui, C = SE.cat;
-  var total = SE.assets().length;
-  var allModels = Object.keys(D.machines).sort(function (a, b) { return D.machines[b].units.length - D.machines[a].units.length; });
-
-  var fleetHtml = '<ul class="mach-grid fleet-grid">' + allModels.map(function (k) {
-    var m = D.machines[k], s = SE.supplier(m.supplier);
-    return '<li><a class="mach-card fleet-card" href="#/machine?m=' + k + C.woQ(p.wo) + '">' + UI.thumb() + '<span><b>' + esc(m.name) + '</b><small>' + esc(s.name) + ' · ' + esc(m.type) + '</small><small>' + (m.schematic ? 'Interactive diagram' : 'Image with callouts') + '</small></span>' +
-      '<span class="fc-count"><b>' + m.units.length + '</b><small>units</small></span>' + icon('angle-small-right') + '</a></li>';
-  }).join('') + '</ul>';
 
   var supsHtml = '<ul class="sup-grid">' + D.suppliers.map(function (s) {
     if (!s.active) return '<li><div class="sup-card off" aria-disabled="true"><div class="sc-top">' + C.badge(s) + SE.chip('Not connected', 'neutral') + '</div><b>' + esc(s.name) + '</b><span>' + esc(s.tagline) + '</span></div></li>';
@@ -279,9 +281,8 @@ SE.views.catalog = function (el, p) {
 
   var s = SE.shell(el, {
     nav: 'catalog', title: 'Parts catalog', wide: true, crumbs: [['Home', 'home']],
-    sub: 'Your fleet first, then browse by supplier, model, assembly group and sub-assembly. 2 connected catalogs.',
+    sub: 'Browse by supplier, model, assembly group and sub-assembly. 2 connected catalogs.',
     body: C.layout({}, p.wo,
-      UI.sec('Your fleet · ' + total + ' units', '', fleetHtml, 'h-fleet') +
       UI.sec('Suppliers in your network · ' + D.suppliers.length, '<span class="sec-note">JLG and Skyjack are connected to Mid-County Rental</span>', supsHtml, 'h-sups')),
   });
 
