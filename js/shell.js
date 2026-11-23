@@ -112,7 +112,7 @@
         '<form class="search" role="search" data-search>' +
           '<label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
           '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
-          '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
+          '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></button>' +
           '<span class="sf-sep" aria-hidden="true"></span>' +
           '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
         '</form>' +
