@@ -80,7 +80,7 @@
         '<form class="search" role="search" data-search>' +
           '<label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
           '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
-          '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
+          '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="13" rx="5"/><line x1="9.5" y1="7" x2="14.5" y2="7"/><line x1="9.5" y1="10" x2="14.5" y2="10"/><path d="M5 12a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg></button>' +
           '<span class="sf-sep" aria-hidden="true"></span>' +
           '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
         '</form>' +
