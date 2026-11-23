@@ -63,6 +63,21 @@
   .fa-tbl td a:hover { color: var(--link); text-decoration: underline; }
   @container (max-width: 879px) { .fa-grid { grid-template-columns: minmax(0, 1fr); } }
 
+  /* grouped WO + PO list in Recent orders */
+  .fa-ro-list { display: flex; flex-direction: column; gap: 2px; }
+  .fa-ro-group { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .fa-ro-wo { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--container-low); text-decoration: none; color: var(--ink); font-size: 13px; }
+  .fa-ro-wo:hover { background: var(--container); }
+  .fa-ro-wo-id { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; flex: none; }
+  .fa-ro-wo-issue { flex: 1; min-width: 0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fa-ro-pos { display: flex; flex-direction: column; }
+  .fa-ro-po { display: flex; align-items: center; gap: 10px; padding: 9px 14px 9px 28px; border-top: 1px solid var(--line); text-decoration: none; color: var(--ink); font-size: 13px; }
+  .fa-ro-po:hover { background: var(--container-low); }
+  .fa-ro-po-id { font-weight: 600; white-space: nowrap; flex: none; min-width: 90px; }
+  .fa-ro-po-sup { flex: 1; min-width: 0; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fa-ro-po-date { white-space: nowrap; color: var(--muted); flex: none; }
+  .fa-ro-po-amt { font-weight: 600; white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; }
+
   /* ---------- order history search (DES-32) */
   .oh-hit { display: block; margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--muted); white-space: nowrap; }
   .oh-hit b { color: var(--ink); font-weight: 500; }

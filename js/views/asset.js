@@ -28,10 +28,34 @@ SE.views.asset = function (el, p) {
     return ['<a href="#/work-order?id=' + w.id + '"><b>#' + w.id + '</b></a>', esc(w.issue), esc(w.priority), esc(w.assignee), esc(w.due), SE.chip(status(w))];
   }), { cls: 'fa-tbl', rowAttrs: function (i) { return 'data-go="work-order" data-id="' + open[i].id + '"'; } })
     : '<p class="fa-none">' + icon('check') + 'No open work orders for this unit.</p>';
-  var poTable = orders.length ? UI.table([['PO', 'nowrap'], ['Supplier'], ['Placed', 'nowrap'], ['Work order', 'nowrap'], ['Lines', 'num'], ['Status'], ['Total', 'num']], orders.map(function (o) {
-    return ['<a href="#/order?po=' + o.po + '"><b>' + o.po + '</b></a>', esc(o.supplier), esc(o.placed), '#' + esc(o.wo), String(o.items.length), SE.chip(o.status), '<b>' + SE.money(o.total) + '</b>'];
-  }), { cls: 'fa-tbl', rowAttrs: function (i) { return 'data-go="order" data-po="' + orders[i].po + '"'; } })
-    : '<p class="fa-none">' + icon('receipt') + 'No orders for this unit\'s work orders yet.</p>';
+
+  // "Recent orders": work orders (all, not just open) with their POs nested underneath
+  var wosWithOrders = wos.filter(function (w) { return orders.some(function (o) { return o.wo === w.id; }); });
+  var recentOrdersHtml;
+  if (!wosWithOrders.length) {
+    recentOrdersHtml = '<p class="fa-none">' + icon('receipt') + 'No purchase orders for this unit\'s work orders yet.</p>';
+  } else {
+    recentOrdersHtml = '<div class="fa-ro-list">' + wosWithOrders.map(function (w) {
+      var woPos = orders.filter(function (o) { return o.wo === w.id; });
+      var st = status(w);
+      return '<div class="fa-ro-group">' +
+        '<a class="fa-ro-wo" href="#/work-order?id=' + w.id + '" data-go="work-order" data-id="' + w.id + '">' +
+          '<span class="fa-ro-wo-id">#' + esc(w.id) + '</span>' +
+          '<span class="fa-ro-wo-issue">' + esc(w.issue) + '</span>' +
+          SE.chip(st) +
+        '</a>' +
+        '<div class="fa-ro-pos">' + woPos.map(function (o) {
+          return '<a class="fa-ro-po" href="#/order?po=' + o.po + '" data-go="order" data-po="' + esc(o.po) + '">' +
+            '<span class="fa-ro-po-id">' + esc(o.po) + '</span>' +
+            '<span class="fa-ro-po-sup">' + esc(o.supplier) + '</span>' +
+            '<span class="fa-ro-po-date">' + esc(o.placed) + '</span>' +
+            SE.chip(o.status) +
+            '<span class="fa-ro-po-amt">' + SE.money(o.total) + '</span>' +
+          '</a>';
+        }).join('') + '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
 
   var s = SE.shell(el, {
     nav: 'fleet', title: a.equip, sub: esc(a.machine) + ' · ' + esc(a.serial) + ' · ' + esc(a.location), crumbs: [['Home', 'home'], ['Fleet', 'fleet']],
@@ -51,7 +75,7 @@ SE.views.asset = function (el, p) {
         ]) + '</section>' +
       '<div class="fa-side">' +
         UI.sec('Open work orders', '<span class="fa-n">' + open.length + '</span>', woTable, 'fa-wo') +
-        UI.sec('Recent orders', '', poTable, 'fa-po') +
+        UI.sec('Recent orders', '', recentOrdersHtml, 'fa-po') +
       '</div></div>',
   });
   el.addEventListener('click', function (e) {
