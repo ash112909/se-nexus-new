@@ -29,32 +29,36 @@ SE.views.asset = function (el, p) {
   }), { cls: 'fa-tbl', rowAttrs: function (i) { return 'data-go="work-order" data-id="' + open[i].id + '"'; } })
     : '<p class="fa-none">' + icon('check') + 'No open work orders for this unit.</p>';
 
-  // "Recent orders": work orders (all, not just open) with their POs nested underneath
+  // "Recent orders": work orders (all statuses) with their POs nested as sub-rows
   var wosWithOrders = wos.filter(function (w) { return orders.some(function (o) { return o.wo === w.id; }); });
   var recentOrdersHtml;
   if (!wosWithOrders.length) {
     recentOrdersHtml = '<p class="fa-none">' + icon('receipt') + 'No purchase orders for this unit\'s work orders yet.</p>';
   } else {
-    recentOrdersHtml = '<div class="fa-ro-list">' + wosWithOrders.map(function (w) {
+    var rows = wosWithOrders.map(function (w) {
       var woPos = orders.filter(function (o) { return o.wo === w.id; });
       var st = status(w);
-      return '<div class="fa-ro-group">' +
-        '<a class="fa-ro-wo" href="#/work-order?id=' + w.id + '" data-go="work-order" data-id="' + w.id + '">' +
-          '<span class="fa-ro-wo-id">#' + esc(w.id) + '</span>' +
-          '<span class="fa-ro-wo-issue">' + esc(w.issue) + '</span>' +
-          SE.chip(st) +
-        '</a>' +
-        '<div class="fa-ro-pos">' + woPos.map(function (o) {
-          return '<a class="fa-ro-po" href="#/order?po=' + o.po + '" data-go="order" data-po="' + esc(o.po) + '">' +
-            '<span class="fa-ro-po-id">' + esc(o.po) + '</span>' +
-            '<span class="fa-ro-po-sup">' + esc(o.supplier) + '</span>' +
-            '<span class="fa-ro-po-date">' + esc(o.placed) + '</span>' +
-            SE.chip(o.status) +
-            '<span class="fa-ro-po-amt">' + SE.money(o.total) + '</span>' +
-          '</a>';
-        }).join('') + '</div>' +
-      '</div>';
-    }).join('') + '</div>';
+      var woRow = '<tr class="fa-ro-wo-row">' +
+        '<td colspan="5" class="fa-ro-wo-cell">' +
+          '<a href="#/work-order?id=' + w.id + '" class="fa-ro-wo-link" data-go="work-order" data-id="' + w.id + '">' +
+            '<b>#' + esc(w.id) + '</b><span class="fa-ro-issue">' + esc(w.issue) + '</span>' +
+          '</a>' + SE.chip(st) +
+        '</td></tr>';
+      var poRows = woPos.map(function (o) {
+        return '<tr data-go="order" data-po="' + esc(o.po) + '">' +
+          '<td class="fa-ro-indent"><b>' + esc(o.po) + '</b></td>' +
+          '<td>' + esc(o.supplier) + '</td>' +
+          '<td class="nowrap">' + esc(o.placed) + '</td>' +
+          '<td>' + SE.chip(o.status) + '</td>' +
+          '<td class="num"><b>' + SE.money(o.total) + '</b></td>' +
+        '</tr>';
+      }).join('');
+      return woRow + poRows;
+    }).join('');
+    recentOrdersHtml = '<div class="tbl-wrap"><table class="tbl fa-tbl">' +
+      '<thead><tr><th>PO</th><th>Supplier</th><th>Placed</th><th>Status</th><th class="num">Total</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+    '</table></div>';
   }
 
   var s = SE.shell(el, {
