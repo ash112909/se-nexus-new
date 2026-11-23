@@ -111,7 +111,7 @@
         '</button>' +
         '<form class="search" role="search" data-search>' +
           '<label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
-          '<input id="q" name="q" type="search" placeholder="Part name or number" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
+          '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
           '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
           '<span class="sf-sep" aria-hidden="true"></span>' +
           '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
