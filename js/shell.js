@@ -106,12 +106,12 @@
           '</button></li>';
       }).join('');
       return '<div class="sf-wrap" data-sf>' +
+        '<button type="button" class="sf-scope" aria-expanded="false" aria-haspopup="true" data-sf-scope>' +
+          '<span class="sf-scope-txt">Parts</span>' + icon('angle-small-down') +
+        '</button>' +
         '<form class="search" role="search" data-search>' +
-          '<button type="button" class="sf-scope" aria-expanded="false" aria-haspopup="true" data-sf-scope>' +
-            '<span class="sf-scope-txt">Parts</span>' + icon('angle-small-down') +
-          '</button>' +
-          '<label class="sr-only" for="q">Search</label>' +
-          '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
+          '<label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
+          '<input id="q" name="q" type="search" placeholder="Part name or number" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
           '<button class="sf-mic" type="button" aria-label="Search by voice" data-voice>' + icon('microphone') + '</button>' +
           '<span class="sf-sep" aria-hidden="true"></span>' +
           '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
