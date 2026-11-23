@@ -519,7 +519,7 @@
     function typeNav(t, q) {
       if (t === 'fleet')   return ['fleet',   { q: q }];
       if (t === 'manuals') return ['manuals', { q: q }];
-      if (t === 'orders')  return ['orders',  { q: q }];
+      if (t === 'orders')  return ['work-orders', { q: q }];
       if (t === 'kb') return ['kb', { q: q }];
       return ['catalog', q ? { q: q } : {}]; // parts: browse the catalog tree
     }
@@ -884,7 +884,7 @@
       var moreLinks = {
         manuals: ['#/manuals' + qEnc, 'book-alt', 'View more in Manuals'],
         fleet:   ['#/fleet'   + qEnc, 'truck-side', 'View more in Fleet'],
-        orders:  ['#/orders'  + qEnc, 'time-past', 'View more in Orders'],
+        orders:  ['#/work-orders' + qEnc, 'clipboard-list', 'View more in Orders'],
         kb:      ['#/kb'      + qEnc, 'notebook',  'View more in Knowledge Base']
       };
       var moreLink = moreLinks[type] ? '<p class="sr-morelink"><a class="sr-chip" href="' + moreLinks[type][0] + '">' + icon(moreLinks[type][1]) + moreLinks[type][2] + icon('arrow-small-right') + '</a></p>' : '';
