@@ -91,7 +91,7 @@
   .ph-topbar > .search { flex: 0 1 420px; height: 40px; border-color: var(--line); }
   .ph-topbar > .search input { font-size: 14px; }
   .ph-topbar > .search.on-page { flex: 1 1 640px; }
-  .ph-topbar .quickbar { flex: none; height: 40px; padding: 0; gap: 4px; border: 0; background: none; }
+  .ph-topbar .quickbar { flex: none; height: 40px; padding: 0; gap: 4px; border: 0; background: none; margin-left: auto; }
   .search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 8px 0 16px; border: 1px solid var(--line-field); border-radius: 12px; background: var(--surface); }
   .search:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
   .search > .i { color: var(--muted); }
