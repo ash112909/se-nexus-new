@@ -75,40 +75,8 @@
           icon('angle-small-down') +
         '</button>';
     }
-    function sfSupItems() {
-      return (D.suppliers || []).filter(function (s) { return s.active && s.status === 'Connected'; }).map(function (s) { return s.name; });
-    }
-    function sfSubHtml(cat) {
-      var sups = cat === 'parts' || cat === 'manuals' ? sfSupItems() : null;
-      if (!sups || !sups.length) return '';
-      var eyebrow = cat === 'parts' ? 'Parts' : 'Manuals';
-      return '<span class="sf-eyebrow">' + eyebrow + '</span>' +
-        '<strong class="sf-heading">Suppliers</strong>' +
-        '<ul class="sf-sub-list">' +
-        ['View all'].concat(sups).map(function (item, i) {
-          var sel = i === 0;
-          return '<li' + (sel ? ' class="sf-sel"' : '') + '>' +
-            '<button type="button" class="sf-sub-btn" data-sf-sub="' + esc(item) + '">' +
-              '<span>' + esc(item) + '</span>' + icon('check') +
-            '</button></li>';
-        }).join('') + '</ul>';
-    }
     SE.searchForm = function (value) {
-      var sfCats = [
-        { id: 'orders', label: 'Orders' }, { id: 'parts', label: 'Parts', sel: true },
-        { id: 'equipment', label: 'Equipment' }, { id: 'manuals', label: 'Manuals' },
-        { id: 'kb', label: 'Knowledge Base' },
-      ];
-      var catList = sfCats.map(function (c) {
-        return '<li' + (c.sel ? ' class="sf-sel"' : '') + '>' +
-          '<button type="button" class="sf-cat-btn" data-sf-cat="' + c.id + '">' +
-            esc(c.label) + icon('angle-right') +
-          '</button></li>';
-      }).join('');
-      return '<div class="sf-wrap" data-sf>' +
-        '<button type="button" class="sf-scope" aria-expanded="false" aria-haspopup="true" data-sf-scope>' +
-          '<span class="sf-scope-txt">Parts</span>' + icon('angle-small-down') +
-        '</button>' +
+      return '<div class="sf-wrap">' +
         '<form class="search" role="search" data-search>' +
           '<label class="sr-only" for="q">Search parts, machines, orders and manuals</label>' +
           '<input id="q" name="q" type="search" placeholder="Search parts…" autocomplete="off" enterkeyhint="search" value="' + esc(value || '') + '" aria-keyshortcuts="Control+K Meta+K /">' +
@@ -116,14 +84,6 @@
           '<span class="sf-sep" aria-hidden="true"></span>' +
           '<button class="sf-go" type="submit" aria-label="Search">' + icon('search') + '</button>' +
         '</form>' +
-        '<div class="sf-panel" hidden>' +
-          '<div class="sf-col-cats">' +
-            '<span class="sf-eyebrow">Search by</span>' +
-            '<strong class="sf-heading">Category</strong>' +
-            '<ul class="sf-cat-list">' + catList + '</ul>' +
-          '</div>' +
-          '<div class="sf-col-sub" data-sf-sub>' + sfSubHtml('parts') + '</div>' +
-        '</div>' +
       '</div>';
     };
     SE.tools = function () {
@@ -246,14 +206,9 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
     SE.refreshShell = api.refresh;
 
     // ---------- events
-    function closeSfPanel(wrap) {
-      var p = wrap.querySelector('.sf-panel'); if (!p) return;
-      p.hidden = true; wrap.querySelector('[data-sf-scope]').setAttribute('aria-expanded', 'false');
-    }
     el.addEventListener('click', function (e) {
       var t = e.target.closest('button, a, [data-go]');
       if (!account.hidden && !e.target.closest('#account') && !(t && t.hasAttribute('data-account'))) closeAccount(false);
-      el.querySelectorAll('[data-sf]').forEach(function (w) { if (!w.querySelector('.sf-panel').hidden && !e.target.closest('[data-sf]')) closeSfPanel(w); });
       if (!t) return;
       if (t.closest('.rail') && mode() === 'drawer' && t.matches('a')) closeDrawer(true);
       if (t.hasAttribute('data-account')) { if (account.hidden) openAccount(t); else closeAccount(true); return; }
@@ -269,23 +224,6 @@ el.querySelectorAll('[data-qa="notes"]').forEach(function (b) { var n = SE.unrea
       if (t.hasAttribute('data-settings')) { closeAccount(false); return; }
       if (t.hasAttribute('data-ann-x')) { SE.mkt.dismiss(t); return; }
       if (t.hasAttribute('data-whatsnew')) { closeAccount(false); if (SE.mkt) SE.mkt.whatsNew(); return; }
-      if (t.hasAttribute('data-sf-scope')) {
-        var w = t.closest('[data-sf]'), p = w.querySelector('.sf-panel'), open = !p.hidden;
-        p.hidden = open; t.setAttribute('aria-expanded', String(!open)); return;
-      }
-      if (t.hasAttribute('data-sf-cat')) {
-        var w = t.closest('[data-sf]'), cat = t.dataset.sfCat;
-        w.querySelectorAll('.sf-cat-list li').forEach(function (li) {
-          li.classList.toggle('sf-sel', li.querySelector('[data-sf-cat]').dataset.sfCat === cat);
-        });
-        w.querySelector('[data-sf-sub]').innerHTML = sfSubHtml(cat); return;
-      }
-      if (t.hasAttribute('data-sf-sub')) {
-        var w = t.closest('[data-sf]'), val = t.dataset.sfSub;
-        w.querySelectorAll('.sf-sub-list li').forEach(function (li) {
-          li.classList.toggle('sf-sel', li.querySelector('[data-sf-sub]').dataset.sfSub === val);
-        }); return;
-      }
       if (t.hasAttribute('data-voice')) { e.preventDefault(); SE.voice.start(); return; }
       if (t.dataset.out) { SE.toast(t.dataset.out + ' is coming soon', 'time-past'); return; }
       if (t.dataset.go && !e.defaultPrevented) { e.preventDefault(); SE.goFrom(t); }
