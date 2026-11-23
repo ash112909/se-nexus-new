@@ -186,7 +186,7 @@
 SE.titles['work-orders'] = 'Orders';
 SE.views['work-orders'] = function (el, p) {
   var esc = SE.esc, icon = SE.icon, W = SE.work, K = SE.desk;
-  var FILTERS = ['All', 'Active', 'Pending', 'Closed'];
+  var FILTERS = ['All', 'Active', 'Pending', 'Closed', 'Archived'];
   var filter = FILTERS.indexOf(p.filter) >= 0 ? p.filter : 'All';
   var tab = p.tab === 'archive' && !SE.twin ? 'archive' : 'active', q = p.q || '';
   var dateMode = 'any', dateFrom = '', dateTo = '';
@@ -202,7 +202,7 @@ SE.views['work-orders'] = function (el, p) {
     if (st === 'In progress') return 'Active';
     return st;
   }
-  var STATUS_CLS = { 'Parts ordered': 'ord-s-parts', 'Active': 'ord-s-active', 'Open': 'ord-s-open', 'Pending': 'ord-s-pending', 'Closed': 'ord-s-closed' };
+  var STATUS_CLS = { 'Parts ordered': 'ord-s-parts', 'Active': 'ord-s-active', 'Open': 'ord-s-open', 'Pending': 'ord-s-pending', 'Closed': 'ord-s-closed', 'Archived': 'ord-s-closed' };
 
   function inDateRange(w) {
     if (dateMode === 'any') return true;
@@ -218,6 +218,8 @@ SE.views['work-orders'] = function (el, p) {
     return true;
   }
   function matchFilter(w) {
+    if (filter === 'Archived') return W.archived(w);
+    if (W.archived(w)) return false;
     if (!inDateRange(w)) return false;
     if (filter === 'All') return true;
     var ds = displayStatus(w);
@@ -227,9 +229,13 @@ SE.views['work-orders'] = function (el, p) {
     return true;
   }
   function hay(w) { return [w.id, w.machine, w.equip, w.issue, w.assignee || ''].join(' '); }
-  function base() { return W.list(false).filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); }); }
+  function base() {
+    var all = W.list(false).concat(W.list(true));
+    return all.filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); });
+  }
   function count(f) {
-    var list = base();
+    if (f === 'Archived') return W.list(true).length;
+    var list = W.list(false).filter(function (w) { return !q.trim() || SE.hitTokens(hay(w), SE.qTokens(q)); });
     if (f === 'All') return list.filter(inDateRange).length;
     return list.filter(function (w) {
       if (!inDateRange(w)) return false;
@@ -275,7 +281,7 @@ SE.views['work-orders'] = function (el, p) {
   }
 
   function row(w) {
-    var ds = displayStatus(w);
+    var ds = W.archived(w) ? 'Archived' : displayStatus(w);
     var priKey = (w.priority || 'Normal').toLowerCase();
     var priLabel = w.priority === 'Normal' || !w.priority ? 'Low' : w.priority === 'Medium' ? 'Med' : w.priority;
     var isLate = K.parse(w.due) && K.parse(w.due) < K.today() && ds !== 'Closed';
