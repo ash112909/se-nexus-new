@@ -155,8 +155,7 @@
   SE.asset = function (equip) { return SE.assets().find(function (a) { return a.equip === equip || a.serial === equip; }); };
   // assets at the chosen location (fleet supervisor sees all; a branch choice scopes it)
   SE.assetsHere = function () {
-    if (SE.state.location === 'all') return SE.assets();
-    var name = SE.loc(SE.state.location).name;
+    var name = SE.location().name;
     return SE.assets().filter(function (a) { return a.location === name; });
   };
   // search context (the filter bar): { wo, equip, serial, model }. A work order fills equip, serial and
@@ -225,7 +224,7 @@
   // branch locale (DES-47 use case 5 state 2, same rule as ARA.branchCurrency): a branch outside the US shows
   // catalog prices in its currency; orders still settle in USD
   SE.branchCurrency = function () {
-    var l = SE.state.location !== 'all' && SE.loc(SE.state.location);
+    var l = SE.loc(SE.state.location);
     if (!l || !l.currency || l.currency === 'USD') return null;
     return { code: l.currency, name: l.currencyName, branch: l.name, fmt: function (n) { return '$' + (n * l.rate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); } };
   };
@@ -234,14 +233,12 @@
     return el.animate(frames, Object.assign({ duration: 300, easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'none' }, o)).finished.catch(function () {});
   };
   SE.location = function () {
-    if (SE.state.location === 'all') return { id: 'all', name: 'All locations', sub: D.locations.length + ' branches' };
-    var l = D.locations.find(function (x) { return x.id === SE.state.location; });
+    var l = D.locations.find(function (x) { return x.id === SE.state.location; }) || D.locations[0];
     return { id: l.id, name: l.name, sub: l.units + ' units' };
   };
   SE.setLocation = function (id) { SE.state.location = id; store.set('location', id); };
   // work orders at the chosen location (a unit's location comes from the machine records)
   SE.workOrders = function () {
-    if (SE.state.location === 'all') return SE.allWorkOrders();
     var name = SE.location().name, where = {};
     Object.keys(D.machines).forEach(function (k) { D.machines[k].units.forEach(function (u) { where[u.equip] = u.location; }); });
     return SE.allWorkOrders().filter(function (w) { return where[w.equip] === name; });

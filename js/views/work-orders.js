@@ -30,10 +30,8 @@
   W.archived = function (w) { return !!(SE.state.archived || {})[w.id]; };
   W.list = function (archive) {
     var all = SE.allWorkOrders().filter(function (w) { return W.archived(w) === !!archive; });
-    if (SE.state.location !== 'all') {
-      var name = SE.location().name;
-      all = all.filter(function (w) { var u = W.unit(w.equip); return u && u.location === name; });
-    }
+    var name = SE.location().name;
+    all = all.filter(function (w) { var u = W.unit(w.equip); return u && u.location === name; });
     return all.filter(function (w) { return !SE.state.cancelled[w.id]; }).concat(all.filter(function (w) { return SE.state.cancelled[w.id]; }));
   };
   W.FILTERS = ['All', 'Open', 'In progress', 'Awaiting approval', 'Done'];

@@ -159,7 +159,8 @@
     var accBtn = null;
     function openAccount(btn) {
       accBtn = btn;
-      var rows = [{ id: 'all', name: 'All locations', sub: 'Cross-location view' }].concat(D.locations.map(function (l) { return { id: l.id, name: l.name, sub: l.units + ' units · ' + l.address }; }));
+      if (SE.state.location === 'all') SE.setLocation(D.locations[0].id);
+      var rows = D.locations.map(function (l) { return { id: l.id, name: l.name, sub: l.units + ' units · ' + l.address }; });
       var accAv = SE.store.getLocal('avatar') || null; if (accAv === 'null') accAv = null;
       var accAvHTML = accAv ? '<img src="' + esc(accAv) + '" alt="Profile photo">' : esc(D.user.initials);
       account.innerHTML =
