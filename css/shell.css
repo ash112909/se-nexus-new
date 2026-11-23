@@ -107,10 +107,10 @@
   .sf-wrap .ss-cat-btn .i { width: 14px; height: 14px; opacity: .75; }
   .sf-wrap .search { flex: 1; height: 100%; border: none !important; box-shadow: none !important; border-radius: 0; background: none; padding: 0 4px 0 0; align-items: center; }
   .sf-wrap .search input { padding: 0 4px 0 10px; font-size: 14px; }
-  .sf-mic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; color: var(--muted); flex: none; }
+  .sf-mic { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; color: var(--muted); flex: none; }
   .sf-mic:hover { color: var(--ink); }
-  .sf-sep { width: 1px; height: 18px; background: var(--line-strong); flex: none; margin: 0 4px; }
-  .sf-go { display: grid; place-items: center; width: 36px; height: 36px; margin-right: 6px; border-radius: 999px; color: var(--muted); flex: none; }
+  .sf-sep { width: 1px; height: 18px; background: var(--line-strong); flex: none; margin: 0 2px; }
+  .sf-go { display: grid; place-items: center; width: 28px; height: 28px; margin-right: 4px; border-radius: 999px; color: var(--muted); flex: none; }
   .sf-go:hover { color: var(--ink); }
 
   .voice { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--muted); }
