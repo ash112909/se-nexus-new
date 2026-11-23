@@ -83,13 +83,15 @@
     { id: 'model',   label: 'Model',   ph: 'e.g. 1930ES' },
     { id: 'serial',  label: 'Serial #', ph: 'e.g. JL1930-04417' },
   ];
-  C.searchPanel = function (wo) {
+  C.searchPanel = function (wo, extra) {
     var s = C.search;
-    var modeRow = SEARCH_MODES.map(function (m) {
+    var modes = extra ? SEARCH_MODES.slice(0, 1) : SEARCH_MODES;
+    if (extra && s.mode !== 'keyword') { s.mode = 'keyword'; s.query = ''; s.woFilter = null; }
+    var modeRow = modes.length > 1 ? modes.map(function (m) {
       return '<button class="smode-btn' + (s.mode === m.id ? ' on' : '') + '" type="button" onclick="SE.catMode(\'' + m.id + '\')">' + esc(m.label) + '</button>';
-    }).join('');
+    }).join('') : '';
     var inputRow;
-    if (s.mode === 'wo') {
+    if (!extra && s.mode === 'wo') {
       var wos = SE.allWorkOrders().filter(function (w) { return w.status !== 'Cancelled'; });
       var opts = '<option value="">Select work order…</option>' + wos.map(function (w) {
         return '<option value="' + esc(w.id) + '"' + (s.woFilter === w.id ? ' selected' : '') + '>#' + esc(w.id) + ' · ' + esc(w.machine) + ' (' + esc(w.equip) + ')</option>';
@@ -108,7 +110,7 @@
           'onkeydown="if(event.key===\'Enter\')SE.catSearch(\'' + esc(wo || '') + '\')">' +
         '</div>';
     }
-    return '<div class="ctree-search"><div class="smode-row">' + modeRow + '</div>' + inputRow + '</div>';
+    return '<div class="ctree-search">' + (modeRow ? '<div class="smode-row">' + modeRow + '</div>' : '') + inputRow + '</div>';
   };
 
   // ---------- catalog tree (left panel). cur: { sup, m, cat, sub, line }. Only the current path is open
@@ -146,7 +148,7 @@
       }
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
-    var navHead = '<nav class="ctree" aria-label="Catalog tree"><p class="ctree-h"><a href="#/catalog' + (wo ? '?wo=' + encodeURIComponent(wo) : '') + '">' + icon('grid-alt') + 'Parts catalog</a></p>';
+    var navHead = '<nav class="ctree" aria-label="Catalog tree">';
     // Enhanced Catalog tree: 4 levels — supplier → category → sub-category
     if (cur.extra === 'enhanced-catalog') {
       var ECAT_BY_SUP = C.ecatBySup;
@@ -192,7 +194,7 @@
     return C.woRibbon(wo) +
       C.typeBar(cur, wo) +
       '<div class="cat-layout"><aside class="ctree-col">' +
-      C.searchPanel(wo) +
+      C.searchPanel(wo, cur.extra) +
       C.tree(cur, wo) +
       '</aside><div class="cat-main">' + main + '</div></div>';
   };

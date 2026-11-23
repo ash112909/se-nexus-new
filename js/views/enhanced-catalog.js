@@ -479,13 +479,6 @@ SE.views['enhanced-catalog'] = function (el, p) {
 
   // ---- top level ----
   var connSups = D.suppliers ? D.suppliers.filter(function (s) { return s.active && s.status === 'Connected' && ECATS[s.id]; }) : [];
-  var allTopItems = connSups.reduce(function (arr, s) {
-    return arr.concat((ECATS[s.id] || []).reduce(function (a2, cat) {
-      return a2.concat(catPartsWithCat(s.id, cat.id));
-    }, []));
-  }, []);
-  var topFeatured = allTopItems.filter(function (item) { return item.part.featured; }).slice(0, 6);
-  var unit = C.unit(p.wo);
 
   var supCards = connSups.map(function (s) {
     var cnt = (ECATS[s.id] || []).reduce(function (n, cat) { return n + catPartsWithCat(s.id, cat.id).length; }, 0);
@@ -504,12 +497,7 @@ SE.views['enhanced-catalog'] = function (el, p) {
     sub: 'Parts with richer data — full descriptions, images, cross-references — organized by supplier category',
     body: C.layout(
       { extra: 'enhanced-catalog' }, p.wo,
-      UI.sec('Suppliers', '', '<div class="sup-pf-grid">' + supCards + '</div>', 'h-sups') +
-      UI.sec('Featured parts',
-        '<span class="muted">across all suppliers</span>',
-        '<div class="ecat-part-grid">' +
-          topFeatured.map(function (item) { return partCard(item.part, item.cat, unit); }).join('') +
-        '</div>', 'h-feat'))
+      UI.sec('Suppliers', '', '<div class="sup-pf-grid">' + supCards + '</div>', 'h-sups'))
   });
   el.addEventListener('click', function (e) {
     var q = e.target.closest('[data-quick]');
