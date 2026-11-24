@@ -66,85 +66,8 @@ SE.views.orders = function (el, p) {
           o.wo ? '<a href="#/work-order?id=' + esc(o.wo) + '">#' + hl(o.wo, q) + '</a>' : '<span class="muted">None</span>'];
       }), { rowAttrs: function (i) { return 'data-go="order" data-po="' + r[i].po + '"'; }, cls: 'oh-tbl' });
   }
-  var OH_PLACEMENTS = [
-    { id: 'top',    label: 'Top of order summary' },
-    { id: 'bottom', label: 'Bottom of order summary' },
-  ];
-
   function openMsgManager() {
-    if (!SE.cms) return;
-    var msgs = SE.cms.getArticles('published').filter(function (a) { return !!a.orderMsg; });
-
-    function buildRow(a) {
-      var pl = OH_PLACEMENTS.filter(function (p) { return p.id === a.placement; })[0] || { label: a.placement || '—' };
-      return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:0.5px solid #F0ECE8;">' +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
-            '<span style="font-size:9px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.5px;background:#EEEDFE;padding:2px 6px;border-radius:3px;">' + esc(pl.label) + '</span>' +
-            '<span style="font-size:11px;font-weight:600;color:#111318;">' + esc(a.title) + '</span>' +
-          '</div>' +
-          '<div style="font-size:11px;color:#7A7F8E;">' + esc(a.body ? a.body.slice(0, 120) + (a.body.length > 120 ? '…' : '') : '') + '</div>' +
-          (a.postedDate ? '<div style="font-size:10px;color:#B0AAA3;margin-top:2px;">' + esc(a.postedDate) + '</div>' : '') +
-        '</div>' +
-        '<button data-oh-del="' + esc(a.id) + '" style="background:none;border:0.5px solid #E2DDD8;border-radius:6px;padding:4px 8px;font-size:11px;color:#D9534F;cursor:pointer;font-family:inherit;flex-shrink:0;">Remove</button>' +
-      '</div>';
-    }
-
-    var listHtml = msgs.length
-      ? msgs.map(buildRow).join('')
-      : '<div style="font-size:13px;color:#9CA3AF;text-align:center;padding:20px 0;">No order messages yet.</div>';
-
-    var dlg = UI.dialog({
-      title: 'Order Messages',
-      body: '<div style="max-height:480px;overflow-y:auto;margin:-16px;">' +
-        '<div style="padding:14px 16px;border-bottom:0.5px solid #F0ECE8;">' +
-          '<div style="font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px;">Add new message</div>' +
-          '<div style="display:grid;gap:7px;">' +
-            '<input id="oh-msg-title" type="text" placeholder="Message title *" style="width:100%;height:32px;border:0.5px solid #E2DDD8;border-radius:6px;padding:0 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;background:var(--surface);" />' +
-            '<textarea id="oh-msg-body" placeholder="Message content *" style="width:100%;min-height:56px;border:0.5px solid #E2DDD8;border-radius:6px;padding:7px 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;resize:none;background:var(--surface);"></textarea>' +
-            '<select id="oh-msg-placement" style="height:32px;border:0.5px solid #E2DDD8;border-radius:6px;padding:0 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;background:var(--surface);">' +
-              OH_PLACEMENTS.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>'; }).join('') +
-            '</select>' +
-            '<button type="button" data-oh-add style="height:32px;background:var(--ink);border:none;border-radius:6px;font-size:12px;font-weight:600;color:var(--paper);font-family:inherit;cursor:pointer;">Add message</button>' +
-          '</div>' +
-        '</div>' +
-        '<div>' +
-          '<div style="padding:10px 16px 4px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#534AB7;">Active messages (' + msgs.length + ')</div>' +
-          listHtml +
-        '</div>' +
-      '</div>',
-      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Done</button>',
-    });
-
-    dlg.el.addEventListener('click', function (e) {
-      var del = e.target.closest('[data-oh-del]');
-      if (del) {
-        SE.cms.deleteArticle(del.dataset.ohDel);
-        dlg.close();
-        openMsgManager();
-        return;
-      }
-      if (e.target.closest('[data-oh-add]')) {
-        var titleEl = dlg.el.querySelector('#oh-msg-title');
-        var bodyEl  = dlg.el.querySelector('#oh-msg-body');
-        var placEl  = dlg.el.querySelector('#oh-msg-placement');
-        var t = titleEl ? titleEl.value.trim() : '';
-        var b = bodyEl  ? bodyEl.value.trim()  : '';
-        var pl = placEl ? placEl.value : 'top';
-        if (!t || !b) { SE.toast('Title and content are required', 'cross-small'); return; }
-        SE.cms.saveArticle({
-          id: 'oh-msg-' + Date.now(),
-          type: 'notice', subtype: 'Administrative', status: 'published', postAs: 'news',
-          title: t, body: b, placement: pl,
-          orderMsg: true, showOnOrders: false, vendorName: '',
-          poster: SE.data.user.name || '', postedDate: new Date().toISOString().slice(0, 10), expiryDate: '',
-          language: 'en', tags: [], attachments: [], locations: ['all'],
-          banner: false, bannerDismissible: true, bannerText: '', priority: 'low',
-        });
-        dlg.close();
-        openMsgManager();
-      }
-    });
+    if (SE.cms) SE.cms.openMsgManager();
   }
 
   var s = SE.shell(el, { nav: 'orders', title: 'Order history', sub: SE.orders().length + ' orders · purchases, transfers and shelf picks · newest first', crumbs: [['Home', 'home']],

@@ -382,6 +382,7 @@ SE.views['work-orders'] = function (el, p) {
           '<button type="button" class="ord-vbtn" data-view="wo">Work Orders</button>' +
           '<button type="button" class="ord-vbtn" data-view="po">Purchase Orders</button>' +
         '</div>' +
+        (SE.cms ? '<button class="btn btn-secondary" type="button" data-wo-manage-msgs>' + icon('megaphone') + 'Messages</button>' : '') +
         '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
       '</div>' +
       '<div class="ord-filters">' +
@@ -440,6 +441,7 @@ SE.views['work-orders'] = function (el, p) {
   }
   el.addEventListener('click', function (e) {
     var t = e.target.closest('button');
+    if (t && t.hasAttribute('data-wo-manage-msgs')) { if (SE.cms) SE.cms.openMsgManager(); return; }
     if (t && t.hasAttribute('data-new')) { openNew(false); return; }
     if (t && t.dataset.view) { view = t.dataset.view; q = ''; el.querySelector('#wo-q').value = ''; el.querySelector('#wo-date-sel').value = view === 'wo' ? dateMode : poDateMode; render(); return; }
     if (t && t.hasAttribute('data-clear')) {
