@@ -480,3 +480,10 @@
 
 /* Logo color: use ink so it reads on the light rail in light mode and on the dark rail in dark mode */
 .rail-lockup .mc-logo { color: var(--ink); }
+
+/* Category pill left flush: search.css adds .scoped { padding-left: 4px } at equal specificity;
+   bump to (0,3,0) so the dark fill button reaches the left border of the sf-wrap */
+.sf-wrap .search.scoped { padding-left: 0; }
+
+/* Profile pill: match the squarish corner radius of the other quickbar icons */
+.quickbar .qa[data-account] { border-radius: 10px; }
