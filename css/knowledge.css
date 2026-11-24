@@ -17,9 +17,8 @@
   }
 
   /* ---------- filter select dropdowns (manuals + kb) */
-  .mw-filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: -4px; }
-  .kb-filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .flt-sel { display: inline-flex; align-items: center; height: 36px; padding: 0 10px 0 14px; border: 1px solid var(--line-field); border-radius: 10px; background: var(--surface); gap: 4px; }
+  .sx-bar .mw-find, .sx-bar .kb-find { flex: 1; min-width: 0; max-width: none; height: 40px; }
+  .flt-sel { display: inline-flex; align-items: center; height: 40px; padding: 0 10px 0 14px; border: 1px solid var(--line-field); border-radius: 10px; background: var(--surface); gap: 4px; }
   .flt-sel select { border: 0; outline: 0; background: none; font: inherit; font-size: 14px; color: var(--ink); height: 100%; padding: 0; cursor: pointer; -webkit-appearance: none; appearance: none; min-width: 0; }
   .flt-sel .i { width: 16px; height: 16px; color: var(--muted); flex: none; pointer-events: none; }
   .flt-sel:focus-within { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }

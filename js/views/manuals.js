@@ -115,8 +115,6 @@ SE.views.manuals = function (el, p) {
     body: '<section class="sec mw" aria-label="Documents">' +
       '<div class="sx-bar">' +
         '<div class="search page-search" role="search"><label class="sr-only" for="mw-q">Search manuals</label>' + icon('search') + '<input type="text" id="mw-q" value="' + esc(q) + '" placeholder="Search manuals by title or section" autocomplete="off" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>' +
-      '</div>' +
-      '<div class="mw-filter-row">' +
         '<div class="flt-sel" id="mw-m-wrap">' + machSel() + '</div>' +
         '<div class="flt-sel" id="mw-type-wrap">' + typeSel() + '</div>' +
         '<div class="flt-sel" id="mw-lang-wrap">' + langSel() + '</div>' +

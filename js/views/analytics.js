@@ -2,7 +2,6 @@
    Metrics: parts spend trend, avg cost per WO, open orders, avg days to close,
    pending approvals, overnight shipping %; mechanic spend, vendor concentration,
    top parts by qty, spend by asset, order type mix, approval pipeline.
-   Two views: Overview dashboard and Location heatmap.
    State: #/analytics */
 SE.titles.analytics = 'Analytics';
 SE.views.analytics = function (el, p) {
@@ -12,7 +11,6 @@ SE.views.analytics = function (el, p) {
   var ST = SE.state.analytics || (SE.state.analytics = {});
   if (!ST.period) ST.period = '30D';
   if (!ST.locs) ST.locs = D.locations.map(function (l) { return l.id; });
-  if (!ST.view) ST.view = 'dashboard';
   if (!ST.hkpi) ST.hkpi = 'parts_spend';
 
   // ── Accent colors per location index ────────────────────────────────────
@@ -72,18 +70,11 @@ SE.views.analytics = function (el, p) {
 
   // ── Filter bar ──────────────────────────────────────────────────────────
   function filterBarHtml() {
-    var views = [['dashboard', icon('stats') + ' Overview'], ['heatmap', icon('map-marker') + ' Location map']];
     return '<div class="an-filter-bar" id="an-filter-bar">' +
       '<span class="an-filter-label">Period</span>' +
       '<div class="an-period-pills">' +
         ['7D','30D','90D','12M'].map(function (p) {
           return '<button type="button" class="an-period-pill' + (ST.period === p ? ' on' : '') + '" data-anperiod="' + p + '">' + p + '</button>';
-        }).join('') +
-      '</div>' +
-      '<div class="an-filter-sep"></div>' +
-      '<div class="an-period-pills">' +
-        views.map(function (v) {
-          return '<button type="button" class="an-period-pill' + (ST.view === v[0] ? ' on' : '') + '" data-anview="' + v[0] + '">' + v[1] + '</button>';
         }).join('') +
       '</div>' +
       '<div class="an-filter-sep"></div>' +
@@ -133,14 +124,6 @@ SE.views.analytics = function (el, p) {
     if (pill) {
       ST.period = pill.dataset.anperiod;
       el.querySelectorAll('[data-anperiod]').forEach(function (p) { p.classList.toggle('on', p.dataset.anperiod === ST.period); });
-      renderContent();
-      return;
-    }
-    // view toggle
-    var vbtn = e.target.closest('[data-anview]');
-    if (vbtn) {
-      ST.view = vbtn.dataset.anview;
-      el.querySelectorAll('[data-anview]').forEach(function (p) { p.classList.toggle('on', p.dataset.anview === ST.view); });
       renderContent();
       return;
     }
@@ -198,7 +181,7 @@ SE.views.analytics = function (el, p) {
   function renderContent() {
     var body = el.querySelector('#an-body');
     if (!body) return;
-    body.innerHTML = ST.view === 'heatmap' ? renderHeatmap() : renderDashboard();
+    body.innerHTML = renderDashboard();
   }
 
   function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
@@ -524,80 +507,6 @@ SE.views.analytics = function (el, p) {
 
   function woStat(label, count, bgColor, inkColor) {
     return '<div class="an-wo-stat"><span style="font-size:12px;color:var(--muted);">' + esc(label) + '</span><span class="an-wo-badge" style="background:' + bgColor + ';color:' + inkColor + ';">' + count + '</span></div>';
-  }
-
-  // ── Heatmap view ─────────────────────────────────────────────────────────
-  function renderHeatmap() {
-    var KPI_DEFS = [
-      { key:'parts_spend',       label:'Parts Spend',          icon:'receipt'        },
-      { key:'open_orders',       label:'Open Orders',          icon:'clipboard-list' },
-      { key:'pending_approvals', label:'Pending Approvals',    icon:'check'          },
-      { key:'overnight_pct',     label:'Overnight Shipping %', icon:'truck-side'     },
-    ];
-    var allWOs2 = SE.workOrders();
-    var LOC_KPI = {};
-    D.locations.forEach(function (l, i) {
-      var base = LOC_BASE[l.id] || LOC_BASE.austin;
-      LOC_KPI[l.id] = {
-        parts_spend:       base[11],
-        open_orders:       2 + i * 2 + allWOs2.filter(function (w) { return w.equip && w.equip.toLowerCase().indexOf(l.id.slice(0, 2)) >= 0 && w.status === 'Open'; }).length,
-        pending_approvals: 1 + i,
-        overnight_pct:     28 + i * 4,
-      };
-    });
-    var selKpi = KPI_DEFS.filter(function (k) { return k.key === ST.hkpi; })[0] || KPI_DEFS[0];
-    var kpiVals = D.locations.map(function (l) { return LOC_KPI[l.id][ST.hkpi]; });
-    var kpiMax = Math.max.apply(null, kpiVals.concat([1]));
-
-    // TX city SVG positions (approximate, viewBox 0 0 500 460)
-    var LOC_POS = { austin:[235,290], sanmarcos:[225,315], kyle:[225,300], monterrey:[180,400] };
-
-    var locDots = D.locations.map(function (l, i) {
-      var pos = LOC_POS[l.id] || [200 + i * 60, 250];
-      var val = LOC_KPI[l.id][ST.hkpi];
-      var pct = val / kpiMax;
-      var r = 10 + Math.round(pct * 18);
-      var glowR = r + 14 + Math.round(pct * 14);
-      var col = LC[i % LC.length];
-      var fmtVal = ST.hkpi === 'parts_spend' ? '$' + val.toLocaleString() : ST.hkpi === 'overnight_pct' ? val + '%' : val.toString();
-      return '<circle cx="' + pos[0] + '" cy="' + pos[1] + '" r="' + glowR + '" fill="' + col + '" opacity="0.12"/>' +
-        '<circle cx="' + pos[0] + '" cy="' + pos[1] + '" r="' + (r + 5) + '" fill="' + col + '" opacity="0.22"/>' +
-        '<circle cx="' + pos[0] + '" cy="' + pos[1] + '" r="' + r + '" fill="' + col + '" opacity="0.85"/>' +
-        '<text x="' + pos[0] + '" y="' + (pos[1] + 1) + '" text-anchor="middle" dominant-baseline="middle" fill="#FFFFFF" font-size="9" font-weight="700" font-family="inherit">' + esc(l.name.split(' ')[0]) + '</text>' +
-        '<text x="' + pos[0] + '" y="' + (pos[1] + r + 13) + '" text-anchor="middle" fill="' + col + '" font-size="10" font-weight="700" font-family="inherit">' + esc(fmtVal) + '</text>';
-    }).join('');
-
-    var kpiBar = KPI_DEFS.map(function (k) {
-      return '<button type="button" class="an-hm-kpi-btn' + (k.key === ST.hkpi ? ' on' : '') + '" data-anhkpi="' + k.key + '">' + icon(k.icon) + ' ' + esc(k.label) + '</button>';
-    }).join('');
-
-    var locCards = D.locations.map(function (l, i) {
-      var val = LOC_KPI[l.id][ST.hkpi];
-      var pct = val / kpiMax;
-      var col = LC[i % LC.length];
-      var fmtVal = ST.hkpi === 'parts_spend' ? '$' + val.toLocaleString() : ST.hkpi === 'overnight_pct' ? val + '%' : val.toString();
-      var active = ST.locs.indexOf(l.id) >= 0;
-      return '<div class="an-hm-loc-card" style="' + (active ? 'border-color:' + col + ';' : '') + '">' +
-        '<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">' +
-          '<div class="an-hm-loc-dot" style="background:' + col + ';"></div>' +
-          '<span style="font-size:11px;font-weight:600;color:var(--muted);">' + esc(l.name) + '</span>' +
-        '</div>' +
-        '<div class="an-hm-loc-val">' + fmtVal + '</div>' +
-        '<div class="an-hm-loc-name">' + esc(selKpi.label) + '</div>' +
-        '<div class="an-hm-loc-bar"><div class="an-hm-loc-bar-fill" style="width:' + Math.round(pct * 100) + '%;background:' + col + ';"></div></div>' +
-      '</div>';
-    }).join('');
-
-    return '<div class="an-hm-kpi-bar">' + kpiBar + '</div>' +
-      '<div class="an-hm-map">' +
-        '<div class="an-hm-map-title">' + icon('map-marker') + ' ' + esc(selKpi.label) + ' by location</div>' +
-        '<svg viewBox="0 0 500 420" style="width:100%;max-height:360px;">' +
-          '<defs><filter id="an-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
-          '<path d="M100,25 L275,25 L275,95 L330,95 L330,128 L420,128 L445,155 L465,195 L478,255 L470,315 L445,355 L400,385 L335,400 L255,408 L185,388 L145,350 L120,300 L90,255 L82,200 L88,150 L100,95 Z" fill="var(--sunken)" stroke="var(--line)" stroke-width="1.5"/>' +
-          '<g filter="url(#an-glow)">' + locDots + '</g>' +
-        '</svg>' +
-      '</div>' +
-      '<div class="an-hm-loc-cards">' + locCards + '</div>';
   }
 
   return s.cleanup;

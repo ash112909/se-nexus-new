@@ -81,8 +81,7 @@ SE.views.kb = function (el, p) {
     nav: 'kb', title: 'Knowledge Base', crumbs: [['Home', 'home']],
     sub: esc(D.news.length + ' bulletins, recalls and notices · ' + D.kb.length + ' how-to articles'),
     body: '<div id="kb-feat">' + (SE.mkt ? SE.mkt.featured() : '') + '</div>' +
-      '<section class="sec kb" aria-label="Library"><div class="nf-bar">' + field + '</div>' +
-      '<div class="kb-filter-row">' +
+      '<section class="sec kb" aria-label="Library"><div class="sx-bar">' + field +
         '<div class="flt-sel" id="kb-kind-wrap">' + kindSel() + '</div>' +
         '<div class="flt-sel" id="kb-date-wrap">' + dateSel() + '</div>' +
         '<div class="flt-sel" id="kb-by-wrap">' + bySel() + '</div>' +

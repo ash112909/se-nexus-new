@@ -385,13 +385,13 @@ SE.views['work-orders'] = function (el, p) {
         '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
       '</div>' +
       '<div class="ord-filters">' +
-        '<div id="wo-seg" class="ord-pills"></div>' +
+        '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
+          '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search orders…" autocomplete="off"></form>' +
         '<div class="ord-extras">' +
+          '<div id="wo-seg" class="ord-pills"></div>' +
           '<div class="control ord-sel-wrap"><select class="ord-ctl" id="wo-date-sel" aria-label="Filter by date">' +
             '<option value="any">Any date</option><option value="week">This week</option><option value="month">This month</option><option value="custom">Custom range…</option>' +
           '</select>' + icon('angle-small-down') + '</div>' +
-          '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +
-            '<input id="wo-q" type="search" value="' + esc(q) + '" placeholder="Search orders…" autocomplete="off"></form>' +
         '</div>' +
         '<span class="ord-count-label" id="wo-count"></span>' +
       '</div>' +

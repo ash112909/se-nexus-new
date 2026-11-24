@@ -133,23 +133,6 @@
 .an-risk-badge { font-size:10px; font-weight:600; color:var(--danger); background:var(--tint-danger); padding:2px 7px; border-radius:8px; }
 .an-pend-badge { font-size:10px; font-weight:600; color:var(--danger); background:var(--tint-danger); padding:2px 7px; border-radius:8px; }
 
-/* heatmap */
-.an-hm-kpi-bar { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
-.an-hm-kpi-btn { display:flex; align-items:center; gap:5px; padding:6px 13px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--line); color:var(--muted); background:var(--surface); font-family:inherit; transition:all .14s; }
-.an-hm-kpi-btn .i { width:13px; height:13px; }
-.an-hm-kpi-btn.on { background:var(--ink); color:var(--sunken); border-color:var(--ink); }
-.an-hm-kpi-btn:hover:not(.on) { border-color:var(--muted); color:var(--ink); }
-.an-hm-map { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px; }
-.an-hm-map-title { font-size:12px; font-weight:600; color:var(--ink); margin-bottom:12px; display:flex; align-items:center; gap:5px; }
-.an-hm-map-title .i { width:14px; height:14px; color:var(--muted); }
-.an-hm-loc-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:12px; }
-.an-hm-loc-card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 15px; }
-.an-hm-loc-val { font-size:21px; font-weight:700; color:var(--ink); letter-spacing:-0.5px; }
-.an-hm-loc-name { font-size:11px; color:var(--muted); margin-top:2px; }
-.an-hm-loc-bar { height:3px; border-radius:2px; margin-top:8px; background:var(--sunken); }
-.an-hm-loc-bar-fill { height:100%; border-radius:2px; }
-.an-hm-loc-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-
 /* responsive */
 @media (max-width:1200px) { .an-kpi-row { grid-template-columns:repeat(3,1fr); } }
 @media (max-width:900px) { .an-grid-2,.an-grid-3 { grid-template-columns:1fr; } .an-grid-insight { grid-template-columns:1fr; } .an-kpi-row { grid-template-columns:repeat(2,1fr); } }
