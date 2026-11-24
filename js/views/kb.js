@@ -43,14 +43,14 @@ function _kbManageList(el, p) {
       var tm = cms.TYPES[a.type] || cms.TYPES.notice;
       var pri = cms.PRIORITIES.find(function (p) { return p.value === a.priority; }) || cms.PRIORITIES[2];
       return '<div class="kbcms-row" data-cms-edit="' + esc(a.id) + '">' +
-        '<div class="kbcms-row-icon" style="background:' + esc(tm.bg) + ';color:' + esc(tm.color) + ';">' + icon('file-blank') + '</div>' +
+        '<div class="kbcms-row-icon" style="background:' + esc(tm.bg) + ';color:' + esc(tm.color) + ';">' + icon('document') + '</div>' +
         '<div class="kbcms-row-body">' +
           '<div class="kbcms-row-title">' + esc(a.title) + '</div>' +
           '<div class="kbcms-row-meta">' +
             '<span class="kbcms-chip kbcms-status-' + esc(status) + '">' + status.charAt(0).toUpperCase() + status.slice(1) + '</span>' +
             '<span class="kbcms-chip" style="background:' + esc(pri.bg) + ';color:' + esc(pri.color) + ';">' + esc(pri.label) + '</span>' +
             '<span class="kbcms-chip" style="background:' + esc(tm.bg) + ';color:' + esc(tm.color) + ';">' + esc(tm.label) + '</span>' +
-            (a.banner ? '<span class="kbcms-chip" style="background:#FFFBEB;color:#111318;">' + icon('speakerphone') + ' Banner</span>' : '') +
+            (a.banner ? '<span class="kbcms-chip" style="background:#FFFBEB;color:#111318;">' + icon('megaphone') + ' Banner</span>' : '') +
             (a.orderMsg ? '<span class="kbcms-chip" style="background:#EFF4FB;color:#111318;">Order msg</span>' : '') +
             (a.showOnOrders ? '<span class="kbcms-chip" style="background:#EEEDFE;color:#534AB7;">Supplier msg</span>' : '') +
             '<span>By ' + esc(a.poster || 'Unknown') + '</span>' +
@@ -59,7 +59,7 @@ function _kbManageList(el, p) {
           '</div>' +
         '</div>' +
         '<div class="kbcms-row-actions" data-cms-row-actions>' +
-          '<button class="kbcms-btn-ghost kbcms-btn-sm" data-cms-edit="' + esc(a.id) + '" title="Edit">' + icon('edit') + '</button>' +
+          '<button class="kbcms-btn-ghost kbcms-btn-sm" data-cms-edit="' + esc(a.id) + '" title="Edit">' + icon('pencil') + '</button>' +
           '<button class="kbcms-btn-danger kbcms-btn-sm" data-cms-delete="' + esc(a.id) + '" title="Delete">' + icon('trash') + '</button>' +
         '</div>' +
       '</div>';
@@ -98,7 +98,7 @@ function _kbManageList(el, p) {
       '<div><div class="kbcms-hdr-title">Manage Articles</div><div class="kbcms-hdr-sub">Fleet news, notices and site-wide banners</div></div>' +
       '<div style="display:flex;gap:8px;">' +
         '<button class="kbcms-btn-ghost" data-kb-tab="library">Back to library</button>' +
-        '<button class="kbcms-btn-primary" data-cms-new>' + icon('plus') + ' New article</button>' +
+        '<button class="kbcms-btn-primary" data-cms-new>' + icon('plus-small') + ' New article</button>' +
       '</div>' +
     '</div>' +
     '<div class="kbcms-filter-bar">' + filterTabs() + '</div>' +
@@ -214,7 +214,7 @@ function _kbManageEdit(el, p) {
       /* left column */
       '<div>' +
         '<div class="kbcms-panel">' +
-          '<div class="kbcms-panel-hdr">' + icon('file-blank') + ' Article content</div>' +
+          '<div class="kbcms-panel-hdr">' + icon('document') + ' Article content</div>' +
           '<div class="kbcms-panel-body">' +
             '<div class="kbcms-field"><label class="kbcms-label" for="kbcms-f-title">Title *</label>' +
               '<input class="kbcms-input" id="kbcms-f-title" placeholder="Headline — clear and specific" value="' + esc(a.title) + '"/></div>' +
@@ -265,7 +265,7 @@ function _kbManageEdit(el, p) {
       /* right column */
       '<div>' +
         '<div class="kbcms-panel">' +
-          '<div class="kbcms-panel-hdr">' + icon('tag') + ' Classification</div>' +
+          '<div class="kbcms-panel-hdr">' + icon('info') + ' Classification</div>' +
           '<div class="kbcms-panel-body">' +
             '<div class="kbcms-field"><label class="kbcms-label" for="kbcms-f-type">Type</label>' +
               '<select class="kbcms-select" id="kbcms-f-type">' +
@@ -298,7 +298,7 @@ function _kbManageEdit(el, p) {
           '</div>' +
         '</div>' +
         '<div class="kbcms-panel">' +
-          '<div class="kbcms-panel-hdr">' + icon('send-email') + ' Post as</div>' +
+          '<div class="kbcms-panel-hdr">' + icon('envelope') + ' Post as</div>' +
           '<div class="kbcms-panel-body">' +
             '<div class="kbcms-post-toggle" id="kbcms-post-toggle">' +
               cms.POST_AS.map(function (opt) {
@@ -317,7 +317,7 @@ function _kbManageEdit(el, p) {
                 'Users can dismiss banner' +
               '</label>' +
               '<div class="kbcms-banner-preview" id="kbcms-banner-live">' +
-                icon('speakerphone') +
+                icon('megaphone') +
                 '<span id="kbcms-banner-live-text">' + esc(a.bannerText || a.summary || 'Banner preview') + '</span>' +
               '</div>' +
             '</div>' +
@@ -326,11 +326,11 @@ function _kbManageEdit(el, p) {
       '</div>' +
     '</div>' +
     '<div class="kbcms-action-bar">' +
-      '<button class="kbcms-btn-ghost" data-cms-back>' + icon('arrow-left') + ' Back to articles</button>' +
+      '<button class="kbcms-btn-ghost" data-cms-back>' + icon('arrow-small-left') + ' Back to articles</button>' +
       '<div style="flex:1;"></div>' +
-      '<button class="kbcms-btn-ghost" data-cms-save="draft">' + icon('save') + ' Save draft</button>' +
+      '<button class="kbcms-btn-ghost" data-cms-save="draft">' + icon('document') + ' Save draft</button>' +
       '<button class="kbcms-btn-ghost" data-cms-save="scheduled">' + icon('calendar') + ' Schedule</button>' +
-      '<button class="kbcms-btn-primary" data-cms-save="published">' + icon('send-email') + ' Publish now</button>' +
+      '<button class="kbcms-btn-primary" data-cms-save="published">' + icon('envelope') + ' Publish now</button>' +
     '</div>';
 
   var s = SE.shell(el, {
@@ -520,8 +520,10 @@ SE.views.kb = function (el, p) {
   var s = SE.shell(el, {
     nav: 'kb', title: 'Knowledge Base', crumbs: [['Home', 'home']],
     sub: esc(D.news.length + ' bulletins, recalls and notices · ' + D.kb.length + ' how-to articles'),
-    actions: '<a class="btn btn-secondary" href="#/kb?tab=manage">' + icon('edit') + 'Manage articles</a>',
+    actions: '<a class="btn btn-secondary" href="#/kb?tab=manage">' + icon('pencil') + 'Manage articles</a>',
     body: '<div id="kb-feat">' + (SE.mkt ? SE.mkt.featured() : '') + '</div>' +
+      (SE.cms ? '<div style="display:flex;justify-content:flex-end;margin-bottom:4px;padding:0 0 8px;">' +
+        '<a class="btn btn-secondary" href="#/kb?tab=manage" style="gap:6px;">' + icon('pencil') + 'Manage articles</a></div>' : '') +
       '<section class="sec kb" aria-label="Library"><div class="sx-bar">' + field +
         '<div class="flt-sel" id="kb-kind-wrap">' + kindSel() + '</div>' +
         '<div class="flt-sel" id="kb-date-wrap">' + dateSel() + '</div>' +

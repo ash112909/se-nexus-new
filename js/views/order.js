@@ -32,8 +32,10 @@ SE.views.order = function (el, p) {
           .concat(o.needBy ? [['Needed by', esc(o.needBy)]] : [])) + '</section>' +
         '<section class="card"><h2 class="od-h">Ship to</h2>' + UI.kv([['Branch', esc(l ? l.name : o.shipTo)], ['Address', esc(l ? l.address : '')]]) + '</section>' +
         (o.wo ? '<section class="card"><h2 class="od-h">Work order</h2>' + UI.kv([['Number', '<a href="#/work-order?id=' + esc(o.wo) + '">#' + esc(o.wo) + '</a>']].concat(w ? [['Issue', esc(w.issue)], ['Unit', esc(w.equip + ', ' + w.machine)]] : [])) + '</section>' : '') +
+        (SE.cms ? SE.cms.supplierMessages([o.supplier]) : '') +
       '</div>' +
     '</div>' +
+    (SE.cms ? SE.cms.orderMessages('') : '') +
     UI.sec('Items · ' + n, '', items + '<div class="od-total"><span>Total</span><b>' + (pick ? 'No charge, branch shelf pick' : transfer ? 'No charge, internal transfer' : money(o.total)) + '</b></div>', 'od-items-h') +
     (o.note && !cancelled ? UI.sec('Notes', '', '<div class="card"><p>' + esc(o.note) + '</p></div>') : '');
   var s = SE.shell(el, { nav: 'orders', title: o.po, sub: esc(o.supplier) + ' · ' + (pick ? 'Shelf pick' : transfer ? 'No charge' : money(o.total)), crumbs: crumbs, body: body,
