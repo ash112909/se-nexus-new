@@ -35,7 +35,7 @@ SE.views.order = function (el, p) {
         (SE.cms ? SE.cms.supplierMessages([o.supplier]) : '') +
       '</div>' +
     '</div>' +
-    (SE.cms ? SE.cms.orderMessages('') : '') +
+    (SE.cms ? SE.cms.orderMessages('order-top', transfer) : '') +
     UI.sec('Items · ' + n, '', items + '<div class="od-total"><span>Total</span><b>' + (pick ? 'No charge, branch shelf pick' : transfer ? 'No charge, internal transfer' : money(o.total)) + '</b></div>', 'od-items-h') +
     (o.note && !cancelled ? UI.sec('Notes', '', '<div class="card"><p>' + esc(o.note) + '</p></div>') : '');
   var s = SE.shell(el, { nav: 'orders', title: o.po, sub: esc(o.supplier) + ' · ' + (pick ? 'Shelf pick' : transfer ? 'No charge' : money(o.total)), crumbs: crumbs, body: body,

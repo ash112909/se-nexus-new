@@ -69,6 +69,7 @@ SE.views.checkout = function (el, p) {
           '<div class="form-row"><label for="ck-notes">Notes for the supplier (optional)</label><div class="control area"><textarea id="ck-notes" rows="3" placeholder="Dock hours, contact on site">' + esc(draft ? draft.note : '') + '</textarea></div></div></section>' +
       '</div>' +
       '<aside class="card oc-aside" aria-label="Order summary"><h2 class="oc-aside-h">Order summary</h2>' +
+        (SE.cms ? SE.cms.orderMessages('cart-top') : '') +
         g.map(function (s, i) {
           var sub = s.lines.reduce(function (t, l) { return t + SE.part(l.pn).price * K.alloc(l).buy; }, 0);
           return '<div class="ck-sum"><div class="ck-sum-head"><b>' + esc(s.name) + '</b><span class="muted">' + pos[i] + '</span></div><ul>' +
@@ -81,7 +82,7 @@ SE.views.checkout = function (el, p) {
         (trKeys.length ? '<div class="ck-sum"><div class="ck-sum-head"><b>Branch transfers</b><span class="muted">' + trKeys.length + ' order' + (trKeys.length === 1 ? '' : 's') + '</span></div><ul>' + trKeys.map(function (b) {
           return '<li><span>From ' + esc(SE.loc(tr[b].from).name + ' → ' + SE.loc(tr[b].shipTo).name) + '<small>' + tr[b].items.map(function (x) { return x.qty + ' x ' + esc(x.pn); }).join(', ') + '</small></span><b>No charge</b></li>'; }).join('') + '</ul></div>' : '') +
         '<p class="oc-note">' + (g.length > 1 ? 'This creates ' + g.length + ' purchase orders, split by supplier, destination and work order' + (trKeys.length ? ', and ' + trKeys.length + ' branch transfer' + (trKeys.length === 1 ? '' : 's') : '') + '. ' : trKeys.length ? 'This creates ' + g.length + ' purchase order' + (g.length === 1 ? '' : 's') + ' and ' + trKeys.length + ' branch transfer' + (trKeys.length === 1 ? '' : 's') + '. ' : '') + 'Tax and freight are added by the supplier.</p>' +
-        (SE.cms ? SE.cms.orderMessages('') : '') +
+        (SE.cms ? SE.cms.orderMessages('cart-bottom') : '') +
         '<button class="btn btn-primary oc-cta" type="submit" data-submit>Submit order' + (g.length + trKeys.length > 1 ? 's' : '') + '</button>' +
         '<a class="btn btn-secondary oc-cta" href="#/cart">Back to cart</a>' +
       '</aside></form>';

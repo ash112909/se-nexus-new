@@ -59,7 +59,7 @@
       tags: ['inspection', 'safety', 'JLG', '1930ES'],
       attachments: [], locations: ['all'],
       banner: false, bannerDismissible: true, bannerText: '',
-      orderMsg: true, placement: 'top',
+      orderMsg: true, placement: 'order-top',
       showOnOrders: false, vendorName: '',
     },
     {
@@ -72,7 +72,7 @@
       tags: ['JLG', 'hydraulics', 'lead times'],
       attachments: [], locations: ['all'],
       banner: false, bannerDismissible: true, bannerText: '',
-      orderMsg: true, placement: 'bottom',
+      orderMsg: false, placement: 'order-bottom',
       showOnOrders: true, vendorName: 'JLG',
     },
     {
@@ -148,10 +148,15 @@
       persist();
     },
 
-    // Order-level fleet messages (placement: '' = all, 'top', 'bottom')
-    orderMessages: function (placement) {
+    // Order-level fleet messages.
+    // placement: 'cart-top'|'cart-bottom'|'order-top'|'order-bottom'|'' ('' = all)
+    // forTransfer: true to also include transfer-only messages (vendorName === '__transfers__')
+    orderMessages: function (placement, forTransfer) {
       var msgs = cms.getArticles('published').filter(function (a) {
-        return a.orderMsg && (!placement || a.placement === placement);
+        if (!a.orderMsg) return false;
+        if (placement && a.placement !== placement) return false;
+        if (a.vendorName === '__transfers__') return forTransfer === true;
+        return true;
       });
       if (!msgs.length) return '';
       return msgs.map(function (a) {
@@ -167,52 +172,130 @@
 
     // Open "Order Messages" manager dialog (shared by orders and work-orders pages)
     openMsgManager: function () {
-      var UI = SE.ui, icon = SE.icon;
+      var UI = SE.ui;
       var PLACEMENTS = [
-        { id: 'top',    label: 'Top of order summary' },
-        { id: 'bottom', label: 'Bottom of order summary' },
+        { id: 'cart-top',    label: 'Top of cart',              forOrder: false },
+        { id: 'cart-bottom', label: 'Bottom of cart',           forOrder: false },
+        { id: 'order-top',   label: 'Top of order summary',     forOrder: true  },
+        { id: 'order-bottom',label: 'Bottom of order summary',  forOrder: true  },
       ];
-      var msgs = cms.getArticles('published').filter(function (a) { return !!a.orderMsg; });
+      var PL_IDS = PLACEMENTS.map(function (p) { return p.id; });
+      var sups = (SE.data.suppliers || []).filter(function (s) { return s.active !== false; }).map(function (s) { return s.name; });
+
+      function plLabel(id) {
+        var p = PLACEMENTS.filter(function (p) { return p.id === id; })[0];
+        return p ? p.label : (id || '—');
+      }
+      function scopeLabel(a) {
+        if (a.vendorName === '__transfers__') return 'Branch transfers';
+        if (a.showOnOrders && a.vendorName) return a.vendorName;
+        return 'All orders';
+      }
+
+      var msgs = cms.getArticles('published').filter(function (a) {
+        return PL_IDS.indexOf(a.placement) >= 0 && (a.orderMsg || (a.showOnOrders && a.vendorName));
+      });
+
+      var INP = 'width:100%;border:1px solid #E5E7EB;border-radius:8px;padding:8px 12px;font-size:13px;color:var(--ink);background:var(--surface);font-family:inherit;outline:none;box-sizing:border-box;';
+      var LBL = 'display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:5px;';
 
       function buildRow(a) {
-        var pl = PLACEMENTS.filter(function (p) { return p.id === a.placement; })[0] || { label: a.placement || '—' };
-        return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:0.5px solid #F0ECE8;">' +
+        var scopeChip = scopeLabel(a) !== 'All orders'
+          ? '<span style="font-size:9px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.4px;background:#F3F4F6;padding:2px 5px;border-radius:3px;margin-left:4px;">' + esc(scopeLabel(a)) + '</span>'
+          : '';
+        return '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid #F3F4F6;">' +
           '<div style="flex:1;min-width:0;">' +
-            '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
-              '<span style="font-size:9px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.5px;background:#EEEDFE;padding:2px 6px;border-radius:3px;">' + esc(pl.label) + '</span>' +
-              '<span style="font-size:11px;font-weight:600;color:#111318;">' + esc(a.title) + '</span>' +
+            '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:4px;">' +
+              '<span style="font-size:9px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.5px;background:#EEEDFE;padding:2px 7px;border-radius:4px;white-space:nowrap;">' + esc(plLabel(a.placement)) + '</span>' +
+              scopeChip +
+              '<span style="font-size:12px;font-weight:600;color:var(--ink);margin-left:2px;">' + esc(a.title) + '</span>' +
             '</div>' +
-            '<div style="font-size:11px;color:#7A7F8E;">' + esc(a.body ? a.body.slice(0, 120) + (a.body.length > 120 ? '…' : '') : '') + '</div>' +
-            (a.postedDate ? '<div style="font-size:10px;color:#B0AAA3;margin-top:2px;">' + esc(a.postedDate) + '</div>' : '') +
+            (a.body ? '<div style="font-size:11px;color:#6B7280;line-height:1.5;margin-bottom:2px;">' + esc(a.body.slice(0, 100) + (a.body.length > 100 ? '…' : '')) + '</div>' : '') +
+            (a.postedDate ? '<div style="font-size:10px;color:#B0AAA3;">' + esc(a.postedDate) + '</div>' : '') +
           '</div>' +
-          '<button data-oh-del="' + esc(a.id) + '" style="background:none;border:0.5px solid #E2DDD8;border-radius:6px;padding:4px 8px;font-size:11px;color:#D9534F;cursor:pointer;font-family:inherit;flex-shrink:0;">Remove</button>' +
+          '<button data-oh-del="' + esc(a.id) + '" style="background:none;border:1px solid #FECACA;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#DC2626;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;">Remove</button>' +
         '</div>';
       }
 
       var listHtml = msgs.length
         ? msgs.map(buildRow).join('')
-        : '<div style="font-size:13px;color:#9CA3AF;text-align:center;padding:20px 0;">No order messages yet.</div>';
+        : '<div style="font-size:13px;color:#9CA3AF;text-align:center;padding:24px 0;">No order messages yet.</div>';
+
+      var supOpts = sups.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
 
       var dlg = UI.dialog({
         title: 'Order Messages',
-        body: '<div style="max-height:480px;overflow-y:auto;margin:-16px;">' +
-          '<div style="padding:14px 16px;border-bottom:0.5px solid #F0ECE8;">' +
-            '<div style="font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px;">Add new message</div>' +
-            '<div style="display:grid;gap:7px;">' +
-              '<input id="oh-msg-title" type="text" placeholder="Message title *" style="width:100%;height:32px;border:0.5px solid #E2DDD8;border-radius:6px;padding:0 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;background:var(--surface);" />' +
-              '<textarea id="oh-msg-body" placeholder="Message content *" style="width:100%;min-height:56px;border:0.5px solid #E2DDD8;border-radius:6px;padding:7px 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;resize:none;background:var(--surface);"></textarea>' +
-              '<select id="oh-msg-placement" style="height:32px;border:0.5px solid #E2DDD8;border-radius:6px;padding:0 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;background:var(--surface);">' +
-                PLACEMENTS.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>'; }).join('') +
-              '</select>' +
-              '<button type="button" data-oh-add style="height:32px;background:#111318;border:none;border-radius:6px;font-size:12px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer;">Add message</button>' +
+        wide: true,
+        body: '<div style="max-height:520px;overflow-y:auto;margin:-16px;">' +
+
+          '<div style="padding:16px;border-bottom:1px solid #F0ECE8;">' +
+            '<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#9CA3AF;margin-bottom:14px;">Add new message</div>' +
+            '<div style="display:grid;gap:11px;">' +
+
+              '<div><label for="oh-msg-title" style="' + LBL + '">Message title</label>' +
+                '<input id="oh-msg-title" type="text" placeholder="e.g. New inspection requirement for JLG 1930ES" style="' + INP + '" /></div>' +
+
+              '<div><label for="oh-msg-body" style="' + LBL + '">Message content</label>' +
+                '<textarea id="oh-msg-body" placeholder="Describe the message shown to users when placing or reviewing orders…" rows="3" style="' + INP + 'resize:vertical;"></textarea></div>' +
+
+              '<div><label for="oh-msg-placement" style="' + LBL + '">Placement</label>' +
+                '<div style="position:relative;">' +
+                  '<select id="oh-msg-placement" style="' + INP + 'appearance:none;-webkit-appearance:none;padding-right:28px;cursor:pointer;">' +
+                    PLACEMENTS.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>'; }).join('') +
+                  '</select>' +
+                  '<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:12px;color:#6B7280;">&#9660;</span>' +
+                '</div></div>' +
+
+              '<div id="oh-applies-wrap" hidden>' +
+                '<div style="' + LBL + '">Applies to</div>' +
+                '<div style="display:flex;flex-direction:column;gap:6px;">' +
+                  '<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;font-size:13px;color:var(--ink);">' +
+                    '<input type="radio" name="oh-scope" value="all" checked style="accent-color:#111318;width:14px;height:14px;cursor:pointer;"> All orders</label>' +
+                  '<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;font-size:13px;color:var(--ink);">' +
+                    '<input type="radio" name="oh-scope" value="supplier" style="accent-color:#111318;width:14px;height:14px;cursor:pointer;"> Specific supplier</label>' +
+                  '<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;font-size:13px;color:var(--ink);">' +
+                    '<input type="radio" name="oh-scope" value="transfer" style="accent-color:#111318;width:14px;height:14px;cursor:pointer;"> Branch transfers only</label>' +
+                '</div>' +
+                '<div id="oh-vendor-wrap" hidden style="margin-top:8px;">' +
+                  '<div style="position:relative;">' +
+                    '<select id="oh-msg-vendor" style="' + INP + 'appearance:none;-webkit-appearance:none;padding-right:28px;cursor:pointer;">' +
+                      '<option value="">Select supplier…</option>' + supOpts +
+                    '</select>' +
+                    '<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:12px;color:#6B7280;">&#9660;</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+
+              '<button type="button" data-oh-add style="width:100%;height:40px;background:#111318;border:none;border-radius:8px;font-size:13px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer;text-align:center;letter-spacing:.1px;">Add message</button>' +
+
             '</div>' +
           '</div>' +
+
           '<div>' +
-            '<div style="padding:10px 16px 4px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#534AB7;">Active messages (' + msgs.length + ')</div>' +
+            '<div style="padding:12px 16px 6px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#534AB7;">Active messages (' + msgs.length + ')</div>' +
             listHtml +
           '</div>' +
+
         '</div>',
         foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Done</button>',
+      });
+
+      // Show/hide Applies To section based on placement
+      dlg.el.addEventListener('change', function (e) {
+        var placEl = dlg.el.querySelector('#oh-msg-placement');
+        var appliesWrap = dlg.el.querySelector('#oh-applies-wrap');
+        var vendorWrap  = dlg.el.querySelector('#oh-vendor-wrap');
+        if (e.target === placEl) {
+          var chosen = PLACEMENTS.filter(function (p) { return p.id === placEl.value; })[0];
+          appliesWrap.hidden = !(chosen && chosen.forOrder);
+          if (appliesWrap.hidden) {
+            var r = appliesWrap.querySelector('input[value="all"]');
+            if (r) { r.checked = true; }
+          }
+        }
+        if (e.target.name === 'oh-scope') {
+          vendorWrap.hidden = e.target.value !== 'supplier';
+        }
       });
 
       dlg.el.addEventListener('click', function (e) {
@@ -227,19 +310,31 @@
           var titleEl = dlg.el.querySelector('#oh-msg-title');
           var bodyEl  = dlg.el.querySelector('#oh-msg-body');
           var placEl  = dlg.el.querySelector('#oh-msg-placement');
-          var t = titleEl ? titleEl.value.trim() : '';
-          var b = bodyEl  ? bodyEl.value.trim()  : '';
-          var pl = placEl ? placEl.value : 'top';
+          var scopeEl = dlg.el.querySelector('input[name="oh-scope"]:checked');
+          var vendorEl = dlg.el.querySelector('#oh-msg-vendor');
+          var t  = titleEl ? titleEl.value.trim() : '';
+          var b  = bodyEl  ? bodyEl.value.trim()  : '';
+          var pl = placEl  ? placEl.value : 'cart-top';
+          var scope = scopeEl ? scopeEl.value : 'all';
+          var vendor = (vendorEl && !vendorEl.closest('#oh-vendor-wrap[hidden]')) ? vendorEl.value.trim() : '';
           if (!t || !b) { SE.toast('Title and content are required', 'cross-small'); return; }
-          cms.saveArticle({
+          if (scope === 'supplier' && !vendor) { SE.toast('Select a supplier', 'cross-small'); return; }
+          var article = {
             id: 'oh-msg-' + Date.now(),
             type: 'notice', subtype: 'Administrative', status: 'published', postAs: 'news',
             title: t, body: b, placement: pl,
-            orderMsg: true, showOnOrders: false, vendorName: '',
             poster: SE.data.user.name || '', postedDate: new Date().toISOString().slice(0, 10), expiryDate: '',
             language: 'en', tags: [], attachments: [], locations: ['all'],
             banner: false, bannerDismissible: true, bannerText: '', priority: 'low',
-          });
+          };
+          if (scope === 'supplier') {
+            article.orderMsg = false; article.showOnOrders = true; article.vendorName = vendor;
+          } else if (scope === 'transfer') {
+            article.orderMsg = true; article.showOnOrders = false; article.vendorName = '__transfers__';
+          } else {
+            article.orderMsg = true; article.showOnOrders = false; article.vendorName = '';
+          }
+          cms.saveArticle(article);
           dlg.close();
           cms.openMsgManager();
         }
