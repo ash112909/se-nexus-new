@@ -254,6 +254,13 @@ SE.catSearch = function (currentWo) {
   var D = SE.data;
   if (s.mode === 'keyword') {
     var h = location.hash.replace(/^#\/?/, ''), hi = h.indexOf('?');
+    var routeName = hi < 0 ? h : h.slice(0, hi);
+    if (routeName === 'company-catalog') {
+      var ccSp = { q: q };
+      if (currentWo) ccSp.wo = currentWo;
+      SE.go('company-catalog', { params: ccSp });
+      return;
+    }
     var pgParams = {};
     if (hi >= 0) new URLSearchParams(h.slice(hi + 1)).forEach(function (v, k) { pgParams[k] = v; });
     var supId = pgParams.sup;

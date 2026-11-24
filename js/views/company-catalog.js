@@ -292,6 +292,48 @@ SE.views['company-catalog'] = function (el, p) {
     '</div>';
   }
 
+  // ---- search results: ?q=grease ----
+  if (p.q && !p.cat) {
+    if (p.q) C.search.query = p.q;
+    var ql = p.q.trim().toLowerCase();
+    var unit = C.unit(p.wo);
+    var hits = [];
+    CCATS.forEach(function (cat) {
+      var d = CPARTS[cat.id];
+      if (!d) return;
+      Object.keys(d).forEach(function (subId) {
+        d[subId].forEach(function (x) {
+          if ((x.pn + ' ' + x.name + ' ' + (x.desc || '')).toLowerCase().indexOf(ql) >= 0) {
+            hits.push({ part: x, cat: cat.id });
+          }
+        });
+      });
+    });
+
+    var bodyHtml;
+    if (!hits.length) {
+      bodyHtml = UI.empty({ icon: 'search', title: 'No items found', text: 'No company catalog items matched "' + esc(p.q) + '".' });
+    } else {
+      bodyHtml = '<div class="ecat-part-grid">' +
+        hits.map(function (h) { return partCard(h.part, h.cat, unit); }).join('') +
+      '</div>';
+    }
+
+    var sh = SE.shell(el, {
+      nav: 'catalog', title: '"' + p.q + '" · Company Catalog', wide: true,
+      crumbs: [['Parts catalog', catQ], ['Company Catalog', ccQ]],
+      sub: hits.length ? hits.length + ' result' + (hits.length === 1 ? '' : 's') : '',
+      body: C.layout({ extra: 'company-catalog' }, p.wo,
+        UI.sec('"' + esc(p.q) + '"', hits.length ? '<span class="muted">' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + '</span>' : '',
+          bodyHtml, 'h-results'))
+    });
+    el.addEventListener('click', function (e) {
+      var q = e.target.closest('[data-quick]');
+      if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
+    });
+    return sh.cleanup;
+  }
+
   // ---- sub-category level: ?cat=shop-supplies&sub=lubricants ----
   if (p.cat && p.sub) {
     var catDef  = CCATS.find(function (c) { return c.id === p.cat; });
