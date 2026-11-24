@@ -103,25 +103,17 @@
     },
   ];
 
+  var STORAGE_KEY = 'se-1016-cms-articles';
   var _articles;
   try {
-    var saved = localStorage.getItem('se-1015-cms-articles');
+    var saved = localStorage.getItem(STORAGE_KEY);
     _articles = saved ? JSON.parse(saved) : SEED.slice();
-    // Migrate old placement values ('top'/'bottom') to current scheme
-    var migrated = false;
-    _articles.forEach(function (a) {
-      if (a.placement === 'top')    { a.placement = 'order-top';    migrated = true; }
-      if (a.placement === 'bottom') { a.placement = 'order-bottom'; migrated = true; }
-    });
-    if (migrated) {
-      try { localStorage.setItem('se-1015-cms-articles', JSON.stringify(_articles)); } catch (e) {}
-    }
   } catch (e) {
     _articles = SEED.slice();
   }
 
   function persist() {
-    try { localStorage.setItem('se-1015-cms-articles', JSON.stringify(_articles)); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_articles)); } catch (e) {}
   }
 
   function esc(s) {
