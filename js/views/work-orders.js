@@ -382,8 +382,8 @@ SE.views['work-orders'] = function (el, p) {
           '<button type="button" class="ord-vbtn" data-view="wo">Work Orders</button>' +
           '<button type="button" class="ord-vbtn" data-view="po">Purchase Orders</button>' +
         '</div>' +
-        (SE.cms ? '<button class="btn btn-secondary" type="button" data-wo-manage-msgs>' + icon('megaphone') + 'Messages</button>' : '') +
         '<button class="btn btn-primary ord-new-btn" type="button" data-new>' + icon('plus-small') + 'New Order</button>' +
+        (SE.cms ? '<button class="btn btn-secondary" type="button" data-wo-manage-msgs>' + icon('megaphone') + 'Messages</button>' : '') +
       '</div>' +
       '<div class="ord-filters">' +
         '<form class="ord-ctl ord-search" role="search" data-wo-form><label class="sr-only" for="wo-q">Search orders</label>' + icon('search') +

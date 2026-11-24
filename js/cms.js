@@ -204,7 +204,7 @@
               '<select id="oh-msg-placement" style="height:32px;border:0.5px solid #E2DDD8;border-radius:6px;padding:0 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;background:var(--surface);">' +
                 PLACEMENTS.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>'; }).join('') +
               '</select>' +
-              '<button type="button" data-oh-add style="height:32px;background:var(--ink);border:none;border-radius:6px;font-size:12px;font-weight:600;color:var(--paper);font-family:inherit;cursor:pointer;">Add message</button>' +
+              '<button type="button" data-oh-add style="height:32px;background:#111318;border:none;border-radius:6px;font-size:12px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer;">Add message</button>' +
             '</div>' +
           '</div>' +
           '<div>' +
