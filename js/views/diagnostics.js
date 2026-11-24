@@ -632,44 +632,42 @@ SE.views.diagnostics = function (el, p) {
     diagSend();
   };
 
-  // ── Manual reference ───────────────────────────────────────────────────────
+  // ── Manual reference — fullscreen PDF viewer ──────────────────────────────
   window.diagOpenManual = function (sectionId, sectionTitle) {
     var section = null;
     for (var i = 0; i < SJ3219_SECTIONS.length; i++) {
       if (SJ3219_SECTIONS[i].id === sectionId) { section = SJ3219_SECTIONS[i]; break; }
     }
-    if (!section) return;
 
-    var pdfPage = section.pdfPage || section.page;
-    var pdfUrl = window.SJIII_MANUAL_PDF;
+    var pdfFile = window.SJIII_MANUAL_PDF || 'manuals/skj-3219-service.pdf';
+    var pdfPage = section ? section.pdfPage : null;
+    var manPage = section ? section.page : null;
+    var pdfSrc  = pdfFile + (pdfPage ? '#page=' + pdfPage : '');
+    var title   = sectionTitle || (section ? section.title : 'Manual Reference');
 
-    var body = '<div style="font-size:13px;line-height:20px;color:var(--ink);">' +
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
-        SE.icon('book-alt') +
-        '<strong>Chapter ' + SE.esc(section.chapter) + ' — ' + SE.esc(section.title) + '</strong>' +
-        '<span style="margin-left:auto;font-size:11px;color:var(--muted);">p.' + section.page + '</span>' +
+    // Remove any existing overlay
+    var existing = document.getElementById('diag-pdf-overlay');
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+    var overlay = document.createElement('div');
+    overlay.id = 'diag-pdf-overlay';
+    overlay.className = 'diag-pdf-overlay';
+    overlay.innerHTML =
+      '<div class="diag-pdf-toolbar">' +
+        SE.icon('book-alt', 'diag-pdf-toolbar-icon') +
+        '<span class="diag-pdf-meta">Skyjack SJIII Series Operating Manual &nbsp;&middot;&nbsp; ' + SE.esc(title) + '</span>' +
+        (manPage ? '<span class="diag-pdf-page">' + SE.icon('marker') + 'Page ' + manPage + '</span>' : '') +
+        '<a href="' + SE.esc(pdfFile) + '" download class="diag-pdf-dl">' + SE.icon('download') + 'Download</a>' +
+        '<button class="diag-pdf-close" onclick="diagClosePdf()">' + SE.icon('cross-small') + 'Close</button>' +
       '</div>' +
-      '<p style="color:var(--muted);margin:0 0 16px;">' + SE.esc(section.summary) + '</p>';
+      '<iframe class="diag-pdf-frame" src="' + SE.esc(pdfSrc) + '" title="' + SE.esc(title) + '"></iframe>';
 
-    if (pdfUrl) {
-      body += '<iframe src="' + pdfUrl + '#page=' + pdfPage + '" ' +
-        'style="width:100%;height:480px;border:1px solid var(--line);border-radius:8px;" ' +
-        'title="SJIII Manual"></iframe>';
-    } else {
-      body += '<div style="padding:24px;border:1px solid var(--line);border-radius:8px;text-align:center;color:var(--muted);font-size:12px;">' +
-        SE.icon('document') +
-        '<br>Manual PDF not available in this environment.<br>' +
-        '<span style="font-size:11px;">Reference: p.' + section.page + ' of the SJIII 3219 Service Manual (143857AD-A)</span>' +
-      '</div>';
-    }
-    body += '</div>';
+    el.appendChild(overlay);
 
-    SE.ui.dialog({
-      title: 'Manual Reference',
-      body: body,
-      wide: true,
-      foot: '<button class="btn btn-secondary" data-dlg-close>Close</button>',
-    });
+    window.diagClosePdf = function () {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      delete window.diagClosePdf;
+    };
   };
 
   // ── Context management ─────────────────────────────────────────────────────
@@ -776,8 +774,11 @@ SE.views.diagnostics = function (el, p) {
       'diagCreateWO', 'diagAddToExistingWO', 'diagConfirmAddToWO',
       'diagLookupFc', 'diagOpenManual', 'diagClearCtx', 'diagSetCtx',
       'diagToggleMobile', 'diagAutoResize', 'diagInputKey',
-      'diagSuggest', 'diagSetWOContext', 'diagConfirmSetWO',
+      'diagSuggest', 'diagSetWOContext', 'diagConfirmSetWO', 'diagClosePdf',
     ];
     globals.forEach(function (g) { delete window[g]; });
+    // Close PDF overlay if open when navigating away
+    var pdfOverlay = document.getElementById('diag-pdf-overlay');
+    if (pdfOverlay && pdfOverlay.parentNode) pdfOverlay.parentNode.removeChild(pdfOverlay);
   };
 };

@@ -394,4 +394,4 @@ window.SJ3219_SECTIONS = SJ3219_SECTIONS;
 window.SJ3219_FAULT_CODES = SJ3219_FAULT_CODES;
 window.diagGenerateResponse = diagGenerateResponse;
 window.manualPageToPdf = manualPageToPdf;
-window.SJIII_MANUAL_PDF = 'manuals/sjiii-operating-manual.pdf';
+window.SJIII_MANUAL_PDF = 'manuals/skj-3219-service.pdf';
