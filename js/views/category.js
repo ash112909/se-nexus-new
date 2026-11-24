@@ -37,7 +37,7 @@ SE.views.category = function (el, p) {
       var n = x._n;
       return '<tr data-row data-pn="' + x.pn + '" tabindex="0" aria-selected="' + (x.pn === sel) + '">' + (n != null ? '<td class="num co-td"><span class="co-num">' + n + '</span></td>' : '') +
         '<td class="cell-pn"><span class="pn-link">' + esc(x.pn) + '</span><span class="pn-name">' + esc(x.name) + '</span></td>' +
-        (quick ? '<td class="q-cell">' + C.quickBtn(x, unit) + '</td>' : '') + '</tr>';
+        (quick ? '<td class="q-cell">' + C.listBtn(x) + C.quickBtn(x, unit) + '</td>' : '') + '</tr>';
     }).join('');
   }
   // ---------- generic schematic (same drawing as the iPhone build)
@@ -143,6 +143,8 @@ SE.views.category = function (el, p) {
   }
   el.addEventListener('click', function (e) {
     if (e.target.closest('[data-panel-close]')) { sel = null; history.replaceState(null, '', url()); renderPanel(); return; }
+    var la = e.target.closest('[data-list-add]');
+    if (la) { C.listAdd(la.dataset.listAdd, la.dataset.listName, la.dataset.listPrice); return; }
     var q = e.target.closest('[data-quick]');
     if (q) { C.quickAdd(q.dataset.quick, wo); return; }
     var sg = e.target.closest('[data-seg]');

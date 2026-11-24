@@ -286,6 +286,7 @@ SE.views['company-catalog'] = function (el, p) {
         '<div class="ecat-part-actions">' +
           '<span class="ecat-part-price">' + esc(x.price) + '</span>' +
           (x.location ? '<span class="ecat-part-loc muted">' + esc(x.location) + '</span>' : '') +
+          C.listBtn(x) +
           C.quickBtn(x, unit) +
         '</div>' +
       '</div>' +
@@ -328,6 +329,8 @@ SE.views['company-catalog'] = function (el, p) {
           bodyHtml, 'h-results'))
     });
     el.addEventListener('click', function (e) {
+      var la = e.target.closest('[data-list-add]');
+      if (la) { C.listAdd(la.dataset.listAdd, la.dataset.listName, la.dataset.listPrice); return; }
       var q = e.target.closest('[data-quick]');
       if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
     });
@@ -393,6 +396,8 @@ SE.views['company-catalog'] = function (el, p) {
     }
 
     el.addEventListener('click', function (e) {
+      var la = e.target.closest('[data-list-add]');
+      if (la) { C.listAdd(la.dataset.listAdd, la.dataset.listName, la.dataset.listPrice); return; }
       var q = e.target.closest('[data-quick]');
       if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
     });
@@ -434,6 +439,8 @@ SE.views['company-catalog'] = function (el, p) {
           '</div>', 'h-feat'))
     });
     el.addEventListener('click', function (e) {
+      var la = e.target.closest('[data-list-add]');
+      if (la) { C.listAdd(la.dataset.listAdd, la.dataset.listName, la.dataset.listPrice); return; }
       var q = e.target.closest('[data-quick]');
       if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
     });
@@ -470,8 +477,10 @@ SE.views['company-catalog'] = function (el, p) {
         '</div>', 'h-feat'))
   });
   el.addEventListener('click', function (e) {
+    var la = e.target.closest('[data-list-add]');
+    if (la) { C.listAdd(la.dataset.listAdd, la.dataset.listName, la.dataset.listPrice); return; }
     var q = e.target.closest('[data-quick]');
-    if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
+    if (q) { C.quickAdd(q.dataset.quick, p.wo); }
   });
   return sh.cleanup;
 };

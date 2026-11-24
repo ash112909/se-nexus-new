@@ -77,6 +77,23 @@
   C.priceOk = function (part, unit) { return !part.serialPricing || !!(unit && unit.model === part.machine); };
   C.addable = function (part, unit) { return !part.supersededBy && C.priceOk(part, unit); };
   C.priceCell = function (part, unit) { return C.priceOk(part, unit) ? SE.money(part.price) : '<span class="need-serial">Serial needed</span>'; };
+  C.listBtn = function (part) {
+    return '<button class="btn btn-secondary q-add q-list" type="button" data-list-add="' + esc(part.pn) + '" data-list-name="' + esc(part.name) + '" data-list-price="' + esc(part.price || '') + '" aria-label="Save ' + esc(part.name) + ' to a list">' + icon('star') + '<span class="q-add-l">Save</span></button>';
+  };
+  C.listAdd = function (pn, name, price) {
+    var edit = SE.state && SE.state._listEdit;
+    if (edit) {
+      var list = SE.list(edit.id);
+      if (list) {
+        var exists = list.items.some(function (i) { return i.pn === pn; });
+        if (!exists) { list.items.push({ pn: pn, qty: 1 }); SE.saveLists(); }
+        SE.toast((exists ? 'Already on “' : 'Added to “') + list.name + '”', 'star');
+      }
+      return;
+    }
+    var part = SE.part(pn) || { pn: pn, name: name, price: price };
+    SE.addToShoppingList(part);
+  };
   C.quickBtn = function (part, unit) {
     if (!C.addable(part, unit)) return '<span class="q-none">' + (part.supersededBy ? 'Replaced' : 'Pick unit') + '</span>';
     return '<button class="btn btn-secondary q-add" type="button" data-quick="' + part.pn + '" aria-label="Add ' + esc(part.name) + ' to cart">' + icon('plus-small') + '<span class="q-add-l">Add</span></button>';
@@ -214,8 +231,17 @@
   // page body with the tree beside it; under 960px of content the tree folds away and the breadcrumb leads.
   // The WO ribbon (dark bar) and search panel live in the aside above the tree.
   C.layout = function (cur, wo, main) {
+    var edit = SE.state && SE.state._listEdit;
+    var banner = edit
+      ? '<div class="cat-list-banner">' + icon('star') +
+        '<span>Adding parts to <b>' + esc(edit.name) + '</b></span>' +
+        '<a class="btn btn-secondary btn-sm" href="#/list?id=' + esc(edit.id) + '" onclick="SE.listEditDone()">Done</a>' +
+        '<button type="button" class="cat-list-cancel icon-btn" onclick="SE.listEditCancel()" aria-label="Stop adding to list">' + icon('cross-small') + '</button>' +
+        '</div>'
+      : '';
     return C.woRibbon(wo) +
       C.typeBar(cur, wo) +
+      banner +
       '<div class="cat-layout"><aside class="ctree-col">' +
       C.searchPanel(wo, cur.extra) +
       C.tree(cur, wo) +
@@ -302,6 +328,8 @@ SE.catSearch = function (currentWo) {
     } else { SE.toast('No model found for "' + q + '"', 'triangle-warning'); }
   }
 };
+SE.listEditDone = function () { if (SE.state) delete SE.state._listEdit; SE.save && SE.save(); };
+SE.listEditCancel = function () { if (SE.state) delete SE.state._listEdit; SE.save && SE.save(); SE.catRerender(); };
 SE.catClearWo = function () {
   var h = location.hash.replace(/^#\/?/, ''), i = h.indexOf('?');
   var name = i < 0 ? h : h.slice(0, i), params = {};

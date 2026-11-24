@@ -34,7 +34,8 @@
       return D.listTags.map(function (t) { return '<button type="button" role="radio" aria-checked="' + (t === draft.tag) + '" aria-selected="' + (t === draft.tag) + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>'; }).join('');
     }
     function member(it, i) {
-      var p = SE.part(it.pn), n = draft.items.length, bad = LX.issue(p);
+      var p = SE.part(it.pn) || { pn: it.pn, name: it.pn, price: 0, supersededBy: null };
+      var n = draft.items.length, bad = LX.issue(p);
       var step = UI.stepper(it.qty, 'Recommended quantity of ' + p.name, ' data-i="' + i + '"').replace('class="stepper"', 'class="stepper sm"');
       if (it.qty <= 1) step = step.replace('data-step="-1"', 'data-step="-1" disabled');
       return '<li class="le-m" data-m="' + i + '"><span class="le-pos">' + (i + 1) + '</span>' +
@@ -48,27 +49,6 @@
     function members() {
       return draft.items.length ? '<ol class="le-list">' + draft.items.map(member).join('') + '</ol>'
         : '<p class="le-none">No parts yet. Search below and add them; they keep the order you add them in.</p>';
-    }
-    function tokens(q) { return String(q || '').toLowerCase().split(/\s+/).filter(Boolean); }
-    function find(q) {
-      var tk = tokens(q);
-      if (!tk.length) return D.parts.filter(function (x) { return !draft.machine || x.machine === draft.machine; }).slice(0, 6);
-      return D.parts.filter(function (x) {
-        var m = x.machine ? SE.machine(x.machine) : null;
-        var hay = [x.name, x.pn, x.sub || '', x.type || '', m ? m.name : '', SE.supplierOf(x.pn).name].join(' ').toLowerCase();
-        return tk.every(function (t) { return hay.indexOf(t) >= 0; });
-      });
-    }
-    function results(q) {
-      var r = find(q);
-      if (!r.length) return '<p class="le-none">No parts match "' + esc(q) + '". Try a part number or a word like "filter".</p>';
-      return '<ul class="pk-list">' + r.map(function (x) {
-        var on = draft.items.some(function (i) { return i.pn === x.pn; });
-        var act = x.supersededBy ? '<span class="pk-rep">Replaced: use ' + esc(x.supersededBy) + '</span>'
-          : on ? '<span class="pk-done">' + icon('check') + 'On the list</span>'
-          : '<button type="button" class="btn btn-secondary pk-add" data-pick="' + esc(x.pn) + '">' + icon('plus-small') + 'Add</button>';
-        return '<li>' + UI.thumb() + '<span class="le-info"><b>' + esc(x.name) + '</b><small>' + esc(x.pn) + ' · ' + esc(SE.supplierOf(x.pn).name) + ' · ' + (SE.priceVisible(x) ? money(x.price) : 'Priced by unit') + '</small></span>' + UI.stock(x) + act + '</li>';
-      }).join('') + '</ul>';
     }
     var machines = [['', 'Any machine (shop supplies, attachments)']].concat(Object.keys(D.machines).map(function (k) { return [k, D.machines[k].name]; }));
     var dlg = UI.dialog({
@@ -86,21 +66,21 @@
           '<button type="button" role="radio" aria-checked="' + !!draft.public + '" aria-selected="' + !!draft.public + '" data-vis="public">' + icon('share') + 'Public</button>' +
         '</div></div>' +
         '<div class="form-row"><span class="le-lbl">Parts · <span id="le-n">' + draft.items.length + '</span></span><div id="le-members">' + members() + '</div></div>' +
-        '<div class="form-row le-add"><label for="le-q">Search parts to add</label><div class="control">' + icon('search') + '<input id="le-q" type="search" placeholder="Part number, name or machine" enterkeyhint="search"></div>' +
-          '<div id="le-res">' + results('') + '</div></div>' +
+        '<div class="form-row le-browse"><span class="le-lbl">Add parts</span>' +
+          '<button type="button" class="btn btn-secondary le-browse-btn" data-le-browse>' + icon('search') + 'Browse catalog to add parts</button>' +
+          '<p class="muted le-browse-note" style="margin-top:6px;font-size:13px;">Navigate to any catalog page and use the <b>Save</b> button on each part.</p>' +
+        '</div>' +
       '</form>',
       foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="submit" form="le-form" class="btn btn-primary">' + (src ? 'Save list' : 'Create list') + '</button>',
     });
-    var d = dlg.el, q = d.querySelector('#le-q'), res = d.querySelector('#le-res'), mem = d.querySelector('#le-members'), timer;
+    var d = dlg.el, mem = d.querySelector('#le-members');
     function renderMembers(focusSel) {
       mem.innerHTML = members();
       d.querySelector('#le-n').textContent = draft.items.length;
       if (focusSel && !SE.capture) { var f = mem.querySelector(focusSel); if (f && !f.disabled) f.focus(); }
     }
     d.querySelector('#le-name').addEventListener('input', function () { if (this.value.trim()) { d.querySelector('#le-err').hidden = true; d.querySelector('#le-row-name').classList.remove('invalid'); this.removeAttribute('aria-invalid'); } });
-    q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { res.innerHTML = results(q.value); }, 150); });
-    q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); res.innerHTML = results(q.value); } });
-    d.querySelector('#le-mach').addEventListener('change', function () { draft.machine = this.value || null; if (!q.value.trim()) res.innerHTML = results(''); });
+    d.querySelector('#le-mach').addEventListener('change', function () { draft.machine = this.value || null; });
     d.addEventListener('click', function (e) {
       var t = e.target.closest('button');
       if (!t || t.disabled) return;
@@ -116,8 +96,33 @@
         SE.animate(row, [{ backgroundColor: 'var(--tint-info)' }, { backgroundColor: 'var(--surface)' }], { duration: 700 });
         return;
       }
-      if (x.remove != null) { var gone = draft.items.splice(+x.remove, 1)[0]; renderMembers(); res.innerHTML = results(q.value); SE.toast('Removed ' + SE.part(gone.pn).name, 'trash'); return; }
-      if (x.pick) { draft.items.push({ pn: x.pick, qty: 1 }); renderMembers(); res.innerHTML = results(q.value); SE.toast('Added to the end of the list', 'check'); }
+      if (x.remove != null) {
+        var gone = draft.items.splice(+x.remove, 1)[0];
+        renderMembers();
+        SE.toast('Removed ' + (SE.part(gone.pn) || { name: gone.pn }).name, 'trash');
+        return;
+      }
+      if (t.hasAttribute('data-le-browse')) {
+        draft.name = d.querySelector('#le-name').value.trim();
+        draft.description = d.querySelector('#le-desc').value.trim();
+        if (!draft.name) {
+          d.querySelector('#le-err').hidden = false;
+          d.querySelector('#le-row-name').classList.add('invalid');
+          d.querySelector('#le-name').setAttribute('aria-invalid', 'true');
+          d.querySelector('#le-name').focus();
+          return;
+        }
+        draft.updatedBy = D.user.name; draft.updatedAt = LX.today();
+        var lists = SE.lists();
+        if (!src) { draft.id = 'sl-' + Date.now().toString(36); lists.unshift(draft); }
+        else lists.splice(lists.indexOf(src), 1, draft);
+        SE.saveLists();
+        SE.state._listEdit = { id: draft.id, name: draft.name };
+        SE.save && SE.save();
+        dlg.close();
+        SE.go('catalog');
+        return;
+      }
     });
     d.querySelector('#le-form').addEventListener('submit', function (e) {
       e.preventDefault();

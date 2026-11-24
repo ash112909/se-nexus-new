@@ -560,3 +560,13 @@
   .ctree-s-go:hover { opacity: .9; }
 }
 
+
+/* "Adding to list" banner */
+.cat-list-banner { display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: var(--tint-info); border-bottom: 1px solid color-mix(in srgb, var(--link) 25%, transparent); font-size: 13px; color: var(--ink); }
+.cat-list-banner .i { flex: none; color: var(--link); }
+.cat-list-banner span { flex: 1; min-width: 0; }
+.cat-list-banner .btn-sm { font-size: 12px; padding: 4px 12px; }
+.cat-list-cancel { margin-left: 2px; }
+
+/* Save-to-list button */
+.q-list { gap: 4px; }
