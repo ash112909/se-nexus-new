@@ -522,8 +522,6 @@ SE.views.kb = function (el, p) {
     sub: esc(D.news.length + ' bulletins, recalls and notices · ' + D.kb.length + ' how-to articles'),
     actions: '<a class="btn btn-secondary" href="#/kb?tab=manage">' + icon('pencil') + 'Manage articles</a>',
     body: '<div id="kb-feat">' + (SE.mkt ? SE.mkt.featured() : '') + '</div>' +
-      (SE.cms ? '<div style="display:flex;justify-content:flex-end;margin-bottom:4px;padding:0 0 8px;">' +
-        '<a class="btn btn-secondary" href="#/kb?tab=manage" style="gap:6px;">' + icon('pencil') + 'Manage articles</a></div>' : '') +
       '<section class="sec kb" aria-label="Library"><div class="sx-bar">' + field +
         '<div class="flt-sel" id="kb-kind-wrap">' + kindSel() + '</div>' +
         '<div class="flt-sel" id="kb-date-wrap">' + dateSel() + '</div>' +
