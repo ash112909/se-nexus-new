@@ -7,11 +7,9 @@ SE.views['catalog-search'] = function (el, p) {
   var q = (p.q || '').trim(), wo = p.wo || null;
   var sup = p.sup ? SE.supplier(p.sup) : null;
 
-  // Sync sidebar search state from URL params so the search bar shows the
-  // query and the tree reflects the supplier, whether navigated here via the
-  // search bar or directly via a link/bookmark.
-  C.search.mode = 'keyword';
-  C.search.query = q;
+  // Sync the query from the URL so the sidebar search bar stays populated.
+  // Don't override mode — SE.catMode manages that and re-renders this page.
+  if (q) C.search.query = q;
 
   // filter parts by supplier (if given) and keyword
   var ql = q.toLowerCase();
