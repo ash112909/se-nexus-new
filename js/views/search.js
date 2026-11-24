@@ -521,7 +521,8 @@
       if (t === 'manuals') return ['manuals', { q: q }];
       if (t === 'orders')  return ['work-orders', { q: q }];
       if (t === 'kb') return ['kb', { q: q }];
-      return ['catalog', q ? { q: q } : {}]; // parts: browse the catalog tree
+      if (q) return ['catalog-search', { q: q, sup: X.supplierFor() }]; // parts: search results with active supplier
+      return ['catalog', {}]; // parts, no query: browse the catalog tree
     }
 
     function build() {
