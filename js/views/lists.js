@@ -164,7 +164,7 @@
   };
 })();
 
-SE.titles.lists = 'Shopping Lists';
+SE.titles.lists = 'Lists';
 SE.views.lists = function (el, p) {
   var D = SE.data, UI = SE.ui, esc = SE.esc, icon = SE.icon, LX = SE.lx;
   var myId = D.user.username;
@@ -325,56 +325,56 @@ SE.views.lists = function (el, p) {
   function render() { renderSideLists(); renderItems(); }
 
   // ── Add to cart helpers ───────────────────────────────────────────────────
+  function woPickDlg(title, confirmLabel, onConfirm) {
+    var wos = openWos();
+    if (!wos.length) { onConfirm(null); return; }
+    var rows = wos.map(function (w) {
+      return '<label class="wo-pick-row"><input type="radio" name="wo-pick" value="' + esc(w.id) + '">' +
+        '<span class="wo-pick-label"><b>#' + esc(w.id) + '</b><span>' + esc(w.issue || w.equip) + ' · ' + esc(w.equip) + '</span></span>' +
+        '</label>';
+    }).join('');
+    var dlg = UI.dialog({
+      title: title,
+      body: '<div class="wo-pick-list">' + rows + '</div>' +
+        '<button class="btn btn-secondary wo-pick-new" type="button" data-wo-pick-new>' + icon('plus') + 'Create new work order</button>',
+      foot: '<button class="btn btn-secondary" type="button" data-dlg-close>Cancel</button>' +
+            '<button class="btn btn-brand" type="button" data-wo-pick-confirm>' + icon('shopping-cart') + confirmLabel + '</button>',
+    });
+    dlg.el.querySelector('[data-wo-pick-confirm]').addEventListener('click', function () {
+      var sel = dlg.el.querySelector('input[name="wo-pick"]:checked');
+      if (!sel) { SE.toast('Select a work order first', 'exclamation'); return; }
+      dlg.close(); onConfirm(sel.value);
+    });
+    dlg.el.querySelector('[data-wo-pick-new]').addEventListener('click', function () {
+      dlg.close();
+      SE.work.newDialog({ onCreate: function (w) { onConfirm(w.id); } });
+    });
+  }
+
   function wlAddOne(pn, listId) {
     var l = SE.list(listId);
     var item = l && l.items.filter(function (i) { return i.pn === pn; })[0];
     var qty = item ? item.qty : 1;
     var part = SE.part(pn);
     if (!part) return;
-    function doOne(wo) {
+    woPickDlg('Add to work order', 'Add to cart', function (wo) {
       SE.addToCart(pn, qty, wo || null, {});
       SE.toast(part.name + ' added to cart' + (wo ? ' · WO #' + wo : ''), 'shopping-cart');
-    }
-    var wos = openWos();
-    if (!wos.length) { doOne(null); return; }
-    var dlg = UI.dialog({
-      title: 'Add to cart',
-      body: '<p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Adding <b>' + esc(part.name) + '</b> · ' + esc(pn) + '</p>' +
-        '<div class="form-row"><label for="wl-one-wo">Work order (optional)</label><div class="control"><select id="wl-one-wo"><option value="">General cart (no WO)</option>' +
-        wos.map(function (w) { return '<option value="' + w.id + '">#' + w.id + ' · ' + esc(w.equip) + ' · ' + esc(w.issue) + '</option>'; }).join('') + '</select>' + icon('angle-small-down') + '</div></div>',
-      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="button" class="btn btn-primary" id="wl-one-ok">' + icon('shopping-cart') + 'Add to cart</button>',
-    });
-    dlg.el.querySelector('#wl-one-ok').addEventListener('click', function () {
-      var v = dlg.el.querySelector('#wl-one-wo').value || null;
-      dlg.close(); doOne(v);
     });
   }
 
   function wlAddAll(listId) {
     var l = SE.list(listId);
     if (!l || !l.items.length) return;
-    function doAll(wo) {
+    woPickDlg('Add to work order', 'Add all to cart', function (wo) {
       l.items.forEach(function (item) { SE.addToCart(item.pn, item.qty, wo || null, {}); });
       SE.toast('Added ' + l.items.length + ' item' + (l.items.length !== 1 ? 's' : '') + ' to cart' + (wo ? ' · WO #' + wo : ''), 'shopping-cart');
-    }
-    var wos = openWos();
-    if (!wos.length) { doAll(null); return; }
-    var dlg = UI.dialog({
-      title: 'Add all to cart',
-      body: '<p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Adding <b>' + l.items.length + ' items</b> from <b>' + esc(l.name) + '</b></p>' +
-        '<div class="form-row"><label for="wl-all-wo">Work order (optional)</label><div class="control"><select id="wl-all-wo"><option value="">General cart (no WO)</option>' +
-        wos.map(function (w) { return '<option value="' + w.id + '">#' + w.id + ' · ' + esc(w.equip) + ' · ' + esc(w.issue) + '</option>'; }).join('') + '</select>' + icon('angle-small-down') + '</div></div>',
-      foot: '<button type="button" class="btn btn-secondary" data-dlg-close>Cancel</button><button type="button" class="btn btn-primary" id="wl-all-ok">' + icon('shopping-cart') + 'Add to cart</button>',
-    });
-    dlg.el.querySelector('#wl-all-ok').addEventListener('click', function () {
-      var v = dlg.el.querySelector('#wl-all-wo').value || null;
-      dlg.close(); doAll(v);
     });
   }
 
   // ── Shell ─────────────────────────────────────────────────────────────────
   var s = SE.shell(el, {
-    nav: 'lists', title: 'Shopping Lists', crumbs: [['Home', 'home']],
+    nav: 'lists', title: 'Lists', crumbs: [['Home', 'home']],
     sub: 'Company catalog: lists your fleet keeps for kits and restocks.',
     actions: '<button type="button" class="btn btn-primary" data-navnew>' + icon('plus-small') + 'New list</button>',
     body: '<div class="wl-two-panel"><div class="wl-sidebar-nav" id="wl-list-nav"></div><div class="wl-items-panel" id="wl-items-panel"></div></div>',
@@ -506,7 +506,7 @@ SE.addToShoppingList = function (part) {
     '</div></div>';
 
   var dlg = UI.dialog({
-    title: 'Save to shopping list',
+    title: 'Save to list',
     body: '<div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Saving <b>' + esc(part.name) + '</b> · ' + esc(part.pn) + '</div>' +
       '<div id="slp-rows">' + buildRows() + '</div>' +
       '<button type="button" class="btn btn-secondary slp-new-toggle" style="margin-top:8px;width:100%;">' + icon('plus-small') + 'Create new list</button>' +

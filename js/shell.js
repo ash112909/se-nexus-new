@@ -21,7 +21,7 @@
     ['clipboard-list', 'Approvals', 'approvals'], ['truck-side', 'Fleet', 'fleet'],
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 
-    ['#', 'Parts'], ['search', 'Parts Catalog', 'catalog'], ['list', 'Shopping Lists', 'lists'],
+    ['#', 'Parts'], ['search', 'Parts Catalog', 'catalog'], ['list', 'Lists', 'lists'],
     ['#', 'Knowledge'], ['document', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['settings', 'Diagnostics', null],
   ];
   function count(route) {
