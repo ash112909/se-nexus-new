@@ -487,7 +487,8 @@ SE.views.diagnostics = function(el, p) {
   };
 
   window.diagAddToExistingWO = function() {
-    var wos = SE.allWorkOrders ? SE.allWorkOrders().filter(function(w) { return w.status === 'active' || w.status === 'open'; }) : [];
+    var _done = { 'Done': 1, 'Cancelled': 1, 'Delivered': 1 };
+    var wos = SE.allWorkOrders ? SE.allWorkOrders().filter(function(w) { return !_done[w.status]; }) : [];
     if (!wos.length) {
       SE.ui.dialog({ title: 'No active orders', body: '<p style="font-size:13px;color:#7A7F8E;">There are no active work orders to add parts to. Create a new work order instead.</p>', foot: '<button data-dlg-close>Close</button>' });
       return;
@@ -527,7 +528,8 @@ SE.views.diagnostics = function(el, p) {
 
   // ── Context switcher ──────────────────────────────────────────────────────
   window.diagSwitchContext = function() {
-    var wos = SE.allWorkOrders ? SE.allWorkOrders().filter(function(w) { return w.status === 'active' || w.status === 'open'; }) : [];
+    var _done = { 'Done': 1, 'Cancelled': 1, 'Delivered': 1 };
+    var wos = SE.allWorkOrders ? SE.allWorkOrders().filter(function(w) { return !_done[w.status]; }) : [];
     var partsQ = _ctx.type === 'parts' ? (_ctx.query || '') : '';
     SE.ui.dialog({
       title: 'Switch context',
