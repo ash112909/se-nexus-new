@@ -73,12 +73,15 @@ SE.views.checkout = function (el, p) {
           var sub = s.lines.reduce(function (t, l) { return t + SE.part(l.pn).price * K.alloc(l).buy; }, 0);
           return '<div class="ck-sum"><div class="ck-sum-head"><b>' + esc(s.name) + '</b><span class="muted">' + pos[i] + '</span></div><ul>' +
             s.lines.map(function (l) { var pt = SE.part(l.pn), q = K.alloc(l).buy; return '<li><span>' + esc(pt.name) + '<small>' + esc(pt.pn) + ' · ' + q + ' x ' + money(pt.price) + (q < l.qty ? ' · ' + (l.qty - q) + ' from shelves' : '') + '</small></span><b>' + money(pt.price * q) + '</b></li>'; }).join('') +
-            '</ul><div class="ck-sub"><span>Subtotal</span><b>' + money(sub) + '</b></div></div>';
+            '</ul><div class="ck-sub"><span>Subtotal</span><b>' + money(sub) + '</b></div>' +
+            (SE.cms ? SE.cms.supplierMessages([s.name]) : '') +
+            '</div>';
         }).join('') +
         '<div class="oc-grand"><span>Total</span><b>' + money(SE.cartTotal()) + '</b></div>' +
         (trKeys.length ? '<div class="ck-sum"><div class="ck-sum-head"><b>Branch transfers</b><span class="muted">' + trKeys.length + ' order' + (trKeys.length === 1 ? '' : 's') + '</span></div><ul>' + trKeys.map(function (b) {
           return '<li><span>From ' + esc(SE.loc(tr[b].from).name + ' → ' + SE.loc(tr[b].shipTo).name) + '<small>' + tr[b].items.map(function (x) { return x.qty + ' x ' + esc(x.pn); }).join(', ') + '</small></span><b>No charge</b></li>'; }).join('') + '</ul></div>' : '') +
         '<p class="oc-note">' + (g.length > 1 ? 'This creates ' + g.length + ' purchase orders, split by supplier, destination and work order' + (trKeys.length ? ', and ' + trKeys.length + ' branch transfer' + (trKeys.length === 1 ? '' : 's') : '') + '. ' : trKeys.length ? 'This creates ' + g.length + ' purchase order' + (g.length === 1 ? '' : 's') + ' and ' + trKeys.length + ' branch transfer' + (trKeys.length === 1 ? '' : 's') + '. ' : '') + 'Tax and freight are added by the supplier.</p>' +
+        (SE.cms ? SE.cms.orderMessages('') : '') +
         '<button class="btn btn-primary oc-cta" type="submit" data-submit>Submit order' + (g.length + trKeys.length > 1 ? 's' : '') + '</button>' +
         '<a class="btn btn-secondary oc-cta" href="#/cart">Back to cart</a>' +
       '</aside></form>';
