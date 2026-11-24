@@ -316,7 +316,6 @@ SE.views['work-order'] = function (el, p) {
       ? 'Submit orderable items<span class="ci-unord">' + icon('triangle-warning') + blocked + ' unorderable</span>'
       : icon('check') + 'Submit order';
     var aside = '<aside class="card ci-cart-aside"><h2 class="oc-aside-h">Summary</h2>' +
-      (SE.cms ? SE.cms.orderMessages('cart-top') : '') +
       (SE.cms ? SE.cms.supplierMessages(vOrder) : '') +
       SE.ui.kv(vOrder.map(function (v) { return [v, SE.money(byVendor[v])]; })) +
       '<div class="oc-grand"><span>Estimated total</span><b>' + SE.money(total) + '</b></div>' +
@@ -330,7 +329,9 @@ SE.views['work-order'] = function (el, p) {
         : '') +
       '</aside>';
     return '<div class="card ci-cart-card">' +
-      hdr + '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div>' +
+      hdr +
+      (SE.cms ? SE.cms.orderMessages('cart-top') : '') +
+      '<div class="cart-tbl-wrap"><table class="ci-table">' + thead + tbody + '</table></div></div>' +
       aside;
   }
 
