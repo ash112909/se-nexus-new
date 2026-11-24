@@ -274,7 +274,6 @@ SE.views.lists = function (el, p) {
         '<span class="wl-ph-cnt">' + l.items.length + ' item' + (l.items.length !== 1 ? 's' : '') + '</span>' +
         (canEdit && l.items.length ? '<button type="button" class="wl-act-btn wl-act-primary" data-wladdall data-wlid="' + esc(l.id) + '">' + icon('shopping-cart') + 'Add all to cart</button>' : '') +
         (canEdit ? '<button type="button" class="wl-act-btn" data-wlpub data-wlid="' + esc(l.id) + '">' + icon(l.public ? 'lock' : 'share') + (l.public ? 'Make private' : 'Make public') + '</button>' : '') +
-        '<a class="wl-act-btn" href="#/list?id=' + encodeURIComponent(l.id) + '">' + icon('clipboard-list') + 'Full review</a>' +
         (canEdit ? '<button type="button" class="wl-act-btn" data-wledit data-wlid="' + esc(l.id) + '">' + icon('pencil') + 'Edit</button>' : '') +
         (canEdit ? '<button type="button" class="wl-act-btn wl-act-danger" data-wldel data-wlid="' + esc(l.id) + '">' + icon('trash') + 'Delete</button>' : '') +
       '</div>' +

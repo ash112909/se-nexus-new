@@ -206,7 +206,7 @@ SE.views.cart = function (el, p) {
         SE.lists().unshift({ id: id, name: 'Saved cart, ' + lines.length + ' line' + (lines.length === 1 ? '' : 's'), description: 'Saved from the cart by Sarah Martinez.', tag: 'Repair', machine: first.machine || null, items: lines, updatedBy: 'Sarah Martinez', updatedAt: 'Today' });
         SE.saveLists();
         SE.toast('Saved as a shopping list', 'list');
-        SE.go('list', { params: { id: id } });
+        SE.go('lists', { params: { id: id } });
       } },
       { label: 'Share cart', icon: 'share', run: function () {
         var link = SE.tx.shareCart(SE.state.cart);

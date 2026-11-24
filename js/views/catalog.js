@@ -235,7 +235,7 @@
     var banner = edit
       ? '<div class="cat-list-banner">' + icon('star') +
         '<span>Adding parts to <b>' + esc(edit.name) + '</b></span>' +
-        '<a class="btn btn-secondary btn-sm" href="#/list?id=' + esc(edit.id) + '" onclick="SE.listEditDone()">Done</a>' +
+        '<a class="btn btn-secondary btn-sm" href="#/lists?id=' + esc(edit.id) + '" onclick="SE.listEditDone()">Done</a>' +
         '<button type="button" class="cat-list-cancel icon-btn" onclick="SE.listEditCancel()" aria-label="Stop adding to list">' + icon('cross-small') + '</button>' +
         '</div>'
       : '';
