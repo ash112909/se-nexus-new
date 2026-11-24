@@ -342,26 +342,23 @@
       });
     },
 
-    // Supplier-specific messages for a list of vendor names
+    // Fleet messages scoped to specific suppliers — same style as orderMessages
     supplierMessages: function (vendors) {
       if (!vendors || !vendors.length) return '';
       var msgs = cms.getArticles('published').filter(function (a) {
         return a.showOnOrders && a.vendorName && vendors.indexOf(a.vendorName) >= 0;
       });
       if (!msgs.length) return '';
-      return '<div style="margin-top:12px;">' +
-        '<div style="font-size:10px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;">From your supplier' + (msgs.length !== 1 ? 's' : '') + '</div>' +
-        msgs.map(function (a) {
-          return '<div style="background:#F5F2EE;border-radius:9px;padding:12px 14px;border-left:3px solid #534AB7;margin-bottom:8px;">' +
-            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">' +
-              '<span style="font-size:11px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.6px;">' + esc(a.vendorName) + '</span>' +
-              (a.postedDate ? '<span style="font-size:10px;color:#9CA3AF;">' + esc(a.postedDate) + '</span>' : '') +
-            '</div>' +
-            '<div style="font-size:13px;font-weight:600;color:#111318;margin-bottom:3px;">' + esc(a.title) + '</div>' +
-            '<div style="font-size:12px;color:#5A5F6E;line-height:1.55;">' + esc(a.body ? a.body.slice(0, 300) + (a.body.length > 300 ? '…' : '') : '') + '</div>' +
-          '</div>';
-        }).join('') +
-      '</div>';
+      return msgs.map(function (a) {
+        return '<div style="background:#EFF4FB;border-radius:9px;padding:11px 14px;margin-bottom:10px;border-left:3px solid #111318;">' +
+          '<div style="font-size:11px;font-weight:700;color:#111318;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">' +
+            esc(a.vendorName) + ' orders' +
+            (a.postedDate ? '<span style="font-weight:400;color:#9CA3AF;margin-left:8px;text-transform:none;">' + esc(a.postedDate) + '</span>' : '') +
+          '</div>' +
+          '<div style="font-size:13px;font-weight:600;color:#111318;margin-bottom:2px;">' + esc(a.title) + '</div>' +
+          (a.body ? '<div style="font-size:12px;color:#5A5F6E;line-height:1.55;">' + esc(a.body) + '</div>' : '') +
+        '</div>';
+      }).join('');
     },
   };
 })();
