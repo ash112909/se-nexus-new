@@ -604,7 +604,7 @@ SE.views.diagnostics = function(el, p) {
   var _diagStyle = document.createElement('style');
   _diagStyle.id = 'diag-view-styles';
   _diagStyle.textContent =
-'.i{width:1em;height:1em;display:inline-flex;vertical-align:middle;fill:currentColor;flex-shrink:0;}\n' +
+'.diag-view .i{width:1em;height:1em;display:inline-flex;vertical-align:middle;fill:currentColor;flex-shrink:0;}\n' +
 '.diag-layout{flex:1;display:flex;min-height:0;overflow:hidden;}\n' +
 '.diag-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}\n' +
 '#diag-sessions-panel{width:210px;flex-shrink:0;border-right:0.5px solid #E8E4DF;background:#F5F2EE;display:flex;flex-direction:column;overflow:hidden;}\n' +
@@ -785,6 +785,7 @@ SE.views.diagnostics = function(el, p) {
   document.head.appendChild(_diagStyle);
 
   var _diagWrap = document.createElement('div');
+  _diagWrap.className = 'diag-view';
   _diagWrap.style.cssText = 'flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;';
   _diagWrap.innerHTML =
 '<div class="diag-ctx-strip" id="diag-ctx-bar"></div>' +

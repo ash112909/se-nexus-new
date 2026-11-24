@@ -477,3 +477,6 @@
   /* Badge: on a white rail the brand-yellow badge still works; active item keeps it readable */
   .nav-item[aria-current="page"] .nav-count { background: var(--brand-pressed); color: var(--brand-on); }
 }
+
+/* Logo color: use ink so it reads on the light rail in light mode and on the dark rail in dark mode */
+.rail-lockup .mc-logo { color: var(--ink); }
