@@ -596,7 +596,14 @@ SE.views.diagnostics = function(el, p) {
 
   s.content.style.cssText = 'flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:0;';
 
-  s.content.innerHTML = '<style>\n' +
+  // Preserve the page-head (search bar + quickbar) already rendered by SE.shell
+  var _pageHead = s.content.querySelector('.page-head');
+  if (_pageHead) _pageHead.style.flexShrink = '0';
+
+  // Inject styles into <head> so they don't wipe the page-head
+  var _diagStyle = document.createElement('style');
+  _diagStyle.id = 'diag-view-styles';
+  _diagStyle.textContent =
 '.i{width:1em;height:1em;display:inline-flex;vertical-align:middle;fill:currentColor;flex-shrink:0;}\n' +
 '.diag-layout{flex:1;display:flex;min-height:0;overflow:hidden;}\n' +
 '.diag-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}\n' +
@@ -774,8 +781,12 @@ SE.views.diagnostics = function(el, p) {
 '.mob-overlay-close:hover{background:rgba(255,255,255,.22);}\n' +
 '.mob-preview-label{position:absolute;top:24px;left:24px;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.8px;text-transform:uppercase;}\n' +
 '.mob-toggle-btn{display:inline-flex;align-items:center;gap:5px;background:#F5F2EE;border:0.5px solid #E2DDD8;border-radius:7px;padding:5px 11px;font-size:11px;font-weight:600;color:#7A7F8E;cursor:pointer;font-family:inherit;}\n' +
-'.mob-toggle-btn:hover{background:#FEF3C7;color:#111318;border-color:#11131840;}\n' +
-'</style>' +
+'.mob-toggle-btn:hover{background:#FEF3C7;color:#111318;border-color:#11131840;}\n';
+  document.head.appendChild(_diagStyle);
+
+  var _diagWrap = document.createElement('div');
+  _diagWrap.style.cssText = 'flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;';
+  _diagWrap.innerHTML =
 '<div class="diag-ctx-strip" id="diag-ctx-bar"></div>' +
 '<div class="diag-layout">' +
   '<div id="diag-sessions-panel"></div>' +
@@ -870,6 +881,7 @@ SE.views.diagnostics = function(el, p) {
     '<div class="mob-home-bar"><div class="mob-home-pill"></div></div>' +
   '</div>' +
 '</div>';
+  s.content.appendChild(_diagWrap);
 
   renderContextBar();
   renderSessions();
@@ -1138,6 +1150,8 @@ SE.views.diagnostics = function(el, p) {
   function cleanup() {
     var pdfOv = document.getElementById('diag-pdf-fullscreen');
     if (pdfOv) pdfOv.remove();
+    var styleEl = document.getElementById('diag-view-styles');
+    if (styleEl) styleEl.remove();
   }
 
   return cleanup;

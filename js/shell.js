@@ -44,7 +44,7 @@
     function railHtml() {
       return '<nav class="rail" id="rail" aria-label="Primary">' +
         '<div class="rail-brand">' +
-          '<a class="rail-lockup" href="#/home" aria-label="' + esc(D.fleet.name) + ', Home">' + '<span class="rail-wordmark"><b class="rail-org-name">' + esc(D.fleet.name) + '</b></span><span class="rail-chev" aria-hidden="true">' + SE.mcMark('var(--brand)') + '</span></a>' +
+          '<a class="rail-lockup" href="#/home" aria-label="' + esc(D.fleet.name) + ', Home">' + '<span class="rail-wordmark">' + SE.mcLogo('#FFF', 'var(--brand)') + '</span><span class="rail-chev" aria-hidden="true">' + SE.mcMark('var(--brand)') + '</span></a>' +
           '<button class="rail-toggle" type="button" aria-controls="rail">' + icon('angle-small-left') + '</button>' +
         '</div>' +
         '<ul class="rail-nav">' + SE.NAV.map(function (r) {
