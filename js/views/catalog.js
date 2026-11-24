@@ -238,7 +238,7 @@ SE.catSearch = function (currentWo) {
     var sp = { q: q };
     if (currentWo) sp.wo = currentWo;
     if (supId) sp.sup = supId;
-    SE.go(supId ? 'catalog-search' : 'catalog', { params: sp });
+    SE.go('catalog-search', { params: sp });
     return;
   }
   if (s.mode === 'equip' || s.mode === 'serial') {
