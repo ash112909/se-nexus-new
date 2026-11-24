@@ -263,6 +263,13 @@ SE.catSearch = function (currentWo) {
     }
     var pgParams = {};
     if (hi >= 0) new URLSearchParams(h.slice(hi + 1)).forEach(function (v, k) { pgParams[k] = v; });
+    if (routeName === 'enhanced-catalog') {
+      var ecSp = { q: q };
+      if (currentWo) ecSp.wo = currentWo;
+      if (pgParams.sup) ecSp.sup = pgParams.sup;
+      SE.go('enhanced-catalog', { params: ecSp });
+      return;
+    }
     var supId = pgParams.sup;
     if (!supId && pgParams.m) { var machData = SE.data.machines[pgParams.m]; if (machData) supId = machData.supplier; }
     var sp = { q: q };

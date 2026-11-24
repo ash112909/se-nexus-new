@@ -313,6 +313,58 @@ SE.views['enhanced-catalog'] = function (el, p) {
     }, []);
   }
 
+  // ---- search results: ?q=motor  or  ?q=motor&sup=JLG ----
+  if (p.q) {
+    if (p.q) C.search.query = p.q;
+    var sup = p.sup ? SE.supplier(p.sup) : null;
+    var ql = p.q.trim().toLowerCase();
+    var unit = C.unit(p.wo);
+    var hits = [];
+    var searchSups = sup ? [sup] : (D.suppliers ? D.suppliers.filter(function (s) { return s.active && ECATS[s.id]; }) : []);
+    searchSups.forEach(function (s) {
+      var catList = ECATS[s.id] || [];
+      catList.forEach(function (cat) {
+        var d = EPARTS[s.id] && EPARTS[s.id][cat.id];
+        if (!d) return;
+        Object.keys(d).forEach(function (subId) {
+          d[subId].forEach(function (x) {
+            if ((x.pn + ' ' + x.name + ' ' + (x.desc || '') + ' ' + (x.model || '')).toLowerCase().indexOf(ql) >= 0) {
+              hits.push({ part: x, cat: cat.id });
+            }
+          });
+        });
+      });
+    });
+
+    var bodyHtml;
+    if (!hits.length) {
+      bodyHtml = UI.empty({ icon: 'search', title: 'No parts found', text: 'No enhanced catalog parts matched "' + esc(p.q) + '"' + (sup ? ' for ' + esc(sup.name) : '') + '.' });
+    } else {
+      bodyHtml = '<div class="ecat-part-grid">' +
+        hits.map(function (h) { return partCard(h.part, h.cat, unit); }).join('') +
+      '</div>';
+    }
+
+    var crumbs = [['Parts catalog', catQ], ['Enhanced Catalog', eQ]];
+    if (sup) crumbs.push([sup.name, 'enhanced-catalog?sup=' + sup.id + (p.wo ? '&wo=' + p.wo : '')]);
+
+    var sh = SE.shell(el, {
+      nav: 'catalog', title: '"' + p.q + '" · Enhanced Catalog', wide: true,
+      crumbs: crumbs,
+      sub: hits.length ? hits.length + ' result' + (hits.length === 1 ? '' : 's') + (sup ? ' in ' + sup.name : '') : '',
+      body: C.layout(
+        { extra: 'enhanced-catalog', esup: sup ? sup.id : undefined }, p.wo,
+        UI.sec('"' + esc(p.q) + '"',
+          hits.length ? '<span class="muted">' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + '</span>' : '',
+          bodyHtml, 'h-results'))
+    });
+    el.addEventListener('click', function (e) {
+      var q = e.target.closest('[data-quick]');
+      if (q) { C.quickAdd(q.dataset.quick, p.wo); sh.refresh && sh.refresh(); }
+    });
+    return sh.cleanup;
+  }
+
   // ---- sub-category level: ?sup=JLG&cat=drive&sub=motors ----
   if (p.sup && p.cat && p.sub) {
     var sup = SE.supplier(p.sup);
