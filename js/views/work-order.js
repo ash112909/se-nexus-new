@@ -316,9 +316,12 @@ SE.views['work-order'] = function (el, p) {
       ? 'Submit orderable items<span class="ci-unord">' + icon('triangle-warning') + blocked + ' unorderable</span>'
       : icon('check') + 'Submit order';
     var aside = '<aside class="card ci-cart-aside"><h2 class="oc-aside-h">Summary</h2>' +
+      (SE.cms ? SE.cms.orderMessages('cart-top') : '') +
+      (SE.cms ? SE.cms.supplierMessages(vOrder) : '') +
       SE.ui.kv(vOrder.map(function (v) { return [v, SE.money(byVendor[v])]; })) +
       '<div class="oc-grand"><span>Estimated total</span><b>' + SE.money(total) + '</b></div>' +
       '<p class="oc-note">Tax and freight are added by the supplier.</p>' +
+      (SE.cms ? SE.cms.orderMessages('cart-bottom') : '') +
       (canEdit
         ? '<div class="ci-cart-btns">' +
           '<button type="button" class="btn btn-primary" data-cart-submit' + (submittable.length === 0 ? ' disabled' : '') + '>' + submitLabel + '</button>' +
