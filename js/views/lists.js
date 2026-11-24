@@ -34,13 +34,13 @@
       return D.listTags.map(function (t) { return '<button type="button" role="radio" aria-checked="' + (t === draft.tag) + '" aria-selected="' + (t === draft.tag) + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>'; }).join('');
     }
     function member(it, i) {
-      var p = SE.part(it.pn) || { pn: it.pn, name: it.pn, price: 0, supersededBy: null };
-      var n = draft.items.length, bad = LX.issue(p);
+      var p = SE.part(it.pn) || { pn: it.pn, name: it.pn };
+      var n = draft.items.length;
       var step = UI.stepper(it.qty, 'Recommended quantity of ' + p.name, ' data-i="' + i + '"').replace('class="stepper"', 'class="stepper sm"');
       if (it.qty <= 1) step = step.replace('data-step="-1"', 'data-step="-1" disabled');
       return '<li class="le-m" data-m="' + i + '"><span class="le-pos">' + (i + 1) + '</span>' +
-        '<span class="le-info"><b>' + esc(p.name) + '</b><small>' + esc(p.pn) + ' · ' + (SE.priceVisible(p) ? money(p.price) : 'Priced by unit') + '</small>' +
-          (bad ? '<span class="le-warn">' + esc(p.supersededBy ? 'Replaced by ' + p.supersededBy : bad === 'backordered' ? p.eta : 'Needs a unit for pricing') + '</span>' : '') + '</span>' +
+        '<span class="le-info"><b>' + esc(p.name) + '</b><small>' + esc(p.pn) + '</small></span>' +
+        '<a class="btn btn-secondary le-view-btn" href="#/part?pn=' + encodeURIComponent(p.pn) + '" target="_blank">' + icon('search') + 'View part</a>' +
         step +
         '<span class="le-move"><button type="button" class="icon-btn" data-up="' + i + '" aria-label="Move ' + esc(p.name) + ' up"' + (i ? '' : ' disabled') + '>' + icon('angle-small-down', 'up') + '</button>' +
           '<button type="button" class="icon-btn" data-down="' + i + '" aria-label="Move ' + esc(p.name) + ' down"' + (i < n - 1 ? '' : ' disabled') + '>' + icon('angle-small-down') + '</button></span>' +
@@ -248,7 +248,7 @@ SE.views.lists = function (el, p) {
         '</div>' +
         '<div class="wl-item-acts">' +
           '<button type="button" class="wl-cart-btn" data-wladd data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '">' + icon('shopping-cart') + 'Add to cart</button>' +
-          '<a class="wl-find-btn" href="#/part?pn=' + encodeURIComponent(part.pn) + '">' + icon('search') + 'Find</a>' +
+          '<a class="wl-find-btn" href="#/part?pn=' + encodeURIComponent(part.pn) + '">' + icon('search') + 'View part</a>' +
           moveSel +
           (canEdit ? '<button type="button" class="wl-del-btn" data-wlrm data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '" title="Remove from list">' + icon('trash') + '</button>' : '') +
         '</div>' +
