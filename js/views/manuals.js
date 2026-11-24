@@ -53,19 +53,24 @@ SE.views.manuals = function (el, p) {
   function inLang(d) { return lang === 'any' || d.language === lang; }
   function base() { return D.manuals.filter(function (d) { return inMachine(d) && inLang(d); }).map(hit).filter(Boolean); }
   function pick() { return base().filter(function (h) { return !type || h.doc.type === type; }); }
-  function seg() { return SE.ui.seg('Machine', MACHINES.map(function (x) { return [x[0], x[1], D.manuals.filter(function (d) { return (x[0] === 'all' || d.machine === x[0]) && inLang(d); }).map(hit).filter(Boolean).length]; }), m); }
-  function langs() {
-    return LANGS.map(function (l) {
-      var n = D.manuals.filter(function (d) { return inMachine(d) && (l[0] === 'any' || d.language === l[0]); }).map(hit).filter(Boolean).length;
-      return '<button type="button" role="radio" class="mw-lang-b" aria-checked="' + (lang === l[0]) + '" data-lang="' + l[0] + '">' + l[1] + '<span>' + n + '</span></button>';
-    }).join('');
+  function machSel() {
+    return '<select id="mw-m-sel" aria-label="Machine">' +
+      MACHINES.map(function (x) { return '<option value="' + esc(x[0]) + '"' + (m === x[0] ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join('') +
+      '</select>' + icon('angle-small-down');
   }
-  function types() {
+  function typeOpts() {
     var b = base();
-    return TYPES.map(function (t) {
-      var n = b.filter(function (h) { return h.doc.type === t; }).length;
-      return '<button type="button" class="mw-type" aria-pressed="' + (type === t) + '" data-type="' + t + '"' + (n || type === t ? '' : ' disabled') + '>' + t + '<span>' + n + '</span></button>';
-    }).join('');
+    return '<option value="">All types</option>' +
+      TYPES.map(function (t) {
+        var n = b.filter(function (h) { return h.doc.type === t; }).length;
+        return '<option value="' + esc(t) + '"' + (type === t ? ' selected' : '') + (n || type === t ? '' : ' disabled') + '>' + esc(t) + ' (' + n + ')</option>';
+      }).join('');
+  }
+  function typeSel() { return '<select id="mw-type-sel" aria-label="Document type">' + typeOpts() + '</select>' + icon('angle-small-down'); }
+  function langSel() {
+    return '<select id="mw-lang-sel" aria-label="Language">' +
+      LANGS.map(function (l) { return '<option value="' + esc(l[0]) + '"' + (lang === l[0] ? ' selected' : '') + '>' + esc(l[1]) + '</option>'; }).join('') +
+      '</select>' + icon('angle-small-down');
   }
   function secLabel(s) { var n = /^(\d+(?:\.\d+)*)\s/.exec(s.title); return (n ? 'Section ' + n[1] : s.title) + ' · page ' + s.page; }
   function snippet(text) {
@@ -110,10 +115,12 @@ SE.views.manuals = function (el, p) {
     body: '<section class="sec mw" aria-label="Documents">' +
       '<div class="sx-bar">' +
         '<div class="search page-search" role="search"><label class="sr-only" for="mw-q">Search manuals</label>' + icon('search') + '<input type="text" id="mw-q" value="' + esc(q) + '" placeholder="Search manuals by title or section" autocomplete="off" enterkeyhint="search">' + '<button type="button" class="sx-x" data-qx aria-label="Clear search"' + (q ? '' : ' hidden') + '>' + icon('cross-small') + '</button></div>' +
-        '<div class="mw-lang" role="radiogroup" aria-label="Language" id="mw-lang">' + langs() + '</div>' +
       '</div>' +
-      '<div class="mw-filters"><div id="mw-seg">' + seg() + '</div>' +
-        '<div class="mw-types" role="group" aria-label="Document type" id="mw-types">' + types() + '</div></div>' +
+      '<div class="mw-filter-row">' +
+        '<div class="flt-sel" id="mw-m-wrap">' + machSel() + '</div>' +
+        '<div class="flt-sel" id="mw-type-wrap">' + typeSel() + '</div>' +
+        '<div class="flt-sel" id="mw-lang-wrap">' + langSel() + '</div>' +
+      '</div>' +
       '<div id="mw-recent">' + recents() + '</div>' +
       '<div id="mw-list">' + list() + '</div></section>',
   });
@@ -123,9 +130,9 @@ SE.views.manuals = function (el, p) {
     history.replaceState(null, '', '#/manuals' + (h.length ? '?' + h.join('&') : ''));
   }
   function render() {
-    el.querySelector('#mw-seg').innerHTML = seg();
-    el.querySelector('#mw-lang').innerHTML = langs();
-    el.querySelector('#mw-types').innerHTML = types();
+    el.querySelector('#mw-m-sel').value = m;
+    el.querySelector('#mw-type-sel').innerHTML = typeOpts();
+    el.querySelector('#mw-lang-sel').value = lang;
     el.querySelector('#mw-recent').innerHTML = recents();
     el.querySelector('#mw-list').innerHTML = list();
     el.querySelector('[data-qx]').hidden = !q;
@@ -144,13 +151,21 @@ SE.views.manuals = function (el, p) {
     if (e.key === 'Escape' && q) { e.stopPropagation(); q = ''; input.value = ''; render(); }
   });
   input.addEventListener('blur', remember);
+  el.querySelector('#mw-m-sel').addEventListener('change', function (e) {
+    m = e.target.value;
+    if (type && !base().some(function (h) { return h.doc.type === type; })) type = null;
+    render();
+  });
+  el.querySelector('#mw-type-sel').addEventListener('change', function (e) { type = e.target.value || null; render(); });
+  el.querySelector('#mw-lang-sel').addEventListener('change', function (e) {
+    lang = e.target.value;
+    if (type && !base().some(function (h) { return h.doc.type === type; })) type = null;
+    render();
+  });
   el.addEventListener('click', function (e) {
     if (e.target.closest('.mw-grid a') && q.trim()) remember();
     var t = e.target.closest('button');
     if (!t || !t.closest('.mw')) return;
-    if (t.dataset.seg) { m = t.dataset.seg; if (type && !base().some(function (h) { return h.doc.type === type; })) type = null; render(); return; }
-    if (t.dataset.lang) { lang = t.dataset.lang; if (type && !base().some(function (h) { return h.doc.type === type; })) type = null; render(); return; }
-    if (t.dataset.type) { type = type === t.dataset.type ? null : t.dataset.type; render(); return; }
     if (t.hasAttribute('data-qx')) { q = ''; input.value = ''; render(); input.focus(); return; }
     if (t.dataset.recent) { q = t.dataset.recent; input.value = q; render(); remember(); return; }
     if (t.hasAttribute('data-clear')) { m = 'all'; type = null; lang = 'any'; q = ''; input.value = ''; render(); }
