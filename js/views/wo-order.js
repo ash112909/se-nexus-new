@@ -290,6 +290,7 @@ SE.views['wo-order'] = function (el, p) {
           ' <span class="or-item-cnt">' + g.items.length + ' item' + (g.items.length === 1 ? '' : 's') + '</span>' +
         '</h2>' +
         itemsTable(g, g.items) +
+        (!local && SE.cms ? SE.cms.supplierMessages([g.label]) : '') +
       '</section>' +
       '<section class="card or-sec">' +
         '<h2 class="or-sec-h">' + icon('map-marker') + 'Addresses</h2>' +
@@ -398,10 +399,12 @@ SE.views['wo-order'] = function (el, p) {
     var allSubmitted = groupStates.every(function (gs) { return gs.submitted; });
     return '<aside class="card oc-aside or-aside" aria-label="Order summary">' +
       '<h2 class="oc-aside-h">Summary</h2>' +
+      (SE.cms ? SE.cms.orderMessages('order-top') : '') +
       '<div class="or-sum-wos"><span class="muted">' + icon('clipboard-list') + 'Work order #' + esc(w.id) + '</span><b>' + esc(w.issue || '') + '</b></div>' +
       rows +
       '<div class="oc-grand"><span>Estimated total</span><b>' + money(grandTotal) + '</b></div>' +
       '<p class="oc-note">Tax and freight added by supplier. Branch transfers carry no purchase cost.</p>' +
+      (SE.cms ? SE.cms.orderMessages('order-bottom') : '') +
       (allSubmitted
         ? '<a class="btn btn-primary oc-cta" href="#/work-order?id=' + esc(w.id) + '">' + icon('check') + 'Back to work order</a>'
         : '') +
