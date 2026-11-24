@@ -23,6 +23,7 @@
 
     ['#', 'Parts'], ['search', 'Parts Catalog', 'catalog'], ['list', 'Lists', 'lists'],
     ['#', 'Knowledge'], ['document', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['settings', 'Diagnostics', null],
+    ['#', 'Insights'], ['chart-histogram', 'Analytics', 'analytics'],
   ];
   function count(route) {
     if (route === 'approvals') return SE.pendingApprovals().length;
