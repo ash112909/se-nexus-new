@@ -350,6 +350,61 @@
     max-width: 100%; border-radius: 12px;
   }
 
+  /* ── context set button ──────────────────────────────────── */
+  .diag-ctx-set-btn {
+    display: flex; align-items: center; gap: 5px;
+    height: 24px; padding: 0 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 700; letter-spacing: .2px;
+    border: 1px dashed var(--line-strong); color: var(--muted); flex: none;
+  }
+  .diag-ctx-set-btn:hover { border-color: var(--brand); color: var(--accent-text); background: var(--tint-warning); }
+  .diag-ctx-set-btn .i { width: 12px; height: 12px; }
+  .diag-ctx-value { cursor: pointer; }
+  .diag-ctx-value:hover { background: var(--container-high); }
+
+  /* ── welcome & suggestion prompts ────────────────────────── */
+  .diag-welcome {
+    max-width: 620px; margin: auto; padding: 28px 16px 16px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .diag-welcome-head {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 8px;
+  }
+  .diag-welcome-icon { width: 28px; height: 28px; color: var(--brand); }
+  .diag-welcome-head h2 { font-size: 14px; font-weight: 700; color: var(--ink); margin: 0; }
+  .diag-welcome-head p {
+    font-size: 12px; color: var(--muted); line-height: 18px; margin: 0; max-width: 340px;
+  }
+  .diag-suggest-group { display: flex; flex-direction: column; gap: 7px; }
+  .diag-suggest-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .6px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .diag-suggest-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .diag-suggest-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 11px; border-radius: 20px;
+    border: 1px solid var(--line); background: var(--surface);
+    font-size: 12px; color: var(--ink); cursor: pointer; white-space: nowrap;
+  }
+  .diag-suggest-chip:hover { background: var(--container); border-color: var(--line-strong); }
+  .diag-suggest-chip .i { width: 11px; height: 11px; color: var(--muted); flex: none; }
+  .diag-suggest-fc {
+    font-size: 11px; font-weight: 700; letter-spacing: .4px; padding: 4px 10px;
+  }
+  .diag-suggest-fc-hyd { border-color: #FCA5A5; color: #991B1B; background: #FEF2F2; }
+  .diag-suggest-fc-hyd:hover { background: #FEE2E2; }
+  .diag-suggest-fc-elc { border-color: #FCD34D; color: #92400E; background: #FFFBEB; }
+  .diag-suggest-fc-elc:hover { background: #FEF3C7; }
+  .diag-suggest-fc-drv { border-color: #93C5FD; color: #1E40AF; background: #EFF6FF; }
+  .diag-suggest-fc-drv:hover { background: #DBEAFE; }
+  .diag-suggest-manual { font-size: 11px; color: var(--link); background: var(--tint-info); border-color: rgba(0,79,138,.2); }
+  .diag-suggest-manual:hover { background: #D4E9FF; border-color: var(--info); }
+
+  /* active WO row in picker */
+  .diag-wo-row-active { background: var(--tint-warning); border-color: var(--brand); }
+
   /* ── WO picker dialog ─────────────────────────────────────── */
   .diag-wo-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
   .diag-wo-row {

@@ -148,12 +148,18 @@ SE.views.diagnostics = function (el, p) {
     var bar = el.querySelector('#diag-ctx-bar');
     if (!bar) return;
     if (!_ctx || _ctx.type === 'none') {
-      bar.innerHTML = SE.icon(ctxIcon(), '') + '<span class="diag-ctx-label">General — SJIII 3219</span>';
+      bar.innerHTML =
+        SE.icon('comment', '') +
+        '<span class="diag-ctx-label">SJIII 3219</span>' +
+        '<span class="diag-ctx-gap"></span>' +
+        '<button class="diag-ctx-set-btn" onclick="diagSetWOContext()" title="Link this session to a work order">' +
+          SE.icon('clipboard-list') + 'Link to WO' +
+        '</button>';
       return;
     }
     bar.innerHTML = SE.icon(ctxIcon(), '') +
       '<span class="diag-ctx-label">Context:</span>' +
-      '<span class="diag-ctx-value">' + SE.esc(ctxLabel()) + '</span>' +
+      '<button class="diag-ctx-value" onclick="diagSetWOContext()" title="Change work order" style="cursor:pointer;">' + SE.esc(ctxLabel()) + '</button>' +
       '<button class="diag-ctx-clear" onclick="diagClearCtx()" title="Clear context">' + SE.icon('cross-small') + '</button>';
   }
 
@@ -166,16 +172,77 @@ SE.views.diagnostics = function (el, p) {
     btn.style.display = '';
   }
 
+  function buildWelcomeHtml() {
+    var symptomChips = [
+      "Platform won't elevate",
+      'Platform drifting down',
+      "Won't drive",
+      'Slow lift',
+      'Hydraulic leak',
+      'Battery not charging',
+      'Maintenance schedule',
+      'Wear pads and scissor pins',
+    ];
+    var fcGroups = [
+      { keys: ['HYD-01','HYD-02','HYD-03','HYD-04','HYD-05'], cls: 'diag-suggest-fc-hyd' },
+      { keys: ['ELC-01','ELC-02','ELC-03','ELC-04','ELC-05'], cls: 'diag-suggest-fc-elc' },
+      { keys: ['DRV-01','DRV-02','DRV-03'],                   cls: 'diag-suggest-fc-drv' },
+    ];
+    var manualRefs = [
+      { chapter: '1',          title: 'Safety Rules',       query: 'Safety rules and pre-operation checklist' },
+      { chapter: '2.8',        title: 'Daily Inspection',   query: 'Daily maintenance inspections checklist' },
+      { chapter: '2.9',        title: 'Function Tests',     query: 'Function tests procedure' },
+      { chapter: '2.14',       title: 'Brake Release',      query: 'Winching towing and brake release procedure' },
+      { chapter: '2.15',       title: 'Emergency Lowering', query: 'Emergency lowering procedure' },
+      { chapter: '2.17',       title: 'Battery Maint.',     query: 'Battery maintenance and charging' },
+      { chapter: 'Table 2.3',  title: 'Specifications',     query: 'SJIII 3219 specifications table' },
+      { chapter: 'Table 2.6',  title: 'Service Schedule',   query: 'Maintenance inspection schedule intervals' },
+    ];
+
+    return '<div class="diag-welcome">' +
+      '<div class="diag-welcome-head">' +
+        SE.icon('star', 'diag-welcome-icon') +
+        '<h2>Skyjack SJIII 3219 Diagnostic Assistant</h2>' +
+        '<p>Describe a symptom, enter a fault code, or tap a manual section. I\'ll walk through the diagnosis with you.</p>' +
+      '</div>' +
+      '<div class="diag-suggest-group">' +
+        '<div class="diag-suggest-label">Common Symptoms</div>' +
+        '<div class="diag-suggest-chips">' +
+          symptomChips.map(function (s) {
+            return '<button class="diag-suggest-chip" onclick="diagSuggest(\'' + s.replace(/\'/g, '\\\'') + '\')">' + SE.esc(s) + '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>' +
+      '<div class="diag-suggest-group">' +
+        '<div class="diag-suggest-label">Fault Code Lookup — All Codes</div>' +
+        '<div class="diag-suggest-chips">' +
+          fcGroups.map(function (g) {
+            return g.keys.map(function (fc) {
+              var info = SJ3219_FAULT_CODES[fc] || {};
+              return '<button class="diag-suggest-chip diag-suggest-fc ' + g.cls + '" onclick="diagSuggest(\'' + fc + '\')" title="' + SE.esc(info.title || fc) + '">' + fc + '</button>';
+            }).join('');
+          }).join('') +
+        '</div>' +
+      '</div>' +
+      '<div class="diag-suggest-group">' +
+        '<div class="diag-suggest-label">Manual Reference</div>' +
+        '<div class="diag-suggest-chips">' +
+          manualRefs.map(function (ref) {
+            return '<button class="diag-suggest-chip diag-suggest-manual" onclick="diagSuggest(\'' + ref.query.replace(/\'/g, '\\\'') + '\')">' +
+              SE.icon('book-alt') + 'Ch. ' + SE.esc(ref.chapter) + ' — ' + SE.esc(ref.title) +
+            '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
   function renderMessages() {
     var area = el.querySelector('#diag-messages');
     if (!area) return;
     var msgs = DS.getMessages();
     if (!msgs.length) {
-      area.innerHTML = '<div style="margin:auto;text-align:center;color:var(--subtle);font-size:13px;line-height:20px;">' +
-        SE.icon('star', '') +
-        '<br>Ask anything about the <strong>Skyjack SJIII 3219</strong><br>' +
-        '<span style="font-size:12px;">Fault codes, symptoms, maintenance schedules, parts</span>' +
-      '</div>';
+      area.innerHTML = buildWelcomeHtml();
       return;
     }
     area.innerHTML = msgs.map(function (msg, idx) {
@@ -634,6 +701,67 @@ SE.views.diagnostics = function (el, p) {
       '<div class="diag-mobile-body">' + renderAiCard(msg.resp, msgIdx) + '</div>';
   };
 
+  // ── Suggestion prompt shortcuts ────────────────────────────────────────────
+  window.diagSuggest = function (text) {
+    var ta = el.querySelector('#diag-chat-input');
+    if (!ta) return;
+    ta.value = text;
+    diagAutoResize(ta);
+    ta.focus();
+    // Send immediately — suggestion chips are pre-formed queries
+    diagSend();
+  };
+
+  // ── WO context picker ──────────────────────────────────────────────────────
+  window.diagSetWOContext = function () {
+    var wos = SE.allWorkOrders();
+    if (!wos.length) {
+      SE.ui.dialog({
+        title: 'Link to Work Order',
+        body: '<p style="font-size:13px;color:var(--muted);">No work orders found. Create a work order first, then link it here to give the assistant context about the specific machine and fault history.</p>',
+        foot: '<button class="btn btn-secondary" data-dlg-close>Close</button>',
+      });
+      return;
+    }
+
+    var listHtml = '<div class="diag-wo-list">' +
+      wos.map(function (w) {
+        var active = _ctx.type === 'wo' && _ctx.woId === w.id;
+        return '<div class="diag-wo-row' + (active ? ' diag-wo-row-active' : '') + '" onclick="diagConfirmSetWO(\'' + w.id + '\')">' +
+          '<div class="diag-wo-row-info">' +
+            '<div class="diag-wo-num">WO #' + SE.esc(String(w.id)) + '</div>' +
+            '<div class="diag-wo-name">' + SE.esc(w.machine || w.name || 'Work order') + '</div>' +
+          '</div>' +
+          (active ? SE.icon('check') : SE.icon('arrow-small-right')) +
+        '</div>';
+      }).join('') +
+      '<div class="diag-wo-row" onclick="diagConfirmSetWO(null)" style="border-style:dashed;">' +
+        '<div class="diag-wo-row-info">' +
+          '<div class="diag-wo-name" style="color:var(--muted);">No context (general)</div>' +
+        '</div>' +
+        SE.icon('cross-small') +
+      '</div>' +
+    '</div>';
+
+    SE.ui.dialog({
+      title: 'Link to Work Order',
+      body: '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Select a work order to give the assistant context about the machine and job:</div>' + listHtml,
+      foot: '<button class="btn btn-secondary" data-dlg-close>Cancel</button>',
+    });
+  };
+
+  window.diagConfirmSetWO = function (woId) {
+    if (!woId) {
+      _ctx = { type: 'none' };
+    } else {
+      _ctx = { type: 'wo', woId: woId };
+    }
+    renderContextBar();
+    // close dialog
+    var btn = document.querySelector('[data-dlg-close]');
+    if (btn) btn.click();
+  };
+
   // ── Focus input ────────────────────────────────────────────────────────────
   setTimeout(function () {
     var ta = el.querySelector('#diag-chat-input');
@@ -648,6 +776,7 @@ SE.views.diagnostics = function (el, p) {
       'diagCreateWO', 'diagAddToExistingWO', 'diagConfirmAddToWO',
       'diagLookupFc', 'diagOpenManual', 'diagClearCtx', 'diagSetCtx',
       'diagToggleMobile', 'diagAutoResize', 'diagInputKey',
+      'diagSuggest', 'diagSetWOContext', 'diagConfirmSetWO',
     ];
     globals.forEach(function (g) { delete window[g]; });
   };
