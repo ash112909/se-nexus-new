@@ -193,7 +193,7 @@
   }
 
   /* account popover */
-  .account { position: absolute; z-index: 50; width: 320px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 16px 40px rgba(0, 0, 0, .18); }
+  .account { position: absolute; z-index: 50; width: 320px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 16px 40px rgba(0, 0, 0, .18); overflow: hidden; }
   .shell { position: relative; }
   .acc-head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 16px; border-bottom: 1px solid var(--line); }
   .acc-avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: #FFF; font-size: 14px; font-weight: 700; flex: none; overflow: hidden; }
@@ -210,7 +210,7 @@
   .acc-loc small { display: block; font-size: 12px; line-height: 17px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .acc-loc .tick { visibility: hidden; color: var(--ink); }
   .acc-loc[aria-checked="true"] .tick { visibility: visible; }
-  .acc-out { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 8px; padding: 12px 12px; border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; font-weight: 500; }
+  .acc-out { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 8px; padding: 12px 12px; border-top: 1px solid var(--line); font-weight: 500; }
   .acc-out:hover { background: var(--container-low); }
 
   @media (max-width: 599px) {
