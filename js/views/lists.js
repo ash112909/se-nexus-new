@@ -233,6 +233,11 @@ SE.views.lists = function (el, p) {
           otherLists.map(function (lo) { return '<option value="' + esc(lo.id) + '">' + esc(lo.name) + '</option>'; }).join('') +
         '</select>'
       : '';
+    var extra = '<div class="wl-item-extra">' +
+      (part.sub ? '<span class="wl-item-sub">' + esc(part.sub) + '</span>' : '') +
+      UI.stock(part) +
+      (SE.priceVisible(part) ? '<span class="wl-item-price">' + SE.money(part.price) + (item.qty > 1 ? ' × ' + item.qty : '') + '</span>' : '') +
+    '</div>';
     return '<div class="wl-item-card">' +
       '<div class="wl-item-main">' +
         '<div class="wl-item-info">' +
@@ -246,10 +251,11 @@ SE.views.lists = function (el, p) {
             '<span class="wl-item-sup">' + esc(sup.name) + '</span>' +
             (part.uom ? '<span class="wl-uom">' + esc(part.uom) + '</span>' : '') +
           '</div>' +
+          extra +
         '</div>' +
         '<div class="wl-item-acts">' +
           '<button type="button" class="wl-cart-btn" data-wladd data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '">' + icon('shopping-cart') + 'Add to cart</button>' +
-          '<button type="button" class="wl-find-btn" data-wlview="' + esc(part.pn) + '">' + icon('search') + 'View part</button>' +
+          '<button type="button" class="wl-find-btn' + (_selPn === part.pn ? ' on' : '') + '" data-wlview="' + esc(part.pn) + '">' + icon('search') + 'View part</button>' +
           moveSel +
           (canEdit ? '<button type="button" class="wl-del-btn" data-wlrm data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '" title="Remove from list">' + icon('trash') + '</button>' : '') +
         '</div>' +

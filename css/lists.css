@@ -286,6 +286,13 @@
   .wl-del-btn:hover { background: var(--tint-danger); color: var(--danger); }
   .wl-del-btn .i { width: 16px; height: 16px; }
 
+  /* expanded row extra (hidden when part panel is open) */
+  .wl-item-extra { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: 6px; }
+  .wl-item-sub { font-size: 11px; color: var(--muted); }
+  .wl-item-price { font-size: 12px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .wl-split:not(.no-sel) .wl-item-extra { display: none; }
+  .wl-find-btn.on { background: var(--tint-info); color: var(--info); border-color: var(--info); }
+
   /* panel empty state */
   .wl-panel-empty { padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; line-height: 20px; }
   .wl-panel-empty .btn { margin-top: 8px; }
