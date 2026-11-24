@@ -264,17 +264,19 @@ SE.catSearch = function (currentWo) {
     var pgParams = {};
     if (hi >= 0) new URLSearchParams(h.slice(hi + 1)).forEach(function (v, k) { pgParams[k] = v; });
     if (routeName === 'enhanced-catalog') {
+      if (!pgParams.sup) { SE.toast('Select a supplier to search the enhanced catalog', 'triangle-warning'); return; }
       var ecSp = { q: q };
       if (currentWo) ecSp.wo = currentWo;
-      if (pgParams.sup) ecSp.sup = pgParams.sup;
+      ecSp.sup = pgParams.sup;
       SE.go('enhanced-catalog', { params: ecSp });
       return;
     }
     var supId = pgParams.sup;
     if (!supId && pgParams.m) { var machData = SE.data.machines[pgParams.m]; if (machData) supId = machData.supplier; }
+    if (!supId) { SE.toast('Select a supplier or machine to search the parts catalog', 'triangle-warning'); return; }
     var sp = { q: q };
     if (currentWo) sp.wo = currentWo;
-    if (supId) sp.sup = supId;
+    sp.sup = supId;
     SE.go('catalog-search', { params: sp });
     return;
   }
