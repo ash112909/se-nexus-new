@@ -47,7 +47,7 @@ SE.views['wo-order'] = function (el, p) {
   if (approvalMode) {
     allItems = K.apprItems(appr).map(function (i) {
       var pt = D.parts.find(function (x) { return x.pn === i.pn; }) || {};
-      return { id: 'appr-' + i.pn, partNum: i.pn, description: pt.name || i.pn, qty: i.qty, price: pt.price || 0, inStock: true, vendor: appr.supplier, uom: pt.uom || 'each', selectedSources: [], selectedSource: null };
+      return { id: 'appr-' + i.pn, origPn: i.pn, partNum: i.pn, description: pt.name || i.pn, qty: i.qty, price: pt.price || 0, inStock: true, vendor: appr.supplier, uom: pt.uom || 'each', selectedSources: [], selectedSource: null, crossRefs: pt.crossRefs || [], localInventory: pt.localInventory || [] };
     });
   } else {
     allItems = cartItems().filter(function (c) {
@@ -171,24 +171,57 @@ SE.views['wo-order'] = function (el, p) {
     var cols = items.map(function (c) {
       var src = c.selectedSources || (c.selectedSource ? [c.selectedSource] : []);
       var srcLbl = src.length ? src.map(function (s) { return esc(s.locationName || s.locationId); }).join(', ') : esc(c.vendor || '—');
-      var row = [
-        '<span class="or-pn">' + esc(c.partNum || c.id) + '</span><span class="or-desc">' + esc(c.description || '') + '</span>',
+
+      // description: add cross-ref substitute dropdown in approval mode
+      var descCell = '<span class="or-pn">' + esc(c.partNum || c.id) + '</span>' +
+        '<span class="or-desc">' + esc(c.description || '') + '</span>';
+      if (approvalMode && c.crossRefs && c.crossRefs.length) {
+        var origKey = c.origPn || c.partNum;
+        descCell += '<div class="ap-xref-row"><label class="ap-xref-lbl">Substitute</label>' +
+          '<select class="select" data-ap-xref="' + esc(origKey) + '">' +
+            '<option value="">— keep original</option>' +
+            c.crossRefs.map(function (x) {
+              var xpt = D.parts.find(function (pt) { return pt.pn === x.pn; }) || {};
+              return '<option value="' + esc(x.pn) + '"' + (c.partNum === x.pn ? ' selected' : '') + '>' + esc(xpt.name || x.pn) + '</option>';
+            }).join('') +
+          '</select></div>';
+      }
+
+      // source: dropdown in approval mode when local inventory exists
+      var srcCell;
+      if (approvalMode && c.localInventory && c.localInventory.length) {
+        var curSrcId = c.selectedSource ? c.selectedSource.locationId : '';
+        srcCell = '<select class="select" data-ap-src="' + esc(c.partNum) + '">' +
+          '<option value=""' + (!curSrcId ? ' selected' : '') + '>External · ' + esc(c.vendor || appr.supplier) + '</option>' +
+          c.localInventory.map(function (loc) {
+            return '<option value="' + esc(loc.locationId) + '"' + (curSrcId === loc.locationId ? ' selected' : '') + '>' +
+              esc(loc.locationName) + ' (' + (loc.qty || 0) + ' on hand)</option>';
+          }).join('') +
+        '</select>';
+      } else {
+        srcCell = srcLbl;
+      }
+
+      // qty: stepper in approval mode, plain text in normal mode
+      var qtyCell = approvalMode
+        ? SE.ui.stepper(c.qty || 1, 'Quantity of ' + esc(c.description), ' data-ap-pn="' + esc(c.partNum) + '"').replace('class="stepper"', 'class="stepper sm"')
+        : String(c.qty || 1);
+
+      return [
+        descCell,
         esc(c.uom || 'EA'),
-        srcLbl,
-        String(c.qty || 1),
+        srcCell,
+        qtyCell,
         money(c.price || 0),
         '<b>' + money((c.price || 0) * (c.qty || 1)) + '</b>',
+        '<button class="btn btn-secondary q-add" type="button" data-rtc-id="' + esc(c.id) + '" title="' + (approvalMode ? 'Remove line' : 'Return to cart') + '" aria-label="' + (approvalMode ? 'Remove line' : 'Return to cart') + '">' + icon(approvalMode ? 'trash' : 'shopping-cart') + '</button>',
       ];
-      if (!approvalMode) row.push('<button class="btn btn-secondary q-add" type="button" data-rtc-id="' + esc(c.id) + '" title="Return to cart" aria-label="Return to cart">' + icon('shopping-cart') + '</button>');
-      return row;
     });
     var total = items.reduce(function (s, c) { return s + (c.price || 0) * (c.qty || 1); }, 0);
-    var colCount = approvalMode ? 6 : 7;
     var tfoot = g.type === 'local'
-      ? '<tfoot><tr class="or-tfooter"><td colspan="' + (colCount - 1) + '">Internal transfer — no purchase charge</td><td><b>No charge</b></td></tr></tfoot>'
-      : '<tfoot><tr class="or-tfooter"><td colspan="' + (colCount - 1) + '">Subtotal</td><td><b>' + money(total) + '</b></td></tr></tfoot>';
-    var headers = [['Part / description'], ['UOM'], ['Source'], ['Qty', 'num'], ['Unit', 'num'], ['Total', 'num']];
-    if (!approvalMode) headers.push(['', 'num']);
+      ? '<tfoot><tr class="or-tfooter"><td colspan="6">Internal transfer — no purchase charge</td><td><b>No charge</b></td></tr></tfoot>'
+      : '<tfoot><tr class="or-tfooter"><td colspan="6">Subtotal</td><td><b>' + money(total) + '</b></td></tr></tfoot>';
+    var headers = [['Part / description'], ['UOM'], ['Source'], ['Qty', 'num'], ['Unit', 'num'], ['Total', 'num'], ['', 'num']];
     return SE.ui.table(headers, cols, { cls: 'or-tbl' }) + tfoot;
   }
 
@@ -469,6 +502,25 @@ SE.views['wo-order'] = function (el, p) {
     if (apprBtn && apprBtn.hasAttribute('data-appr-approve')) { approveOrder(apprBtn); return; }
     if (apprBtn && apprBtn.hasAttribute('data-appr-return')) { openApprReturnDlg(); return; }
 
+    // Qty stepper in approval mode
+    if (approvalMode) {
+      var stepBtn = e.target.closest('[data-step]');
+      if (stepBtn) {
+        var apPnHost = stepBtn.closest('[data-ap-pn]');
+        if (apPnHost) {
+          var apPn = apPnHost.dataset.apPn;
+          var stepItem = allItems.find(function (c) { return c.partNum === apPn; });
+          if (stepItem) {
+            var newQty = Math.max(1, (stepItem.qty || 1) + +stepBtn.dataset.step);
+            stepItem.qty = newQty;
+            K.apprChange(appr, stepItem.origPn || stepItem.partNum, newQty);
+            rerender();
+          }
+          return;
+        }
+      }
+    }
+
     // Tab switch
     var tabBtn = e.target.closest('[data-or-tab]');
     if (tabBtn) { activeTab = parseInt(tabBtn.dataset.orTab, 10); rerender(); return; }
@@ -512,9 +564,12 @@ SE.views['wo-order'] = function (el, p) {
         return groupStates[i].submitted ? n : n + g.items.length;
       }, 0);
       function doReturn() {
-        // Remove from allItems — item stays in SE.state.woCart for the WO page
+        // Remove from allItems — in approval mode also track via K.apprChange
         var idx = allItems.findIndex(function (c) { return c.id === rtcId; });
-        if (idx >= 0) allItems.splice(idx, 1);
+        if (idx >= 0) {
+          if (approvalMode) K.apprChange(appr, allItems[idx].origPn || allItems[idx].partNum, 0);
+          allItems.splice(idx, 1);
+        }
         // Rebuild groups, preserving any form state already entered
         var stateByKey = groups.reduce(function (m, g, i) { m[g.type + '|' + g.key] = groupStates[i]; return m; }, {});
         groups = buildPoGroups(allItems);
@@ -522,18 +577,24 @@ SE.views['wo-order'] = function (el, p) {
         if (activeTab >= groups.length) activeTab = Math.max(0, groups.length - 1);
         var layout = el.querySelector('.or-layout');
         if (layout) layout.outerHTML = fullBody();
-        SE.toast('Item returned to work order cart', 'shopping-cart');
+        SE.toast(approvalMode ? 'Line removed' : 'Item returned to work order cart', approvalMode ? 'trash' : 'shopping-cart');
       }
       if (activeCount <= 1) {
         var dlg = SE.ui.dialog({
-          title: 'Cancel this order?',
-          body: '<p>This is the only item left. Removing it will cancel the order and return you to the work order.</p>',
+          title: approvalMode ? 'Remove last line?' : 'Cancel this order?',
+          body: '<p>' + (approvalMode ? 'This is the only line. Removing it will cancel the approval review.' : 'This is the only item left. Removing it will cancel the order and return you to the work order.') + '</p>',
           foot: '<button class="btn btn-secondary" type="button" data-dlg-close>Keep it</button>' +
-                '<button class="btn btn-primary" type="button" data-rtc-confirm>Remove &amp; cancel</button>'
+                '<button class="btn btn-primary" type="button" data-rtc-confirm>' + (approvalMode ? 'Remove' : 'Remove &amp; cancel') + '</button>'
         });
         dlg.el.querySelector('[data-rtc-confirm]').addEventListener('click', function () {
           dlg.close();
-          SE.go('work-order', { params: { id: w.id } });
+          if (approvalMode) {
+            var lastItem = allItems.find(function (c) { return c.id === rtcId; });
+            if (lastItem) K.apprChange(appr, lastItem.origPn || lastItem.partNum, 0);
+            SE.go('approvals', { replace: true });
+          } else {
+            SE.go('work-order', { params: { id: w.id } });
+          }
         });
       } else {
         doReturn();
@@ -543,6 +604,52 @@ SE.views['wo-order'] = function (el, p) {
   });
 
   el.addEventListener('change', function (e) {
+    // Source change in approval mode
+    if (approvalMode) {
+      var srcSel = e.target.closest('[data-ap-src]');
+      if (srcSel) {
+        var srcPn = srcSel.dataset.apSrc;
+        var srcItem = allItems.find(function (c) { return c.partNum === srcPn; });
+        if (srcItem) {
+          var newLocId = srcSel.value;
+          if (newLocId) {
+            var newLoc = (srcItem.localInventory || []).find(function (l) { return l.locationId === newLocId; });
+            srcItem.selectedSource = newLoc || { locationId: newLocId, locationName: newLocId };
+            srcItem.selectedSources = [srcItem.selectedSource];
+            srcItem.vendor = null;
+          } else {
+            srcItem.selectedSource = null;
+            srcItem.selectedSources = [];
+            srcItem.vendor = appr.supplier;
+          }
+          var sbk = groups.reduce(function (m, g, i) { m[g.type + '|' + g.key] = groupStates[i]; return m; }, {});
+          groups = buildPoGroups(allItems);
+          groupStates = groups.map(function (g) { return sbk[g.type + '|' + g.key] || defaultGroupState(g); });
+          if (activeTab >= groups.length) activeTab = Math.max(0, groups.length - 1);
+          rerender();
+        }
+        return;
+      }
+      // Cross-ref substitution in approval mode
+      var xrefSel = e.target.closest('[data-ap-xref]');
+      if (xrefSel) {
+        var origPn = xrefSel.dataset.apXref;
+        var subPn = xrefSel.value;
+        var xrefItem = allItems.find(function (c) { return c.origPn === origPn || c.id === 'appr-' + origPn; });
+        if (xrefItem) {
+          var swapPn = subPn || origPn;
+          var swapPt = D.parts.find(function (x) { return x.pn === swapPn; }) || {};
+          xrefItem.partNum = swapPn;
+          xrefItem.description = swapPt.name || swapPn;
+          xrefItem.price = swapPt.price || 0;
+          xrefItem.uom = swapPt.uom || 'each';
+          xrefItem.crossRefs = swapPt.crossRefs || [];
+          xrefItem.localInventory = swapPt.localInventory || [];
+          rerender();
+        }
+        return;
+      }
+    }
     var f = e.target.closest('[data-or-field]');
     if (!f) return;
     var field = f.dataset.orField, gi = parseInt(f.dataset.gi, 10);
