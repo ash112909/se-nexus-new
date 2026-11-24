@@ -22,7 +22,7 @@
     // Scan Asset Tag is parked on web (2026-10-14, client request): js/views/scan.js stays, with no entry point
 
     ['#', 'Parts'], ['search', 'Parts Catalog', 'catalog'], ['list', 'Lists', 'lists'],
-    ['#', 'Knowledge'], ['document', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['settings', 'Diagnostics', null],
+    ['#', 'Knowledge'], ['document', 'Manuals & Docs', 'manuals'], ['notebook', 'Knowledge Base', 'kb'], ['settings', 'Diagnostics', 'diagnostics'],
     ['#', 'Insights'], ['chart-histogram', 'Analytics', 'analytics'],
   ];
   function count(route) {

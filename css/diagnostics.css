@@ -1,0 +1,381 @@
+/* Diagnostic Assistant — layout and component styles */
+@layer components {
+
+  /* ── page layout ─────────────────────────────────────────── */
+  .diag-wrap {
+    display: flex; height: 100%; min-height: 0; overflow: hidden;
+    background: var(--surface);
+  }
+
+  /* ── sessions panel (left sidebar) ───────────────────────── */
+  .diag-sessions {
+    width: 210px; flex: none; display: flex; flex-direction: column;
+    border-right: 1px solid var(--line); background: var(--sunken);
+    overflow: hidden;
+  }
+  .diag-sessions-head {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 48px; padding: 0 12px; border-bottom: 1px solid var(--line);
+    flex: none;
+  }
+  .diag-sessions-head span {
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .diag-new-btn {
+    display: grid; place-items: center; width: 28px; height: 28px;
+    border-radius: 8px; color: var(--muted);
+  }
+  .diag-new-btn:hover { background: var(--container); color: var(--ink); }
+  .diag-new-btn .i { width: 16px; height: 16px; }
+
+  .diag-sessions-list { flex: 1; overflow-y: auto; padding: 6px; }
+  .diag-session-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    color: var(--ink); font-size: 13px; line-height: 18px;
+    position: relative; group: true;
+  }
+  .diag-session-item:hover { background: var(--container); }
+  .diag-session-item.active {
+    background: var(--container-high); font-weight: 600;
+  }
+  .diag-session-title {
+    flex: 1; min-width: 0; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .diag-session-del {
+    display: none; place-items: center; width: 20px; height: 20px;
+    border-radius: 4px; color: var(--muted); flex: none;
+  }
+  .diag-session-item:hover .diag-session-del { display: grid; }
+  .diag-session-del:hover { background: var(--tint-danger); color: var(--danger); }
+  .diag-session-del .i { width: 12px; height: 12px; }
+
+  /* ── main chat area ───────────────────────────────────────── */
+  .diag-main {
+    flex: 1; min-width: 0; display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* context bar */
+  .diag-ctx-bar {
+    display: flex; align-items: center; gap: 8px;
+    height: 44px; padding: 0 16px; border-bottom: 1px solid var(--line);
+    flex: none; font-size: 12px; color: var(--muted);
+  }
+  .diag-ctx-bar .i { width: 14px; height: 14px; flex: none; }
+  .diag-ctx-label { color: var(--muted); }
+  .diag-ctx-value {
+    color: var(--ink); font-weight: 600; font-size: 12px;
+    padding: 2px 8px; background: var(--container); border-radius: 6px;
+    max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .diag-ctx-clear {
+    display: grid; place-items: center; width: 20px; height: 20px;
+    border-radius: 4px; color: var(--muted);
+  }
+  .diag-ctx-clear:hover { background: var(--tint-danger); color: var(--danger); }
+  .diag-ctx-clear .i { width: 12px; height: 12px; }
+  .diag-ctx-gap { flex: 1; }
+
+  /* toolbar */
+  .diag-toolbar {
+    display: flex; align-items: center; gap: 8px;
+    height: 44px; padding: 0 16px; border-bottom: 1px solid var(--line);
+    flex: none;
+  }
+  .diag-toolbar-title {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .diag-cart-btn {
+    display: flex; align-items: center; gap: 6px;
+    height: 32px; padding: 0 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; color: var(--ink);
+    border: 1px solid var(--line); position: relative;
+  }
+  .diag-cart-btn:hover { background: var(--container); }
+  .diag-cart-btn .i { width: 16px; height: 16px; }
+  .diag-cart-count {
+    position: absolute; top: -6px; right: -6px;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    background: var(--brand); color: var(--brand-on);
+    border-radius: 8px; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+
+  /* messages area */
+  .diag-messages {
+    flex: 1; overflow-y: auto; padding: 24px 24px 16px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .diag-messages:empty::before {
+    content: 'Ask a question about the SJIII 3219 to get started.';
+    color: var(--subtle); font-size: 13px; text-align: center;
+    margin: auto;
+  }
+
+  /* message bubbles */
+  .diag-msg { display: flex; gap: 10px; max-width: 780px; }
+  .diag-msg-user { flex-direction: row-reverse; align-self: flex-end; }
+  .diag-msg-ai { flex-direction: row; }
+
+  .diag-avatar {
+    width: 28px; height: 28px; border-radius: 8px; flex: none;
+    display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  }
+  .diag-avatar-ai {
+    background: var(--brand); color: var(--brand-on);
+  }
+  .diag-avatar-user {
+    background: var(--container-high); color: var(--ink);
+    font-size: 11px;
+  }
+  .diag-avatar .i { width: 14px; height: 14px; }
+
+  .diag-bubble {
+    padding: 10px 14px; border-radius: 12px;
+    font-size: 13px; line-height: 20px; max-width: 640px;
+  }
+  .diag-bubble-user {
+    background: var(--brand); color: var(--brand-on);
+    border-radius: 12px 2px 12px 12px;
+  }
+  .diag-bubble-ai {
+    background: var(--container); color: var(--ink);
+    border-radius: 2px 12px 12px 12px;
+  }
+  .diag-bubble p { margin: 0 0 8px; }
+  .diag-bubble p:last-child { margin-bottom: 0; }
+  .diag-bubble strong { font-weight: 700; }
+
+  /* severity badge */
+  .diag-sev {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    letter-spacing: .3px; margin-bottom: 6px;
+  }
+  .diag-sev-critical { background: var(--tint-danger); color: var(--danger); }
+  .diag-sev-high     { background: var(--chip-high-bg); color: var(--chip-high-ink); }
+  .diag-sev-medium   { background: var(--tint-warning); color: var(--warning); }
+  .diag-sev-low      { background: var(--tint-success); color: var(--success); }
+
+  /* steps list */
+  .diag-steps { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .diag-step {
+    display: flex; gap: 8px; padding: 7px 10px; border-radius: 8px;
+    background: var(--surface); border: 1px solid var(--line);
+    font-size: 12px; line-height: 18px; color: var(--ink);
+  }
+  .diag-step-num {
+    min-width: 18px; height: 18px; border-radius: 50%;
+    background: var(--container-high); color: var(--muted);
+    font-size: 10px; font-weight: 700; display: grid; place-items: center; flex: none;
+  }
+
+  /* manual refs */
+  .diag-refs { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+  .diag-ref-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 8px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line);
+    font-size: 12px; color: var(--link); text-align: left;
+  }
+  .diag-ref-btn:hover { background: var(--tint-info); border-color: var(--info); }
+  .diag-ref-btn .i { width: 14px; height: 14px; flex: none; color: var(--link); }
+  .diag-ref-label { flex: 1; min-width: 0; }
+  .diag-ref-ch { font-weight: 600; }
+  .diag-ref-title { color: var(--muted); margin-left: 4px; }
+
+  /* parts cards */
+  .diag-parts { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .diag-part-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 10px;
+    background: var(--surface); border: 1px solid var(--line);
+  }
+  .diag-part-info { flex: 1; min-width: 0; }
+  .diag-part-num { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .3px; }
+  .diag-part-name { font-size: 13px; font-weight: 500; color: var(--ink); line-height: 18px; }
+  .diag-part-desc { font-size: 11px; color: var(--muted); line-height: 16px; }
+  .diag-part-price {
+    font-size: 13px; font-weight: 700; color: var(--ink);
+    white-space: nowrap; flex: none;
+  }
+  .diag-part-price small { font-size: 11px; font-weight: 400; color: var(--muted); display: block; text-align: right; }
+  .diag-part-add {
+    display: flex; align-items: center; gap: 4px;
+    height: 30px; padding: 0 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; flex: none;
+    background: var(--brand); color: var(--brand-on);
+  }
+  .diag-part-add:hover { background: var(--brand-pressed); }
+  .diag-part-add .i { width: 13px; height: 13px; }
+  .diag-part-added {
+    display: flex; align-items: center; gap: 4px;
+    height: 30px; padding: 0 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; flex: none;
+    background: var(--tint-success); color: var(--success);
+    pointer-events: none;
+  }
+  .diag-part-added .i { width: 13px; height: 13px; }
+
+  /* input area */
+  .diag-input-area {
+    padding: 12px 16px 16px; border-top: 1px solid var(--line); flex: none;
+  }
+  .diag-input-row {
+    display: flex; align-items: flex-end; gap: 8px;
+    padding: 8px 12px; border-radius: 12px;
+    border: 1px solid var(--line-control); background: var(--surface);
+  }
+  .diag-input-row:focus-within { border-color: var(--brand); }
+  .diag-input-row textarea {
+    flex: 1; border: none; outline: none; resize: none; background: transparent;
+    font-size: 14px; line-height: 20px; color: var(--ink); max-height: 120px;
+    font-family: inherit; padding: 0;
+  }
+  .diag-input-row textarea::placeholder { color: var(--placeholder); }
+  .diag-send-btn {
+    display: grid; place-items: center; width: 32px; height: 32px;
+    border-radius: 8px; background: var(--brand); color: var(--brand-on);
+    flex: none;
+  }
+  .diag-send-btn:hover { background: var(--brand-pressed); }
+  .diag-send-btn:disabled { background: var(--container-high); color: var(--muted); cursor: not-allowed; }
+  .diag-send-btn .i { width: 16px; height: 16px; }
+  .diag-input-hint {
+    margin-top: 6px; font-size: 11px; color: var(--subtle); text-align: center;
+  }
+
+  /* thinking indicator */
+  .diag-thinking { display: flex; gap: 10px; align-items: center; }
+  .diag-thinking-dots { display: flex; gap: 4px; padding: 10px 14px; }
+  .diag-thinking-dots span {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+    animation: diag-dot .9s infinite;
+  }
+  .diag-thinking-dots span:nth-child(2) { animation-delay: .15s; }
+  .diag-thinking-dots span:nth-child(3) { animation-delay: .3s; }
+  @keyframes diag-dot { 0%,80%,100% { opacity: .3; transform: scale(.85); } 40% { opacity: 1; transform: scale(1); } }
+
+  /* ── cart overlay ─────────────────────────────────────────── */
+  .diag-cart-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: var(--scrim); display: flex; align-items: flex-end; justify-content: flex-end;
+  }
+  .diag-cart-panel {
+    width: 360px; height: 100%; max-height: 100vh;
+    background: var(--surface); border-left: 1px solid var(--line);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .diag-cart-head {
+    display: flex; align-items: center; gap: 10px;
+    height: 56px; padding: 0 20px; border-bottom: 1px solid var(--line); flex: none;
+  }
+  .diag-cart-head h2 { font-size: 15px; font-weight: 700; flex: 1; }
+  .diag-cart-close {
+    display: grid; place-items: center; width: 32px; height: 32px;
+    border-radius: 8px; color: var(--muted);
+  }
+  .diag-cart-close:hover { background: var(--container); }
+  .diag-cart-close .i { width: 16px; height: 16px; }
+  .diag-cart-items { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .diag-cart-empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--subtle); font-size: 13px; gap: 8px;
+  }
+  .diag-cart-empty .i { width: 32px; height: 32px; opacity: .4; }
+  .diag-cart-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    background: var(--sunken); border: 1px solid var(--line);
+  }
+  .diag-cart-row-info { flex: 1; min-width: 0; }
+  .diag-cart-row-num { font-size: 11px; font-weight: 700; color: var(--muted); }
+  .diag-cart-row-name { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .diag-cart-qty { display: flex; align-items: center; gap: 6px; flex: none; }
+  .diag-cart-qty-btn {
+    display: grid; place-items: center; width: 24px; height: 24px;
+    border-radius: 6px; border: 1px solid var(--line); font-size: 14px; font-weight: 700;
+    color: var(--ink); background: var(--surface);
+  }
+  .diag-cart-qty-btn:hover { background: var(--container); }
+  .diag-cart-qty-num { font-size: 13px; font-weight: 600; min-width: 20px; text-align: center; }
+  .diag-cart-row-price { font-size: 13px; font-weight: 700; color: var(--ink); flex: none; min-width: 56px; text-align: right; }
+  .diag-cart-foot {
+    padding: 12px 20px 20px; border-top: 1px solid var(--line); flex: none;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .diag-cart-total {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .diag-cart-wo-btn {
+    width: 100%; height: 40px; border-radius: 10px;
+    background: var(--brand); color: var(--brand-on);
+    font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .diag-cart-wo-btn:hover { background: var(--brand-pressed); }
+  .diag-cart-wo-btn .i { width: 16px; height: 16px; }
+  .diag-cart-wo-add-btn {
+    width: 100%; height: 40px; border-radius: 10px;
+    border: 1px solid var(--line); color: var(--ink);
+    font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .diag-cart-wo-add-btn:hover { background: var(--container); }
+  .diag-cart-wo-add-btn .i { width: 16px; height: 16px; }
+
+  /* ── mobile overlay ───────────────────────────────────────── */
+  .diag-mobile-overlay {
+    position: fixed; inset: 0; z-index: 60;
+    background: var(--surface); display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .diag-mobile-head {
+    display: flex; align-items: center; gap: 10px;
+    height: 56px; padding: 0 16px; border-bottom: 1px solid var(--line); flex: none;
+  }
+  .diag-mobile-close {
+    display: grid; place-items: center; width: 36px; height: 36px;
+    border-radius: 10px; color: var(--muted);
+  }
+  .diag-mobile-close:hover { background: var(--container); }
+  .diag-mobile-close .i { width: 18px; height: 18px; }
+  .diag-mobile-title { font-size: 15px; font-weight: 700; flex: 1; }
+  .diag-mobile-body { flex: 1; overflow: auto; padding: 16px; }
+  .diag-mobile-body .diag-bubble-ai {
+    max-width: 100%; border-radius: 12px;
+  }
+
+  /* ── WO picker dialog ─────────────────────────────────────── */
+  .diag-wo-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+  .diag-wo-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--sunken);
+  }
+  .diag-wo-row:hover { border-color: var(--brand); background: var(--tint-warning); }
+  .diag-wo-row-info { flex: 1; min-width: 0; }
+  .diag-wo-num { font-size: 11px; font-weight: 700; color: var(--muted); }
+  .diag-wo-name { font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .diag-wo-row .i { width: 14px; height: 14px; color: var(--muted); flex: none; }
+
+  /* ── context switch popover ───────────────────────────────── */
+  .diag-ctx-menu {
+    position: absolute; z-index: 30; top: 100%; left: 0;
+    min-width: 240px; padding: 6px; border-radius: 10px;
+    background: var(--surface); border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  }
+  .diag-ctx-item {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 8px 10px; border-radius: 8px; text-align: left;
+    font-size: 13px; color: var(--ink); cursor: pointer;
+  }
+  .diag-ctx-item:hover { background: var(--container); }
+  .diag-ctx-item.active { background: var(--container-high); font-weight: 600; }
+  .diag-ctx-item .i { width: 14px; height: 14px; flex: none; color: var(--muted); }
+}
