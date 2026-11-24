@@ -314,7 +314,7 @@ SE.views['company-catalog'] = function (el, p) {
     '<p class="ecat-no-results" hidden>No items match your filter.</p>';
 
     var body = C.layout(
-      { extra: 'company-catalog' }, p.wo,
+      { extra: 'company-catalog', ccat: p.cat, csub: p.sub }, p.wo,
       UI.sec('Featured', '<span class="muted">' + featured.length + ' items</span>',
         '<div class="ecat-part-grid ecat-featured-grid">' +
           featured.map(function (x) { return partCard(x, p.cat, unit); }).join('') +
@@ -381,7 +381,7 @@ SE.views['company-catalog'] = function (el, p) {
       crumbs: [['Parts catalog', catQ], ['Company Catalog', ccQ]],
       sub: catDef ? catDef.desc : '',
       body: C.layout(
-        { extra: 'company-catalog' }, p.wo,
+        { extra: 'company-catalog', ccat: p.cat }, p.wo,
         UI.sec(catDef ? catDef.name : p.cat,
           '<span class="muted">' + subs.length + ' sub-categories - ' + allItems.length + ' items</span>',
           '<div class="sup-pf-grid">' + subCards + '</div>', 'h-subs') +

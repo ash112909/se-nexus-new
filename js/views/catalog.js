@@ -55,6 +55,14 @@
       { id: 'fluids',    name: 'Consumables & Fluids', subs: [['hydraulic','Hydraulic Fluid & Filters'],['lubricants','Lubricants & Greases']] }
     ]
   };
+  C.ccatData = [
+    { id: 'shop-supplies',  name: 'Shop Supplies',        subs: [['lubricants','Lubricants & Fluids'],['consumables','Consumables'],['cleaning','Cleaning Agents']] },
+    { id: 'safety',         name: 'Safety Equipment',     subs: [['ppe','PPE'],['fall-protection','Fall Protection'],['inspection','Inspection & Tags']] },
+    { id: 'standard-parts', name: 'Standard Stock Parts', subs: [['filters','Filters'],['belts-chains','Belts & Chains'],['bearings','Bearings & Seals']] },
+    { id: 'tools',          name: 'Tools & Equipment',    subs: [['hand-tools','Hand Tools'],['test-equip','Test Equipment'],['special-tooling','Special Tooling']] },
+    { id: 'hardware',       name: 'Fasteners & Hardware', subs: [['bolts-nuts','Bolts & Nuts'],['pins-clips','Pins & Clips'],['washers','Washers & Retaining']] },
+    { id: 'docs',           name: 'Internal Documents',   subs: [['inspection-forms','Inspection Forms'],['checklists','Checklists'],['specs','Internal Specs']] }
+  ];
   C.lineItems = function (sup, id) { return SE.data.parts.filter(function (x) { return !x.machine && x.supplier === sup && x.enhanced === id; }); };
   C.per = function (part) { return part.uom === 'each' ? 'each' : 'per ' + part.uom; };
   // the unit a part is being bought for: the work order's unit, else the unit chosen in the search context
@@ -149,6 +157,21 @@
       return node(1, s.name, '#/supplier?sup=' + s.id + q, sOpen && !cur.m && !cur.line, null, sOpen, kids);
     }).join('');
     var navHead = '<nav class="ctree" aria-label="Catalog tree">';
+    // Company Catalog tree: 2 levels — category → sub-category
+    if (cur.extra === 'company-catalog') {
+      var ccItems = C.ccatData.map(function (cat) {
+        var cOpen = cur.ccat === cat.id;
+        var subKids = !cOpen ? '' : cat.subs.map(function (sub) {
+          return node(2, sub[1],
+            '#/company-catalog?cat=' + cat.id + '&sub=' + sub[0] + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+            cur.csub === sub[0], null, false, null);
+        }).join('');
+        return node(1, cat.name,
+          '#/company-catalog?cat=' + cat.id + (wo ? '&wo=' + encodeURIComponent(wo) : ''),
+          cOpen && !cur.csub, null, cOpen, subKids);
+      }).join('');
+      return navHead + '<ul>' + ccItems + '</ul></nav>';
+    }
     // Enhanced Catalog tree: 4 levels — supplier → category → sub-category
     if (cur.extra === 'enhanced-catalog') {
       var ECAT_BY_SUP = C.ecatBySup;
