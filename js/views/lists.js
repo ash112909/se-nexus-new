@@ -40,7 +40,6 @@
       if (it.qty <= 1) step = step.replace('data-step="-1"', 'data-step="-1" disabled');
       return '<li class="le-m" data-m="' + i + '"><span class="le-pos">' + (i + 1) + '</span>' +
         '<span class="le-info"><b>' + esc(p.name) + '</b><small>' + esc(p.pn) + '</small></span>' +
-        '<a class="btn btn-secondary le-view-btn" href="#/part?pn=' + encodeURIComponent(p.pn) + '" target="_blank">' + icon('search') + 'View part</a>' +
         step +
         '<span class="le-move"><button type="button" class="icon-btn" data-up="' + i + '" aria-label="Move ' + esc(p.name) + ' up"' + (i ? '' : ' disabled') + '>' + icon('angle-small-down', 'up') + '</button>' +
           '<button type="button" class="icon-btn" data-down="' + i + '" aria-label="Move ' + esc(p.name) + ' down"' + (i < n - 1 ? '' : ' disabled') + '>' + icon('angle-small-down') + '</button></span>' +
@@ -171,6 +170,8 @@ SE.views.lists = function (el, p) {
   var myId = D.user.username;
   var _activeListId = null;
   var _renaming = false;
+  var _selPn = null;
+  var _unbindPart = null;
 
   // Set initial active list
   (function () {
@@ -248,7 +249,7 @@ SE.views.lists = function (el, p) {
         '</div>' +
         '<div class="wl-item-acts">' +
           '<button type="button" class="wl-cart-btn" data-wladd data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '">' + icon('shopping-cart') + 'Add to cart</button>' +
-          '<a class="wl-find-btn" href="#/part?pn=' + encodeURIComponent(part.pn) + '">' + icon('search') + 'View part</a>' +
+          '<button type="button" class="wl-find-btn" data-wlview="' + esc(part.pn) + '">' + icon('search') + 'View part</button>' +
           moveSel +
           (canEdit ? '<button type="button" class="wl-del-btn" data-wlrm data-wpn="' + esc(item.pn) + '" data-wlid="' + esc(l.id) + '" title="Remove from list">' + icon('trash') + '</button>' : '') +
         '</div>' +
@@ -280,6 +281,19 @@ SE.views.lists = function (el, p) {
     '</div>';
   }
 
+  function renderPartPanel() {
+    var panelEl = el.querySelector('#wl-part-panel');
+    if (!panelEl) return;
+    if (_unbindPart) { _unbindPart(); _unbindPart = null; }
+    var part = _selPn ? SE.part(_selPn) : null;
+    if (!part) { panelEl.hidden = true; el.querySelector('#wl-split') && el.querySelector('#wl-split').classList.add('no-sel'); return; }
+    panelEl.hidden = false;
+    el.querySelector('#wl-split') && el.querySelector('#wl-split').classList.remove('no-sel');
+    panelEl.innerHTML = UI.panelHead(part.name, esc(part.pn)) + '<div class="panel-body">' + SE.partDetail(part, {}) + '</div>';
+    _unbindPart = SE.partDetailBind(panelEl.querySelector('.pd'), part, {});
+    el.querySelectorAll('[data-wlview]').forEach(function (b) { b.classList.toggle('on', b.dataset.wlview === _selPn); });
+  }
+
   function renderItems() {
     var panel = el.querySelector('#wl-items-panel');
     if (!panel) return;
@@ -290,11 +304,12 @@ SE.views.lists = function (el, p) {
     }
     var canEdit = !l.ownerId || l.ownerId === myId;
     var otherLists = SE.lists().filter(function (lo) { return lo.id !== l.id && (!lo.ownerId || lo.ownerId === myId); });
-    var bodyHtml = !l.items.length
+    var listHtml = !l.items.length
       ? '<div class="wl-panel-empty"><p>This list is empty.</p><p>Add parts using the <b>Save to list</b> button on any part.</p>' +
         (canEdit ? '<button type="button" class="btn btn-secondary" data-wledit data-wlid="' + esc(l.id) + '">' + icon('pencil') + 'Edit list</button>' : '') + '</div>'
       : '<div class="wl-items-list">' + l.items.map(function (item) { return itemCard(item, l, otherLists, canEdit); }).join('') + '</div>';
-    panel.innerHTML = panelHeader(l) + bodyHtml;
+    panel.innerHTML = panelHeader(l) + '<div class="split wl-split' + (_selPn ? '' : ' no-sel') + '" id="wl-split"><div>' + listHtml + '</div><aside class="panel" id="wl-part-panel" aria-label="Part detail"></aside></div>';
+    renderPartPanel();
     if (_renaming) {
       var inp = panel.querySelector('#wl-ren-inp');
       if (inp) { inp.focus(); inp.select(); }
@@ -365,6 +380,7 @@ SE.views.lists = function (el, p) {
     if (navsel && !e.target.closest('[data-navpin]')) {
       _activeListId = navsel.dataset.navsel;
       _renaming = false;
+      _selPn = null;
       render();
       return;
     }
@@ -413,6 +429,7 @@ SE.views.lists = function (el, p) {
     }
     if (t.hasAttribute('data-wladdall')) { wlAddAll(d.wlid); return; }
     if (t.hasAttribute('data-wladd')) { wlAddOne(d.wpn, d.wlid); return; }
+    if (d.wlview) { _selPn = _selPn === d.wlview ? null : d.wlview; renderPartPanel(); return; }
     if (t.hasAttribute('data-wlrm')) {
       var list = SE.list(d.wlid);
       if (list) { list.items = list.items.filter(function (i) { return i.pn !== d.wpn; }); SE.saveLists(); render(); }
